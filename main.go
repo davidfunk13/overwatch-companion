@@ -1,9 +1,10 @@
 package main
 
 import (
-	"fmt"
+	"log"
 	"os"
 
+	"github.com/davidfunk13/overwatch-companion/api"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -11,16 +12,12 @@ func main() {
 	app := fiber.New()
 	port := os.Getenv("PORT")
 
+	//if is dev
 	if port == "" {
-		port = "3000"
+		port = "3001"
 	}
 
-	fmt.Println("Port:", port)
+	api.ConfigureRouter(app)
 
-	app.Get("/", func(c *fiber.Ctx) error {
-		fmt.Print("Testing")
-		return c.SendString("Hello, World!")
-	})
-
-	app.Listen(":" + port)
+	log.Fatal(app.Listen(":" + port))
 }
