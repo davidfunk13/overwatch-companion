@@ -17,7 +17,7 @@ func main() {
 		port = "3001"
 	}
 
-	api.ConfigureRouter(app)
+	api.RouteHandlers(app)
 
 	log.Fatal(app.Listen(":" + port))
 }
