@@ -4,7 +4,7 @@ package models
 type User struct {
 	ID         int    `json:"id"`
 	Battletag  string `json:"battletag"`
-	Identifier int    `json:"Identifier"`
+	Identifier int    `json:"identifier"`
 	Email      string `json:"email"`
 }
 
