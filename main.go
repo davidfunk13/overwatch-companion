@@ -12,7 +12,7 @@ import (
 func main() {
 	var CorsConfig = cors.Config{
 		Next:             nil,
-		AllowOrigins:     "*",
+		AllowOrigins:     "https://overwatch-companion.netlify.app",
 		AllowMethods:     "GET,POST,HEAD,PUT,DELETE,PATCH",
 		AllowHeaders:     "",
 		AllowCredentials: false,
