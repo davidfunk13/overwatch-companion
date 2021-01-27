@@ -14,6 +14,7 @@ func main() {
 
 	app.Use(cors.New(cors.Config{
 		AllowOrigins: "https://overwatch-companion.netlify.app/, http://localhost:3000, http://localhost:3001",
+		AllowHeaders: "Origin, Content-Type, Accept",
 	}))
 
 	port := os.Getenv("PORT")
