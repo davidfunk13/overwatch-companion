@@ -13,7 +13,7 @@ func main() {
 	app := fiber.New()
 
 	app.Use(cors.New(cors.Config{
-		AllowOrigins: "http://overwatch-companion.herokuapp.com, http://localhost:3000, http://localhost:3001",
+		AllowOrigins: "https://overwatch-companion.netlify.app/, http://localhost:3000, http://localhost:3001",
 	}))
 
 	port := os.Getenv("PORT")
