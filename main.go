@@ -10,9 +10,19 @@ import (
 )
 
 func main() {
+	var CorsConfig = cors.Config{
+		Next:             nil,
+		AllowOrigins:     "*",
+		AllowMethods:     "GET,POST,HEAD,PUT,DELETE,PATCH",
+		AllowHeaders:     "",
+		AllowCredentials: false,
+		ExposeHeaders:    "",
+		MaxAge:           0,
+	}
+
 	app := fiber.New()
 
-	app.Use(cors.New())
+	app.Use(cors.New(CorsConfig))
 
 	port := os.Getenv("PORT")
 
