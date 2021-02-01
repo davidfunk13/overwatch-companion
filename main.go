@@ -2,36 +2,28 @@ package main
 
 import (
 	"log"
+	"net/http"
 	"os"
 
-	"github.com/davidfunk13/overwatch-companion/api"
-	"github.com/gofiber/fiber/v2"
-	"github.com/gofiber/fiber/v2/middleware/cors"
+	"github.com/99designs/gqlgen/graphql/handler"
+	"github.com/99designs/gqlgen/graphql/playground"
+	"github.com/davidfunk13/overwatch-companion/graph"
+	"github.com/davidfunk13/overwatch-companion/graph/generated"
 )
 
+const defaultPort = "3001"
+
 func main() {
-	var CorsConfig = cors.Config{
-		Next:             nil,
-		AllowOrigins:     "https://overwatch-companion.netlify.app",
-		AllowMethods:     "GET,POST,HEAD,PUT,DELETE,PATCH",
-		AllowHeaders:     "",
-		AllowCredentials: false,
-		ExposeHeaders:    "",
-		MaxAge:           0,
-	}
-
-	app := fiber.New()
-
-	app.Use(cors.New(CorsConfig))
-
 	port := os.Getenv("PORT")
-
-	//if is dev
 	if port == "" {
-		port = "3001"
+		port = defaultPort
 	}
 
-	api.RouteHandlers(app)
+	srv := handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: &graph.Resolver{}}))
 
-	log.Fatal(app.Listen(":" + port))
+	http.Handle("/", playground.Handler("GraphQL playground", "/query"))
+	http.Handle("/query", srv)
+
+	log.Printf("connect to http://localhost:%s/ for GraphQL playground", port)
+	log.Fatal(http.ListenAndServe(":"+port, nil))
 }
