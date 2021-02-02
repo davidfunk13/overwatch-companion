@@ -1,6 +1,8 @@
 package main
 
 import (
+	"database/sql"
+	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -16,11 +18,14 @@ import (
 const defaultPort = "3001"
 
 func main() {
-	// db, err := sql.Open("mysql", "root:root@/overwatch_companion")
+	db, err := sql.Open("mysql", "root:root@/overwatch_companion")
 
-	// if err != nil {
-	// 	panic(err.Error())
-	// }
+	if err != nil {
+		panic(err.Error())
+	} else {
+		fmt.Println("Connected to database")
+	}
+	defer db.Close()
 
 	port := os.Getenv("PORT")
 	if port == "" {
