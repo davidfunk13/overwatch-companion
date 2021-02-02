@@ -6,17 +6,26 @@ package graph
 import (
 	"context"
 	"fmt"
+	"math/rand"
 
 	"github.com/davidfunk13/overwatch-companion/graph/generated"
 	"github.com/davidfunk13/overwatch-companion/graph/model"
 )
 
-func (r *mutationResolver) CreateTodo(ctx context.Context, input model.NewTodo) (*model.Todo, error) {
-	panic(fmt.Errorf("not implemented"))
+func (r *mutationResolver) CreateUser(ctx context.Context, input model.NewUser) (*model.User, error) {
+	user := &model.User{
+		ID:    fmt.Sprintf("%d", rand.Intn(50000)),
+		Name:  input.Name,
+		Email: input.Email,
+	}
+
+	r.users = append(r.users, user)
+
+	return user, nil
 }
 
-func (r *queryResolver) Todos(ctx context.Context) ([]*model.Todo, error) {
-	panic(fmt.Errorf("not implemented"))
+func (r *queryResolver) Users(ctx context.Context) ([]*model.User, error) {
+	return r.users, nil
 }
 
 // Mutation returns generated.MutationResolver implementation.
