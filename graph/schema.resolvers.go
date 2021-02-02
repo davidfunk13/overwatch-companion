@@ -14,7 +14,7 @@ import (
 
 func (r *mutationResolver) CreateUser(ctx context.Context, input model.NewUser) (*model.User, error) {
 	user := &model.User{
-		ID:    fmt.Sprintf("%d", rand.Intn(50000)),
+		ID:    "u" + fmt.Sprintf("%d", rand.Intn(50000)),
 		Name:  input.Name,
 		Email: input.Email,
 	}

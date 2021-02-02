@@ -5,6 +5,8 @@ import (
 	"net/http"
 	"os"
 
+	_ "github.com/go-sql-driver/mysql"
+
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/playground"
 	"github.com/davidfunk13/overwatch-companion/graph"
@@ -14,6 +16,12 @@ import (
 const defaultPort = "3001"
 
 func main() {
+	// db, err := sql.Open("mysql", "root:root@/overwatch_companion")
+
+	// if err != nil {
+	// 	panic(err.Error())
+	// }
+
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = defaultPort
