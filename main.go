@@ -22,6 +22,12 @@ func main() {
 		port = defaultPort
 	}
 
+	/*
+		Migration
+		UP migrate -path database/migration -database "mysql://root@/overwatch_companion" -verbose up
+		DOWN migrate -path database/migration -database "mysql://root@/overwatch_companion" -verbose down
+	*/
+
 	database.InitConnection()
 
 	srv := handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: &graph.Resolver{}}))
