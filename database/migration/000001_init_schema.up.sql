@@ -6,15 +6,13 @@ CREATE TABLE `user` (
 );
 
 INSERT INTO user (id, name, email)
-VALUES (2352, "IAmDave", "davefunk135@gmail.com");
+VALUES (2352, "IAmLorde", "poo@gmail.com");
 
 INSERT INTO user (id, name, email)
-VALUES (9148, "buttkegels", "buttkegelsreborn@gmail.com");
+VALUES (9148, "Fablorgian", "doctorflaborgian@gmail.com");
 
 INSERT INTO user (id, name, email)
-VALUES (6986, "NakedDave", "benaffleckinphantoms@gmail.com");
+VALUES (6986, "Yourmom", "yourmom@gmail.com");
 
 INSERT INTO user (id, name, email)
-VALUES (5719, "TurdFergason", "benaffleckinphantoms@gmail.com");
-
-
+VALUES (5719, "TurdFergason", "thatsnotmyname@gmail.com");
