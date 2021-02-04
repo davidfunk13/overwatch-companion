@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"math/rand"
 
+	"github.com/davidfunk13/overwatch-companion/database"
 	"github.com/davidfunk13/overwatch-companion/graph/generated"
 	"github.com/davidfunk13/overwatch-companion/graph/model"
 )
@@ -35,7 +36,9 @@ func (r *mutationResolver) CreateUser(ctx context.Context, input model.NewUser) 
 }
 
 func (r *queryResolver) Users(ctx context.Context) ([]*model.User, error) {
-	return r.users, nil
+	var data = database.SelectAllUsers()
+
+	return data, nil
 }
 
 // Mutation returns generated.MutationResolver implementation.
