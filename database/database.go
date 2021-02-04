@@ -3,6 +3,7 @@ package database
 import (
 	"database/sql"
 	"fmt"
+	"os"
 
 	"github.com/davidfunk13/overwatch-companion/graph/model"
 )
@@ -12,8 +13,9 @@ var Db *sql.DB
 
 // InitConnection esatablishes a connection to the database
 func InitConnection() {
+	env := os.Getenv("APP_ENV")
+	fmt.Printf("{ env: %s }\n", env)
 	db, err := sql.Open("mysql", "root:@/overwatch_companion")
-
 	if err != nil {
 		panic(err.Error())
 	}
