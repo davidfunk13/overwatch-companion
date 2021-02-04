@@ -7,7 +7,6 @@ import (
 
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/playground"
-	"github.com/davidfunk13/overwatch-companion/database"
 	"github.com/davidfunk13/overwatch-companion/graph"
 	"github.com/davidfunk13/overwatch-companion/graph/generated"
 	_ "github.com/go-sql-driver/mysql"
@@ -19,6 +18,7 @@ func main() {
 	port := os.Getenv("PORT")
 
 	if port == "" {
+
 		port = defaultPort
 	}
 
@@ -28,7 +28,7 @@ func main() {
 		DOWN migrate -path database/migration -database "mysql://root@/overwatch_companion" -verbose down
 	*/
 
-	database.InitConnection()
+	// database.InitConnection()
 
 	srv := handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: &graph.Resolver{}}))
 
