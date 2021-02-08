@@ -41,7 +41,7 @@ func SelectAllUsers() []*model.User {
 
 	// run Query for 2+ rows, QueryRow for 1.
 	res, err := Db.Query("SELECT * FROM user")
-	fmt.Println(res)
+
 	// if there is an error making the query, panic.
 	if err != nil {
 		panic(err.Error())
