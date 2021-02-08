@@ -22,13 +22,13 @@ func InitConnection() {
 		connStr = "root:@/overwatch_companion"
 	}
 
+	fmt.Printf("{ env: %s, connectionString: %s }\n", env, connStr)
+
 	db, err := sql.Open("mysql", connStr)
 
 	if err != nil {
 		panic(err.Error())
 	}
-
-	fmt.Printf("{ env: %s, connectionString: %s }\n", env, connStr)
 
 	Db = db
 }
