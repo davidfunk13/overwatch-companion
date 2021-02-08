@@ -41,6 +41,14 @@ func SelectAllUsers() []*model.User {
 
 	// run Query for 2+ rows, QueryRow for 1.
 	res, err := Db.Query("SELECT * FROM user")
+	fmt.Println(res)
+	// if there is an error making the query, panic.
+	if err != nil {
+		panic(err.Error())
+	}
+
+	// dont cut rows until res.Next() returns false
+	defer res.Close()
 
 	// keep looping as long as res.Next() returns true
 	for res.Next() {
@@ -55,12 +63,6 @@ func SelectAllUsers() []*model.User {
 
 		//send this new user to the data array
 		data = append(data, &user)
-	}
-
-	// if there is an error making the query, panic.
-	if err != nil {
-		fmt.Println("hit this err")
-		panic(err.Error())
 	}
 
 	return data
