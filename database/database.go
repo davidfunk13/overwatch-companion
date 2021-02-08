@@ -14,13 +14,22 @@ var Db *sql.DB
 // InitConnection esatablishes a connection to the database
 func InitConnection() {
 	env := os.Getenv("APP_ENV")
-	fmt.Printf("{ env: %s }\n", env)
-	db, err := sql.Open("mysql", "root:@/overwatch_companion")
+	var connStr string
+	if env == "production" {
+		fmt.Println("Connected to database")
+		connStr = os.Getenv("JAWSDB_URL")
+	} else {
+		connStr = "root:@/overwatch_companion"
+	}
+
+	db, err := sql.Open("mysql", connStr)
+
 	if err != nil {
 		panic(err.Error())
 	}
 
-	fmt.Println("Connected to database")
+	fmt.Printf("{ env: %s, connectionString: %s }\n", env, connStr)
+
 	Db = db
 }
 
