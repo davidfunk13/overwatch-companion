@@ -42,9 +42,6 @@ func SelectAllUsers() []*model.User {
 	// run Query for 2+ rows, QueryRow for 1.
 	res, err := Db.Query("SELECT * FROM user")
 
-	// dont cut rows until res.Next() returns false
-	defer res.Close()
-
 	// keep looping as long as res.Next() returns true
 	for res.Next() {
 		// declare variables for the incoming cols values
@@ -64,6 +61,9 @@ func SelectAllUsers() []*model.User {
 	if err != nil {
 		panic(err.Error())
 	}
+
+	// dont cut rows until res.Next() returns false
+	defer res.Close()
 
 	return data
 }
