@@ -59,11 +59,9 @@ func SelectAllUsers() []*model.User {
 
 	// if there is an error making the query, panic.
 	if err != nil {
+		fmt.Println("hit this err")
 		panic(err.Error())
 	}
-
-	// dont cut rows until res.Next() returns false
-	defer res.Close()
 
 	return data
 }
