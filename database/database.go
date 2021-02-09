@@ -14,15 +14,15 @@ var Db *sql.DB
 // InitConnection esatablishes a connection to the database
 func InitConnection() {
 	env := os.Getenv("APP_ENV")
+
 	var connStr string
+
 	if env == "production" {
 		fmt.Println("Connected to database")
 		connStr = os.Getenv("JAWSDB_URL")
 	} else {
 		connStr = "root:@/overwatch_companion"
 	}
-
-	fmt.Printf("{ env: %s, connectionString: %s }\n", env, connStr)
 
 	db, err := sql.Open("mysql", connStr)
 
@@ -67,22 +67,3 @@ func SelectAllUsers() []*model.User {
 
 	return data
 }
-
-// func SelectOneUser() {
-// 	// Selecting one row
-// 	/*
-// 		id := 1
-// 		var col string
-// 		sqlStatement := `SELECT col FROM my_table WHERE id=$1`
-// 		row := db.QueryRow(sqlStatement, id)
-// 		err := row.Scan(&col)
-// 		if err != nil {
-// 			if err == sql.ErrNoRows {
-// 				fmt.Println("Zero rows found")
-// 			} else {
-// 				panic(err)
-// 			}
-// 		}
-// 	*/
-
-// }

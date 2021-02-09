@@ -1,5 +1,5 @@
 CREATE TABLE `user` (
-  `id` varchar(7),
+  `id` int NOT NULL AUTO_INCREMENT,
   `name` varchar(30) NOT NULL,
   `email` varchar(30) NOT NULL,
   PRIMARY KEY (`id`)

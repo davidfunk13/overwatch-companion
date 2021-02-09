@@ -22,8 +22,7 @@ func (r *mutationResolver) CreateUser(ctx context.Context, input model.NewUser) 
 
 	r.users = append(r.users, user)
 
-	// res, err := Db.Exec(`INSERT INTO user (id, name, email)
-	// VALUES (?, ?, ?);`, randi, "Dave", "davefunk135@gmail.com")
+	// res, err := Db.Exec(`INSERT INTO user (id, name, email) VALUES (?, ?, ?);`, randi, "Dave", "davefunk135@gmail.com")
 
 	// if err != nil {
 	// 	panic(err.Error())
