@@ -11,11 +11,6 @@ import (
 	"github.com/form3tech-oss/jwt-go"
 )
 
-// Response struct
-type Response struct {
-	Message string `json:"message"`
-}
-
 // Jwks Keys struct
 type Jwks struct {
 	Keys []JSONWebKeys `json:"keys"`
@@ -34,12 +29,14 @@ type JSONWebKeys struct {
 // JWTMiddleware handler
 var JWTMiddleware = jwtmiddleware.New(jwtmiddleware.Options{
 	ValidationKeyGetter: func(token *jwt.Token) (interface{}, error) {
+
 		// Verify 'aud' claim
 		aud := os.Getenv("AUTH0_AUDIENCE")
 		checkAud := token.Claims.(jwt.MapClaims).VerifyAudience(aud, false)
 		if !checkAud {
 			return token, errors.New("invalid audience")
 		}
+
 		// Verify 'iss' claim
 		iss := "https://" + os.Getenv("AUTH0_DOMAIN") + "/"
 		checkIss := token.Claims.(jwt.MapClaims).VerifyIssuer(iss, false)
@@ -118,19 +115,4 @@ func getPemCert(token *jwt.Token) (string, error) {
 	}
 
 	return cert, nil
-}
-
-// ResponseJSON takes string, encodes as JSON, returns
-func ResponseJSON(message string, w http.ResponseWriter, statusCode int) {
-	response := Response{message}
-
-	jsonResponse, err := json.Marshal(response)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(statusCode)
-	w.Write(jsonResponse)
 }
