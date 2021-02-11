@@ -14,6 +14,7 @@ require (
 	github.com/gofiber/fiber/v2 v2.5.0 // indirect
 	github.com/gorilla/mux v1.8.0
 	github.com/hashicorp/golang-lru v0.5.1 // indirect
+	github.com/joho/godotenv v1.3.0 // indirect
 	github.com/klauspost/compress v1.11.7 // indirect
 	github.com/mitchellh/mapstructure v0.0.0-20180220230111-00c29f56e238 // indirect
 	github.com/rs/cors v1.7.0 // indirect

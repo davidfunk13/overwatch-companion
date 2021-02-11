@@ -32,6 +32,7 @@ var JWTMiddleware = jwtmiddleware.New(jwtmiddleware.Options{
 
 		// Verify 'aud' claim
 		aud := os.Getenv("AUTH0_AUDIENCE")
+
 		checkAud := token.Claims.(jwt.MapClaims).VerifyAudience(aud, false)
 		if !checkAud {
 			return token, errors.New("invalid audience")
@@ -50,6 +51,7 @@ var JWTMiddleware = jwtmiddleware.New(jwtmiddleware.Options{
 		}
 
 		result, _ := jwt.ParseRSAPublicKeyFromPEM([]byte(cert))
+
 		return result, nil
 	},
 	SigningMethod: jwt.SigningMethodRS256,
@@ -94,6 +96,7 @@ func getPemCert(token *jwt.Token) (string, error) {
 	if err != nil {
 		return cert, err
 	}
+
 	defer resp.Body.Close()
 
 	var jwks = Jwks{}

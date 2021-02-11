@@ -37,12 +37,10 @@ func addHandlers(r *mux.Router) {
 	if env != "production" {
 		fmt.Println("You are in development env.", env)
 		r.Handle("/dev", playground.Handler("GraphQL playground", "/api/query"))
-		r.Handle("/api/query", srv)
-	} else {
-		r.Handle("/api/query", negroni.New(
-			negroni.HandlerFunc(auth.JWTMiddleware.HandlerWithNext),
-			negroni.Wrap(srv)))
 	}
+	r.Handle("/api/query", negroni.New(
+		negroni.HandlerFunc(auth.JWTMiddleware.HandlerWithNext),
+		negroni.Wrap(srv)))
 
 	// Mock private route
 	r.Handle("/api/private", negroni.New(
