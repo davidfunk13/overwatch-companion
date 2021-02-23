@@ -31,7 +31,6 @@ func main() {
 	}
 
 	database.InitConnection()
-	Access to fetch at '' from origin '' has been blocked by CORS policy: Response to preflight request doesn't pass access control check: No 'Access-Control-Allow-Origin' header is present on the requested resource. If an opaque response serves your needs, set the request's mode to 'no-cors' to fetch the resource with CORS disabled.
 
 	c := cors.New(cors.Options{
 		AllowedOrigins:   []string{"https://overwatch-companion.netlify.app"},
