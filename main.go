@@ -7,8 +7,8 @@ import (
 
 	"github.com/davidfunk13/overwatch-companion/database"
 	router "github.com/davidfunk13/overwatch-companion/router"
-	"github.com/docker/distribution/registry/handlers"
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/gorilla/handlers"
 	"github.com/joho/godotenv"
 )
 
@@ -42,5 +42,5 @@ func main() {
 		log.Printf("welcome to dev mode. connect to http://localhost:%s/dev for GraphQL playground", port)
 	}
 
-	log.Fatal(http.ListenAndServe(":"+port, handlers.Cors(headersOk, originsOk, methodsOk)(r)))
+	log.Fatal(http.ListenAndServe(":"+port, handlers.CORS(headersOk, originsOk, methodsOk)(r)))
 }
