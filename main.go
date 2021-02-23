@@ -33,9 +33,9 @@ func main() {
 	database.InitConnection()
 
 	c := cors.New(cors.Options{
-		AllowedOrigins:   []string{"https://overwatch-companion.netlify.app"},
+		AllowedOrigins:   []string{"*"},
 		AllowCredentials: true,
-		AllowedHeaders:   []string{"Authorization"},
+		AllowedHeaders:   []string{"Authorization", "Content-Type"},
 	})
 
 	r := router.NewRouter()

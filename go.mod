@@ -17,7 +17,7 @@ require (
 	github.com/joho/godotenv v1.3.0 // indirect
 	github.com/klauspost/compress v1.11.7 // indirect
 	github.com/mitchellh/mapstructure v0.0.0-20180220230111-00c29f56e238 // indirect
-	github.com/rs/cors v1.7.0 // indirect
+	github.com/rs/cors v1.7.0
 	github.com/stretchr/testify v1.5.1 // indirect
 	github.com/urfave/negroni v1.0.0
 	github.com/valyala/fasthttp v1.20.0 // indirect
