@@ -33,14 +33,30 @@ var JWTMiddleware = jwtmiddleware.New(jwtmiddleware.Options{
 		// Verify 'aud' claim
 		aud := os.Getenv("AUTH0_AUDIENCE")
 
-		checkAud := token.Claims.(jwt.MapClaims).VerifyAudience(aud, false)
-		if !checkAud {
+		//isolate array of available audiences
+		audienceArray := token.Claims.(jwt.MapClaims)["aud"].([]interface{})
+
+		// create a map set to lookup if audience exists.
+		set := make(map[string]bool)
+
+		// create set
+		for _, a := range audienceArray {
+			set[a.(string)] = true
+		}
+
+		//boolean value representing whether the set contains the audience of this api
+		contains := set[aud]
+
+		//return err if false
+		if !contains {
 			return token, errors.New("invalid audience")
 		}
 
 		// Verify 'iss' claim
 		iss := "https://" + os.Getenv("AUTH0_DOMAIN") + "/"
+
 		checkIss := token.Claims.(jwt.MapClaims).VerifyIssuer(iss, false)
+
 		if !checkIss {
 			return token, errors.New("invalid issuer")
 		}

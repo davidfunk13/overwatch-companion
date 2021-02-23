@@ -2,16 +2,13 @@ package router
 
 import (
 	"fmt"
-	"net/http"
 	"os"
-	"strings"
 
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/playground"
 	"github.com/davidfunk13/overwatch-companion/auth"
 	"github.com/davidfunk13/overwatch-companion/graph"
 	"github.com/davidfunk13/overwatch-companion/graph/generated"
-	"github.com/davidfunk13/overwatch-companion/helpers"
 	"github.com/gorilla/mux"
 	"github.com/urfave/negroni"
 )
@@ -26,49 +23,23 @@ func NewRouter() *mux.Router {
 func addHandlers(r *mux.Router) {
 	env := os.Getenv("APP_ENV")
 
+	//graphql server
 	srv := handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: &graph.Resolver{}}))
 
-	// This route is always accessible
-	r.Handle("/api/public", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		message := "Hello from a public endpoint! You don't need to be authenticated to see this."
-		helpers.SendResponseJSON(message, w, http.StatusOK)
-	}))
-
+	//if you're in development
 	if env != "production" {
 		fmt.Println("You are in development env.", env)
-		r.Handle("/dev", playground.Handler("GraphQL playground", "/api/query"))
+		//set up the playground for graph queries
+		r.Handle("/dev", playground.Handler("GraphQL playground", os.Getenv("GRAPH_API")))
 	}
-	r.Handle("/api/query", negroni.New(
-		negroni.HandlerFunc(auth.JWTMiddleware.HandlerWithNext),
-		negroni.Wrap(srv)))
 
-	// Mock private route
-	r.Handle("/api/private", negroni.New(
-		negroni.HandlerFunc(auth.JWTMiddleware.HandlerWithNext),
-		negroni.Wrap(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			message := "Hello from a private endpoint! You need to be authenticated to see this."
-			helpers.SendResponseJSON(message, w, http.StatusOK)
-		}))))
+	//if we're in production, instead put the graphql server in a Negroni instance with our jwt middleware.
+	queryHandler := negroni.New(negroni.HandlerFunc(auth.JWTMiddleware.HandlerWithNext), negroni.Wrap(srv))
 
-	// This route is only accessible if the user has a valid access_token with the read:messages scope
-	// We are chaining the jwtmiddleware middleware into the negroni handler function which will check
-	// for a valid token and scope.
+	//serve graphql server at api endpoint.
+	r.Handle(os.Getenv("GRAPH_API"), queryHandler)
 
-	// Mock private router with permissions
-	r.Handle("/api/private-scoped", negroni.New(
-		negroni.HandlerFunc(auth.JWTMiddleware.HandlerWithNext),
-		negroni.Wrap(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			authHeaderParts := strings.Split(r.Header.Get("Authorization"), " ")
-			token := authHeaderParts[1]
+	//we should do a profile endpoint with the auth0 management api here.
 
-			hasScope := auth.CheckScope("read:messages", token)
-
-			if !hasScope {
-				message := "Insufficient scope."
-				helpers.SendResponseJSON(message, w, http.StatusForbidden)
-				return
-			}
-			message := "Hello from a private endpoint! You need to be authenticated to see this."
-			helpers.SendResponseJSON(message, w, http.StatusOK)
-		}))))
+	//think about how we could use the scope functionality.
 }
