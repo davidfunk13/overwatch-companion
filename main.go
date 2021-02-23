@@ -9,7 +9,6 @@ import (
 	router "github.com/davidfunk13/overwatch-companion/router"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/joho/godotenv"
-	"github.com/rs/cors"
 )
 
 const defaultPort = "3001"
@@ -32,17 +31,17 @@ func main() {
 
 	database.InitConnection()
 
-	c := cors.New(cors.Options{
-		AllowedOrigins:   []string{"*"},
-		AllowCredentials: true,
-		AllowedHeaders:   []string{"Authorization"},
-	})
+	// c := cors.New(cors.Options{
+	// 	AllowedOrigins:   []string{"*"},
+	// 	AllowCredentials: true,
+	// 	AllowedHeaders:   []string{"Authorization"},
+	// })
 
 	r := router.NewRouter()
 
-	handler := c.Handler(r)
+	// handler := c.Handler(r)
 
-	http.Handle("/", handler)
+	http.Handle("/", r)
 
 	if env != "production" {
 		log.Printf("welcome to dev mode. connect to http://localhost:%s/dev for GraphQL playground", port)

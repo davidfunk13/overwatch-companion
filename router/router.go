@@ -10,12 +10,14 @@ import (
 	"github.com/davidfunk13/overwatch-companion/graph"
 	"github.com/davidfunk13/overwatch-companion/graph/generated"
 	"github.com/gorilla/mux"
+	"github.com/rs/cors"
 	"github.com/urfave/negroni"
 )
 
 // NewRouter establishes all handlers for api routes
 func NewRouter() *mux.Router {
 	r := mux.NewRouter()
+	cors.Default().Handler(r)
 	addHandlers(r)
 	return r
 }
