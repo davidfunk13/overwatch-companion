@@ -35,14 +35,14 @@ func main() {
 	c := cors.New(cors.Options{
 		AllowedOrigins:   []string{"*"},
 		AllowCredentials: true,
-		AllowedHeaders:   []string{"Authorization", "Content-Type"},
+		AllowedHeaders:   []string{"Authorization"},
 	})
 
 	r := router.NewRouter()
 
 	handler := c.Handler(r)
 
-	http.Handle("/", r)
+	http.Handle("/", handler)
 
 	if env != "production" {
 		log.Printf("welcome to dev mode. connect to http://localhost:%s/dev for GraphQL playground", port)
