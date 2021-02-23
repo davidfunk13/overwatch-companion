@@ -9,7 +9,6 @@ import (
 	router "github.com/davidfunk13/overwatch-companion/router"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/joho/godotenv"
-	"github.com/rs/cors"
 )
 
 const defaultPort = "3001"
@@ -40,5 +39,5 @@ func main() {
 		log.Printf("welcome to dev mode. connect to http://localhost:%s/dev for GraphQL playground", port)
 	}
 
-	log.Fatal(http.ListenAndServe(":"+port, r)
+	log.Fatal(http.ListenAndServe(":"+port, r))
 }
