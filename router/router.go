@@ -10,20 +10,12 @@ import (
 	"github.com/davidfunk13/overwatch-companion/graph"
 	"github.com/davidfunk13/overwatch-companion/graph/generated"
 	"github.com/gorilla/mux"
-	"github.com/rs/cors"
 	"github.com/urfave/negroni"
 )
 
 // NewRouter establishes all handlers for api routes
 func NewRouter() *mux.Router {
 	r := mux.NewRouter()
-
-	r.Use(cors.New(cors.Options{
-		AllowedOrigins:   []string{"*"},
-		AllowCredentials: true,
-		Debug:            true,
-	}).Handler)
-
 	addHandlers(r)
 	return r
 }
@@ -49,5 +41,5 @@ func addHandlers(r *mux.Router) {
 
 	//we should do a profile endpoint with the auth0 management api here.
 
-	//think about how we could use the scope functionality.
+	//think about how we could use the scope funcit
 }
