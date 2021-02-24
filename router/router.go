@@ -29,7 +29,7 @@ func NewRouter() *mux.Router {
 
 	//wrap all requests in cors handler
 	r.Use(cors.New(cors.Options{
-		AllowedOrigins:   []string{"https://overwatch-companion.netlify.app"},
+		AllowedOrigins:   []string{origin},
 		AllowedHeaders:   []string{"Authorization", "Content-Type"},
 		AllowCredentials: true,
 		Debug:            true,
