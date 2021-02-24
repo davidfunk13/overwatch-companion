@@ -20,16 +20,19 @@ func (r *mutationResolver) CreateUser(ctx context.Context, input model.NewUser) 
 		Email: input.Email,
 	}
 
+	fmt.Println(r.users)
+	fmt.Println(user)
+
 	r.users = append(r.users, user)
 
-	// res, err := Db.Exec(`INSERT INTO user (id, name, email) VALUES (?, ?, ?);`, randi, "Dave", "davefunk135@gmail.com")
+	res, err := database.Db.Exec(`INSERT INTO user (id, name, email) VALUES (?, ?, ?);`, user.ID, user.Name, user.Email)
 
-	// if err != nil {
-	// 	panic(err.Error())
-	// } else {
-	// 	fmt.Println("Successfully inserted?")
-	// 	fmt.Println(res)
-	// }
+	if err != nil {
+		panic(err.Error())
+	} else {
+		fmt.Println("Successfully inserted")
+		fmt.Println(res)
+	}
 
 	return user, nil
 }
