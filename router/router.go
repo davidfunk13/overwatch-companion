@@ -6,14 +6,12 @@ import (
 	"os"
 
 	"github.com/99designs/gqlgen/graphql/handler"
-	"github.com/99designs/gqlgen/graphql/handler/transport"
 	"github.com/99designs/gqlgen/graphql/playground"
 	"github.com/davidfunk13/overwatch-companion/auth"
 	"github.com/davidfunk13/overwatch-companion/graph"
 	"github.com/davidfunk13/overwatch-companion/graph/generated"
 	"github.com/davidfunk13/overwatch-companion/helpers"
 	"github.com/gorilla/mux"
-	"github.com/gorilla/websocket"
 	"github.com/rs/cors"
 )
 
@@ -27,13 +25,11 @@ func NewRouter() *mux.Router {
 
 	origin := os.Getenv("ALLOWED_ORIGIN")
 
-	fmt.Println("Wwhat is this")
-
-	fmt.Print(origin)
+	fmt.Printf("Wwhat is this: %s", origin)
 
 	//wrap all requests in cors handler
 	r.Use(cors.New(cors.Options{
-		AllowedOrigins:   []string{origin},
+		AllowedOrigins:   []string{"https://overwatch-companion.netlify.app"},
 		AllowedHeaders:   []string{"Authorization", "Content-Type"},
 		AllowCredentials: true,
 		Debug:            true,
@@ -45,21 +41,21 @@ func NewRouter() *mux.Router {
 	//graphql server handler
 	srv := handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: &graph.Resolver{}}))
 
-	//look into each line of this
-	srv.AddTransport(&transport.Websocket{
-		Upgrader: websocket.Upgrader{
-			CheckOrigin: func(r *http.Request) bool {
-				// Check against your desired domains here
-				if env != "production" {
-					return r.Host == "http://localhost:3001"
-				}
+	// //look into each line of this
+	// srv.AddTransport(&transport.Websocket{
+	// 	Upgrader: websocket.Upgrader{
+	// 		CheckOrigin: func(r *http.Request) bool {
+	// 			// Check against your desired domains here
+	// 			if env != "production" {
+	// 				return r.Host == "http://localhost:3001"
+	// 			}
 
-				return r.Host == "https://overwatch-companion.netlify.app"
-			},
-			ReadBufferSize:  1024,
-			WriteBufferSize: 1024,
-		},
-	})
+	// 			return r.Host == "https://overwatch-companion.netlify.app"
+	// 		},
+	// 		ReadBufferSize:  1024,
+	// 		WriteBufferSize: 1024,
+	// 	},
+	// })
 
 	//if you're in development
 	if env != "production" {
@@ -71,6 +67,7 @@ func NewRouter() *mux.Router {
 
 	//if you are in production, use a jwt on the api subrouter only and serve the graph api
 	if env == "production" {
+		fmt.Println("is production")
 		api.Use(auth.JWTMiddleware.Handler)
 	}
 
