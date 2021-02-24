@@ -25,7 +25,7 @@ func NewRouter() *mux.Router {
 
 	origin := os.Getenv("ALLOWED_ORIGIN")
 
-	fmt.Printf("Wwhat is this: %s", origin)
+	fmt.Printf("What is this: \n %s", origin)
 
 	//wrap all requests in cors handler
 	r.Use(cors.New(cors.Options{
@@ -41,22 +41,6 @@ func NewRouter() *mux.Router {
 	//graphql server handler
 	srv := handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: &graph.Resolver{}}))
 
-	// //look into each line of this
-	// srv.AddTransport(&transport.Websocket{
-	// 	Upgrader: websocket.Upgrader{
-	// 		CheckOrigin: func(r *http.Request) bool {
-	// 			// Check against your desired domains here
-	// 			if env != "production" {
-	// 				return r.Host == "http://localhost:3001"
-	// 			}
-
-	// 			return r.Host == "https://overwatch-companion.netlify.app"
-	// 		},
-	// 		ReadBufferSize:  1024,
-	// 		WriteBufferSize: 1024,
-	// 	},
-	// })
-
 	//if you're in development
 	if env != "production" {
 		fmt.Print(" ---------------------------- \n WELCOME TO DEVELOPMENT MODE \n ---------------------------- \n")
@@ -65,14 +49,15 @@ func NewRouter() *mux.Router {
 		r.Handle("/dev", playground.Handler("GraphQL playground", os.Getenv("GRAPH_SERVER")))
 	}
 
-	//if you are in production, use a jwt on the api subrouter only and serve the graph api
+	//if you are in production, use a jwt on the api subrouter only
 	if env == "production" {
-		fmt.Println("is production")
 		api.Use(auth.JWTMiddleware.Handler)
 	}
 
+	//serve the graph server at the api subrouter /graph.
 	api.Handle("/graph", srv)
 
+	//Heres a public route.
 	r.HandleFunc("/stats", func(w http.ResponseWriter, r *http.Request) {
 		message := "This is a public, restful api endpoint that will be used to return statstics from another api."
 		helpers.SendResponseJSON(message, w, 200)
