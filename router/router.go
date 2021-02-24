@@ -11,6 +11,7 @@ import (
 	"github.com/davidfunk13/overwatch-companion/graph"
 	"github.com/davidfunk13/overwatch-companion/graph/generated"
 	"github.com/gorilla/mux"
+	"github.com/rs/cors"
 	"github.com/urfave/negroni"
 )
 
@@ -40,6 +41,10 @@ func NewRouter() *mux.Router {
 	//get the current environment
 	env := os.Getenv("APP_ENV")
 
+	c := cors.New(cors.Options{
+		AllowedOrigins: []string{"*"},
+	})
+
 	//create new router
 	r := mux.NewRouter()
 
@@ -54,7 +59,11 @@ func NewRouter() *mux.Router {
 	}
 
 	//if we're in production, instead put the graphql server in a Negroni instance with our jwt middleware.
-	queryHandler := negroni.New(negroni.HandlerFunc(auth.JWTMiddleware.HandlerWithNext), negroni.Wrap(srv))
+	queryHandler := negroni.New()
+
+	queryHandler.Use(negroni.HandlerFunc(auth.JWTMiddleware.HandlerWithNext))
+	queryHandler.Use(negroni.Wrap(srv))
+	queryHandler.Use(c)
 
 	//serve graphql server at api endpoint.
 	r.Handle(os.Getenv("GRAPH_SERVER"), queryHandler)

@@ -33,7 +33,7 @@ func main() {
 
 	r := router.NewRouter()
 
-	http.Handle("/", &router.CORSRouterDecorator{R: r})
+	http.Handle("/", r)
 
 	if env != "production" {
 		log.Printf("welcome to dev mode. connect to http://localhost:%s/dev for GraphQL playground", port)
