@@ -25,10 +25,11 @@ func NewRouter() *mux.Router {
 	//create new router
 	r := mux.NewRouter()
 
-	//create a sub router for the graph api so we can protect only it with a jwt
-	api := r.PathPrefix("/api").Subrouter()
-
 	origin := os.Getenv("ALLOWED_ORIGIN")
+
+	fmt.Println("Wwhat is this")
+
+	fmt.Print(origin)
 
 	//wrap all requests in cors handler
 	r.Use(cors.New(cors.Options{
@@ -37,6 +38,9 @@ func NewRouter() *mux.Router {
 		AllowCredentials: true,
 		Debug:            true,
 	}).Handler)
+
+	//create a sub router for the graph api so we can protect only it with a jwt
+	api := r.PathPrefix("/api").Subrouter()
 
 	//graphql server handler
 	srv := handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: &graph.Resolver{}}))
