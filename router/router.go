@@ -27,6 +27,7 @@ func NewRouter() *mux.Router {
 	//wrap all requests in cors handler
 	r.Use(cors.New(cors.Options{
 		AllowedOrigins:   []string{"*"},
+		AllowedHeaders:   []string{"Authorization", "Content-Type"},
 		AllowCredentials: true,
 		Debug:            true,
 	}).Handler)
@@ -40,7 +41,7 @@ func NewRouter() *mux.Router {
 		Upgrader: websocket.Upgrader{
 			CheckOrigin: func(r *http.Request) bool {
 				// Check against your desired domains here
-				fmt.Println()
+				fmt.Println("AHHHHHHH")
 				return r.Host == "https://overwatch-companion.netlify.app"
 			},
 			ReadBufferSize:  1024,
