@@ -11,6 +11,7 @@ import (
 	"github.com/davidfunk13/overwatch-companion/auth"
 	"github.com/davidfunk13/overwatch-companion/graph"
 	"github.com/davidfunk13/overwatch-companion/graph/generated"
+	"github.com/davidfunk13/overwatch-companion/helpers"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/websocket"
 	"github.com/rs/cors"
@@ -23,6 +24,8 @@ func NewRouter() *mux.Router {
 
 	//create new router
 	r := mux.NewRouter()
+
+	//create a sub router for the graph api so we can protect only it with a jwt
 	api := r.PathPrefix("/api").Subrouter()
 
 	origin := os.Getenv("ALLOWED_ORIGIN")
@@ -35,10 +38,7 @@ func NewRouter() *mux.Router {
 		Debug:            true,
 	}).Handler)
 
-	//auth middleware for all routes
-	// r.Use(auth.JWTMiddleware.Handler)
-
-	//graphql server
+	//graphql server handler
 	srv := handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: &graph.Resolver{}}))
 
 	//look into each line of this
@@ -46,7 +46,10 @@ func NewRouter() *mux.Router {
 		Upgrader: websocket.Upgrader{
 			CheckOrigin: func(r *http.Request) bool {
 				// Check against your desired domains here
-				fmt.Println("AHHHHHHH")
+				if env != "production" {
+					return r.Host == "http://localhost:3001"
+				}
+
 				return r.Host == "https://overwatch-companion.netlify.app"
 			},
 			ReadBufferSize:  1024,
@@ -56,14 +59,23 @@ func NewRouter() *mux.Router {
 
 	//if you're in development
 	if env != "production" {
-		fmt.Println("You are in development env.", env)
-		//set up the playground for graph queries
+		fmt.Print(" ---------------------------- \n WELCOME TO DEVELOPMENT MODE \n ---------------------------- \n")
+
+		//set up the playground for graph queries @ /dev without any auth.
 		r.Handle("/dev", playground.Handler("GraphQL playground", os.Getenv("GRAPH_SERVER")))
 	}
 
-	//serve graphql server at api endpoint.
-	api.Use(auth.JWTMiddleware.Handler)
+	//if you are in production, use a jwt on the api subrouter only and serve the graph api
+	if env == "production" {
+		api.Use(auth.JWTMiddleware.Handler)
+	}
+
 	api.Handle("/graph", srv)
+
+	r.HandleFunc("/stats", func(w http.ResponseWriter, r *http.Request) {
+		message := "This is a public, restful api endpoint that will be used to return statstics from another api."
+		helpers.SendResponseJSON(message, w, 200)
+	})
 
 	//we should do a profile endpoint with the auth0 management api here.
 

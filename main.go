@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -36,7 +37,7 @@ func main() {
 	http.Handle("/", r)
 
 	if env != "production" {
-		log.Printf("welcome to dev mode. connect to http://localhost:%s/dev for GraphQL playground", port)
+		fmt.Printf(" +++ connect to http://localhost:%s/dev for GraphQL playground \n +++ Happy Hacking!\n", port)
 	}
 
 	log.Fatal(http.ListenAndServe(":"+port, r))
