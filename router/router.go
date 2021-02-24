@@ -23,20 +23,25 @@ func NewRouter() *mux.Router {
 
 	//create new router
 	r := mux.NewRouter()
+	api := r.PathPrefix("/api").Subrouter()
+
+	origin := os.Getenv("ALLOWED_ORIGIN")
 
 	//wrap all requests in cors handler
 	r.Use(cors.New(cors.Options{
-		AllowedOrigins:   []string{"*"},
+		AllowedOrigins:   []string{origin},
 		AllowedHeaders:   []string{"Authorization", "Content-Type"},
 		AllowCredentials: true,
 		Debug:            true,
 	}).Handler)
 
-	r.Use(auth.JWTMiddleware.Handler)
+	//auth middleware for all routes
+	// r.Use(auth.JWTMiddleware.Handler)
 
 	//graphql server
 	srv := handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: &graph.Resolver{}}))
 
+	//look into each line of this
 	srv.AddTransport(&transport.Websocket{
 		Upgrader: websocket.Upgrader{
 			CheckOrigin: func(r *http.Request) bool {
@@ -57,7 +62,8 @@ func NewRouter() *mux.Router {
 	}
 
 	//serve graphql server at api endpoint.
-	r.Handle(os.Getenv("GRAPH_SERVER"), srv)
+	api.Use(auth.JWTMiddleware.Handler)
+	api.Handle("/graph", srv)
 
 	//we should do a profile endpoint with the auth0 management api here.
 
