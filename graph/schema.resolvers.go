@@ -6,7 +6,6 @@ package graph
 import (
 	"context"
 	"fmt"
-	"math/rand"
 
 	"github.com/davidfunk13/overwatch-companion/database"
 	"github.com/davidfunk13/overwatch-companion/graph/generated"
@@ -15,26 +14,39 @@ import (
 
 func (r *mutationResolver) CreateUser(ctx context.Context, input model.NewUser) (*model.User, error) {
 	user := &model.User{
-		ID:    "u" + fmt.Sprintf("%d", rand.Intn(50000)),
 		Name:  input.Name,
 		Email: input.Email,
 	}
 
-	fmt.Println(r.users)
-	fmt.Println(user)
-
 	r.users = append(r.users, user)
 
-	res, err := database.Db.Exec(`INSERT INTO user (id, name, email) VALUES (?, ?, ?);`, user.ID, user.Name, user.Email)
+	res, err := database.Db.Exec(`INSERT INTO user (name, email) VALUES (?, ?);`, user.Name, user.Email)
 
 	if err != nil {
 		panic(err.Error())
 	} else {
 		fmt.Println("Successfully inserted")
-		fmt.Println(res)
 	}
 
-	return user, nil
+	lastInsertedID, err := res.LastInsertId()
+
+	if err != nil {
+		panic(err.Error())
+	}
+
+	lastInserted := database.Db.QueryRow(`Select * from user where id=?;`, lastInsertedID)
+
+	if err != nil {
+		panic(err.Error())
+	}
+
+	var id, name, email string
+
+	err = lastInserted.Scan(&id, &name, &email)
+
+	insertedUser := model.User{ID: id, Name: name, Email: email}
+
+	return &insertedUser, nil
 }
 
 func (r *queryResolver) Users(ctx context.Context) ([]*model.User, error) {
