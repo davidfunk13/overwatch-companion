@@ -1,18 +1,64 @@
+enum Platform{
+  PC
+  NINTENDO
+  XBOX
+  PLAYSTATION
+}
+
+# User schemas
 type User {
   id: ID!
   name: String!
   email: String!
 }
 
-input NewUser {
+input InputUser {
   name: String!
   email: String!
 }
 
-type Query {
-  users: [User!]!
+# Battletag schemas
+type Battletag {
+  id: ID!
+  userId: ID!
+  battletag: String!
+  platform: Platform
+  identifier: String
 }
 
+input InputBattletag {
+  userId: ID!
+  battletag: String!
+  platform: Platform!
+  identifier: String
+}
+
+interface MutateBattletagPayload {
+  id: ID!
+  success: Boolean!
+}
+
+type BattletagMutationSuccess implements MutateBattletagPayload {
+  id: ID!
+  success: Boolean!
+  message: String!
+}
+
+type BattletagMutationFailure implements MutateBattletagPayload {
+  id: ID!
+  success: Boolean!
+  error: String!
+}
+
+# Queries 
+type Query {
+  users: [User!]!
+  battletags: [Battletag!]!
+}
+
+# Mutations
 type Mutation {
-  createUser(input: NewUser!): User!
+  createUser(input: InputUser!): User!
+  createBattletag(input: InputBattletag!): Battletag!
+  deleteBattletag(input: ID!): MutateBattletagPayload!
 }

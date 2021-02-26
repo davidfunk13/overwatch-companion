@@ -2,7 +2,99 @@
 
 package model
 
-type NewUser struct {
+import (
+	"fmt"
+	"io"
+	"strconv"
+)
+
+type MutateBattletagPayload interface {
+	IsMutateBattletagPayload()
+}
+
+type Battletag struct {
+	ID         string    `json:"id"`
+	UserID     string    `json:"userId"`
+	Battletag  string    `json:"battletag"`
+	Platform   *Platform `json:"platform"`
+	Identifier *string   `json:"identifier"`
+}
+
+type BattletagMutationFailure struct {
+	ID      string `json:"id"`
+	Success bool   `json:"success"`
+	Error   string `json:"error"`
+}
+
+func (BattletagMutationFailure) IsMutateBattletagPayload() {}
+
+type BattletagMutationSuccess struct {
+	ID      string `json:"id"`
+	Success bool   `json:"success"`
+	Message string `json:"message"`
+}
+
+func (BattletagMutationSuccess) IsMutateBattletagPayload() {}
+
+type InputBattletag struct {
+	UserID     string   `json:"userId"`
+	Battletag  string   `json:"battletag"`
+	Platform   Platform `json:"platform"`
+	Identifier *string  `json:"identifier"`
+}
+
+type InputUser struct {
 	Name  string `json:"name"`
 	Email string `json:"email"`
+}
+
+type User struct {
+	ID    string `json:"id"`
+	Name  string `json:"name"`
+	Email string `json:"email"`
+}
+
+type Platform string
+
+const (
+	PlatformPc          Platform = "PC"
+	PlatformNintendo    Platform = "NINTENDO"
+	PlatformXbox        Platform = "XBOX"
+	PlatformPlaystation Platform = "PLAYSTATION"
+)
+
+var AllPlatform = []Platform{
+	PlatformPc,
+	PlatformNintendo,
+	PlatformXbox,
+	PlatformPlaystation,
+}
+
+func (e Platform) IsValid() bool {
+	switch e {
+	case PlatformPc, PlatformNintendo, PlatformXbox, PlatformPlaystation:
+		return true
+	}
+	return false
+}
+
+func (e Platform) String() string {
+	return string(e)
+}
+
+func (e *Platform) UnmarshalGQL(v interface{}) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = Platform(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid Platform", str)
+	}
+	return nil
+}
+
+func (e Platform) MarshalGQL(w io.Writer) {
+	fmt.Fprint(w, strconv.Quote(e.String()))
 }
