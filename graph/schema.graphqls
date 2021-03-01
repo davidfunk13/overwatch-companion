@@ -7,7 +7,7 @@ enum Platform{
 
 # User schemas
 type User {
-  id: ID!
+  ID: ID!
   name: String!
   email: String!
 }
@@ -19,33 +19,33 @@ input InputUser {
 
 # Battletag schemas
 type Battletag {
-  id: ID!
-  userId: ID!
+  ID: Int!
+  userID: Int!
   battletag: String!
   platform: Platform
-  identifier: String
+  identifier: Int
 }
 
 input InputBattletag {
-  userId: ID!
+  userId: Int!
   battletag: String!
   platform: Platform!
-  identifier: String
+  identifier: Int
 }
 
 interface MutateBattletagPayload {
-  id: ID!
+  ID: Int
   success: Boolean!
 }
 
 type BattletagMutationSuccess implements MutateBattletagPayload {
-  id: ID!
+  ID: Int!
   success: Boolean!
   message: String!
 }
 
 type BattletagMutationFailure implements MutateBattletagPayload {
-  id: ID!
+  ID: Int!
   success: Boolean!
   error: String!
 }

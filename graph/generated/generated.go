@@ -114,7 +114,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Battletag.Battletag(childComplexity), true
 
-	case "Battletag.id":
+	case "Battletag.ID":
 		if e.complexity.Battletag.ID == nil {
 			break
 		}
@@ -135,7 +135,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Battletag.Platform(childComplexity), true
 
-	case "Battletag.userId":
+	case "Battletag.userID":
 		if e.complexity.Battletag.UserID == nil {
 			break
 		}
@@ -149,7 +149,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.BattletagMutationFailure.Error(childComplexity), true
 
-	case "BattletagMutationFailure.id":
+	case "BattletagMutationFailure.ID":
 		if e.complexity.BattletagMutationFailure.ID == nil {
 			break
 		}
@@ -163,7 +163,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.BattletagMutationFailure.Success(childComplexity), true
 
-	case "BattletagMutationSuccess.id":
+	case "BattletagMutationSuccess.ID":
 		if e.complexity.BattletagMutationSuccess.ID == nil {
 			break
 		}
@@ -241,7 +241,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.User.Email(childComplexity), true
 
-	case "User.id":
+	case "User.ID":
 		if e.complexity.User.ID == nil {
 			break
 		}
@@ -328,7 +328,7 @@ var sources = []*ast.Source{
 
 # User schemas
 type User {
-  id: ID!
+  ID: ID!
   name: String!
   email: String!
 }
@@ -340,33 +340,33 @@ input InputUser {
 
 # Battletag schemas
 type Battletag {
-  id: ID!
-  userId: ID!
+  ID: Int!
+  userID: Int!
   battletag: String!
   platform: Platform
-  identifier: String
+  identifier: Int
 }
 
 input InputBattletag {
-  userId: ID!
+  userId: Int!
   battletag: String!
   platform: Platform!
-  identifier: String
+  identifier: Int
 }
 
 interface MutateBattletagPayload {
-  id: ID!
+  ID: Int
   success: Boolean!
 }
 
 type BattletagMutationSuccess implements MutateBattletagPayload {
-  id: ID!
+  ID: Int!
   success: Boolean!
   message: String!
 }
 
 type BattletagMutationFailure implements MutateBattletagPayload {
-  id: ID!
+  ID: Int!
   success: Boolean!
   error: String!
 }
@@ -488,7 +488,7 @@ func (ec *executionContext) field___Type_fields_args(ctx context.Context, rawArg
 
 // region    **************************** field.gotpl *****************************
 
-func (ec *executionContext) _Battletag_id(ctx context.Context, field graphql.CollectedField, obj *model.Battletag) (ret graphql.Marshaler) {
+func (ec *executionContext) _Battletag_ID(ctx context.Context, field graphql.CollectedField, obj *model.Battletag) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -518,12 +518,12 @@ func (ec *executionContext) _Battletag_id(ctx context.Context, field graphql.Col
 		}
 		return graphql.Null
 	}
-	res := resTmp.(string)
+	res := resTmp.(int)
 	fc.Result = res
-	return ec.marshalNID2string(ctx, field.Selections, res)
+	return ec.marshalNInt2int(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Battletag_userId(ctx context.Context, field graphql.CollectedField, obj *model.Battletag) (ret graphql.Marshaler) {
+func (ec *executionContext) _Battletag_userID(ctx context.Context, field graphql.CollectedField, obj *model.Battletag) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -553,9 +553,9 @@ func (ec *executionContext) _Battletag_userId(ctx context.Context, field graphql
 		}
 		return graphql.Null
 	}
-	res := resTmp.(string)
+	res := resTmp.(int)
 	fc.Result = res
-	return ec.marshalNID2string(ctx, field.Selections, res)
+	return ec.marshalNInt2int(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Battletag_battletag(ctx context.Context, field graphql.CollectedField, obj *model.Battletag) (ret graphql.Marshaler) {
@@ -652,12 +652,12 @@ func (ec *executionContext) _Battletag_identifier(ctx context.Context, field gra
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.(*string)
+	res := resTmp.(*int)
 	fc.Result = res
-	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+	return ec.marshalOInt2ᚖint(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _BattletagMutationFailure_id(ctx context.Context, field graphql.CollectedField, obj *model.BattletagMutationFailure) (ret graphql.Marshaler) {
+func (ec *executionContext) _BattletagMutationFailure_ID(ctx context.Context, field graphql.CollectedField, obj *model.BattletagMutationFailure) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -687,9 +687,9 @@ func (ec *executionContext) _BattletagMutationFailure_id(ctx context.Context, fi
 		}
 		return graphql.Null
 	}
-	res := resTmp.(string)
+	res := resTmp.(int)
 	fc.Result = res
-	return ec.marshalNID2string(ctx, field.Selections, res)
+	return ec.marshalNInt2int(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _BattletagMutationFailure_success(ctx context.Context, field graphql.CollectedField, obj *model.BattletagMutationFailure) (ret graphql.Marshaler) {
@@ -762,7 +762,7 @@ func (ec *executionContext) _BattletagMutationFailure_error(ctx context.Context,
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _BattletagMutationSuccess_id(ctx context.Context, field graphql.CollectedField, obj *model.BattletagMutationSuccess) (ret graphql.Marshaler) {
+func (ec *executionContext) _BattletagMutationSuccess_ID(ctx context.Context, field graphql.CollectedField, obj *model.BattletagMutationSuccess) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -792,9 +792,9 @@ func (ec *executionContext) _BattletagMutationSuccess_id(ctx context.Context, fi
 		}
 		return graphql.Null
 	}
-	res := resTmp.(string)
+	res := resTmp.(int)
 	fc.Result = res
-	return ec.marshalNID2string(ctx, field.Selections, res)
+	return ec.marshalNInt2int(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _BattletagMutationSuccess_success(ctx context.Context, field graphql.CollectedField, obj *model.BattletagMutationSuccess) (ret graphql.Marshaler) {
@@ -1134,7 +1134,7 @@ func (ec *executionContext) _Query___schema(ctx context.Context, field graphql.C
 	return ec.marshalO__Schema2ᚖgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐSchema(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _User_id(ctx context.Context, field graphql.CollectedField, obj *model.User) (ret graphql.Marshaler) {
+func (ec *executionContext) _User_ID(ctx context.Context, field graphql.CollectedField, obj *model.User) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -2336,7 +2336,7 @@ func (ec *executionContext) unmarshalInputInputBattletag(ctx context.Context, ob
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("userId"))
-			it.UserID, err = ec.unmarshalNID2string(ctx, v)
+			it.UserID, err = ec.unmarshalNInt2int(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -2360,7 +2360,7 @@ func (ec *executionContext) unmarshalInputInputBattletag(ctx context.Context, ob
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("identifier"))
-			it.Identifier, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			it.Identifier, err = ec.unmarshalOInt2ᚖint(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -2440,13 +2440,13 @@ func (ec *executionContext) _Battletag(ctx context.Context, sel ast.SelectionSet
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Battletag")
-		case "id":
-			out.Values[i] = ec._Battletag_id(ctx, field, obj)
+		case "ID":
+			out.Values[i] = ec._Battletag_ID(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
-		case "userId":
-			out.Values[i] = ec._Battletag_userId(ctx, field, obj)
+		case "userID":
+			out.Values[i] = ec._Battletag_userID(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
@@ -2481,8 +2481,8 @@ func (ec *executionContext) _BattletagMutationFailure(ctx context.Context, sel a
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("BattletagMutationFailure")
-		case "id":
-			out.Values[i] = ec._BattletagMutationFailure_id(ctx, field, obj)
+		case "ID":
+			out.Values[i] = ec._BattletagMutationFailure_ID(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
@@ -2518,8 +2518,8 @@ func (ec *executionContext) _BattletagMutationSuccess(ctx context.Context, sel a
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("BattletagMutationSuccess")
-		case "id":
-			out.Values[i] = ec._BattletagMutationSuccess_id(ctx, field, obj)
+		case "ID":
+			out.Values[i] = ec._BattletagMutationSuccess_ID(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
@@ -2654,8 +2654,8 @@ func (ec *executionContext) _User(ctx context.Context, sel ast.SelectionSet, obj
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("User")
-		case "id":
-			out.Values[i] = ec._User_id(ctx, field, obj)
+		case "ID":
+			out.Values[i] = ec._User_ID(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
@@ -3016,6 +3016,21 @@ func (ec *executionContext) unmarshalNInputUser2githubᚗcomᚋdavidfunk13ᚋove
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
+func (ec *executionContext) unmarshalNInt2int(ctx context.Context, v interface{}) (int, error) {
+	res, err := graphql.UnmarshalInt(v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNInt2int(ctx context.Context, sel ast.SelectionSet, v int) graphql.Marshaler {
+	res := graphql.MarshalInt(v)
+	if res == graphql.Null {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+	}
+	return res
+}
+
 func (ec *executionContext) marshalNMutateBattletagPayload2githubᚗcomᚋdavidfunk13ᚋoverwatchᚑcompanionᚋgraphᚋmodelᚐMutateBattletagPayload(ctx context.Context, sel ast.SelectionSet, v model.MutateBattletagPayload) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
@@ -3353,6 +3368,21 @@ func (ec *executionContext) marshalOBoolean2ᚖbool(ctx context.Context, sel ast
 		return graphql.Null
 	}
 	return graphql.MarshalBoolean(*v)
+}
+
+func (ec *executionContext) unmarshalOInt2ᚖint(ctx context.Context, v interface{}) (*int, error) {
+	if v == nil {
+		return nil, nil
+	}
+	res, err := graphql.UnmarshalInt(v)
+	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalOInt2ᚖint(ctx context.Context, sel ast.SelectionSet, v *int) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return graphql.MarshalInt(*v)
 }
 
 func (ec *executionContext) unmarshalOPlatform2ᚖgithubᚗcomᚋdavidfunk13ᚋoverwatchᚑcompanionᚋgraphᚋmodelᚐPlatform(ctx context.Context, v interface{}) (*model.Platform, error) {

@@ -59,7 +59,7 @@ func (r *mutationResolver) CreateBattletag(ctx context.Context, input model.Inpu
 
 	r.battletags = append(r.battletags, battletagInput)
 
-	res, err := database.Db.Exec(`INSERT INTO battletags (userId, battletag, platform, identifier) VALUES (?, ?, ?, ?);`, battletagInput.UserID, battletagInput.Battletag, battletagInput.Platform, battletagInput.Identifier)
+	res, err := database.Db.Exec(`INSERT INTO battletag (userId, battletag, platform, identifier) VALUES (?, ?, ?, ?);`, battletagInput.UserID, battletagInput.Battletag, battletagInput.Platform, battletagInput.Identifier)
 
 	if err != nil {
 		panic(err.Error())
@@ -79,12 +79,14 @@ func (r *mutationResolver) CreateBattletag(ctx context.Context, input model.Inpu
 		panic(err.Error())
 	}
 
-	var id, userId, battletag string
-	var identifier *string
+	var UserID, ID int
+	var battletag string
+	var identifier *int
 	var platform *model.Platform
 
-	err = lastInserted.Scan(&id, &userId, &battletag, &platform, &identifier)
-	insertedBattletag := model.Battletag{ID: id, UserID: userId, Battletag: battletag, Platform: platform, Identifier: identifier}
+	err = lastInserted.Scan(&ID, &UserID, &battletag, &platform, &identifier)
+
+	insertedBattletag := model.Battletag{ID: ID, UserID: UserID, Battletag: battletag, Platform: platform, Identifier: identifier}
 
 	return &insertedBattletag, nil
 }
@@ -100,7 +102,9 @@ func (r *queryResolver) Users(ctx context.Context) ([]*model.User, error) {
 }
 
 func (r *queryResolver) Battletags(ctx context.Context) ([]*model.Battletag, error) {
-	panic(fmt.Errorf("not implemented"))
+	var data = database.SelectAllBattletags()
+
+	return data, nil
 }
 
 // Mutation returns generated.MutationResolver implementation.

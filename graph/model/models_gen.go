@@ -13,15 +13,15 @@ type MutateBattletagPayload interface {
 }
 
 type Battletag struct {
-	ID         string    `json:"id"`
-	UserID     string    `json:"userId"`
+	ID         int       `json:"ID"`
+	UserID     int       `json:"userID"`
 	Battletag  string    `json:"battletag"`
 	Platform   *Platform `json:"platform"`
-	Identifier *string   `json:"identifier"`
+	Identifier *int      `json:"identifier"`
 }
 
 type BattletagMutationFailure struct {
-	ID      string `json:"id"`
+	ID      int    `json:"ID"`
 	Success bool   `json:"success"`
 	Error   string `json:"error"`
 }
@@ -29,7 +29,7 @@ type BattletagMutationFailure struct {
 func (BattletagMutationFailure) IsMutateBattletagPayload() {}
 
 type BattletagMutationSuccess struct {
-	ID      string `json:"id"`
+	ID      int    `json:"ID"`
 	Success bool   `json:"success"`
 	Message string `json:"message"`
 }
@@ -37,10 +37,10 @@ type BattletagMutationSuccess struct {
 func (BattletagMutationSuccess) IsMutateBattletagPayload() {}
 
 type InputBattletag struct {
-	UserID     string   `json:"userId"`
+	UserID     int      `json:"userId"`
 	Battletag  string   `json:"battletag"`
 	Platform   Platform `json:"platform"`
-	Identifier *string  `json:"identifier"`
+	Identifier *int     `json:"identifier"`
 }
 
 type InputUser struct {
@@ -49,7 +49,7 @@ type InputUser struct {
 }
 
 type User struct {
-	ID    string `json:"id"`
+	ID    string `json:"ID"`
 	Name  string `json:"name"`
 	Email string `json:"email"`
 }
