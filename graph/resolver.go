@@ -10,6 +10,5 @@ import "github.com/davidfunk13/overwatch-companion/graph/model"
 
 // Resolver : holds model references
 type Resolver struct {
-	users      []*model.User
 	battletags []*model.Battletag
 }

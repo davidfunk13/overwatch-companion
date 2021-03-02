@@ -5,22 +5,10 @@ enum Platform{
   PLAYSTATION
 }
 
-# User schemas
-type User {
-  ID: ID!
-  name: String!
-  email: String!
-}
-
-input InputUser {
-  name: String!
-  email: String!
-}
-
 # Battletag schemas
 type Battletag {
-  ID: Int!
-  userID: Int!
+  id: Int!
+  userId: Int!
   battletag: String!
   platform: Platform
   identifier: Int
@@ -34,31 +22,30 @@ input InputBattletag {
 }
 
 interface MutateBattletagPayload {
-  ID: Int
+  id: Int
   success: Boolean!
 }
 
+
 type BattletagMutationSuccess implements MutateBattletagPayload {
-  ID: Int!
+  id: Int!
   success: Boolean!
   message: String!
 }
 
 type BattletagMutationFailure implements MutateBattletagPayload {
-  ID: Int!
+  id: Int!
   success: Boolean!
   error: String!
 }
 
 # Queries 
 type Query {
-  users: [User!]!
   battletags: [Battletag!]!
 }
 
 # Mutations
 type Mutation {
-  createUser(input: InputUser!): User!
   createBattletag(input: InputBattletag!): Battletag!
-  deleteBattletag(input: ID!): MutateBattletagPayload!
+  deleteBattletag(input: Int!): MutateBattletagPayload!
 }

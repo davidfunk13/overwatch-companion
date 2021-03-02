@@ -5,106 +5,40 @@ package graph
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/davidfunk13/overwatch-companion/database"
 	"github.com/davidfunk13/overwatch-companion/graph/generated"
 	"github.com/davidfunk13/overwatch-companion/graph/model"
 )
 
-func (r *mutationResolver) CreateUser(ctx context.Context, input model.InputUser) (*model.User, error) {
-	user := &model.User{
-		Name:  input.Name,
-		Email: input.Email,
-	}
-
-	r.users = append(r.users, user)
-
-	res, err := database.Db.Exec(`INSERT INTO user (name, email) VALUES (?, ?);`, user.Name, user.Email)
-
-	if err != nil {
-		panic(err.Error())
-	} else {
-		fmt.Println("Successfully inserted")
-	}
-
-	lastInsertedID, err := res.LastInsertId()
-
-	if err != nil {
-		panic(err.Error())
-	}
-
-	lastInserted := database.Db.QueryRow(`Select * from user where id=?;`, lastInsertedID)
-
-	if err != nil {
-		panic(err.Error())
-	}
-
-	var id, name, email string
-
-	err = lastInserted.Scan(&id, &name, &email)
-
-	insertedUser := model.User{ID: id, Name: name, Email: email}
-
-	return &insertedUser, nil
-}
-
 func (r *mutationResolver) CreateBattletag(ctx context.Context, input model.InputBattletag) (*model.Battletag, error) {
-	battletagInput := &model.Battletag{
-		UserID:     input.UserID,
-		Battletag:  input.Battletag,
-		Platform:   &input.Platform,
-		Identifier: input.Identifier,
-	}
+	inserted := database.CreateBattletag(input)
 
-	r.battletags = append(r.battletags, battletagInput)
+	//why do we do this?!? why not just create and return; query and return? why append to resolver?
+	r.battletags = append(r.battletags, inserted)
 
-	res, err := database.Db.Exec(`INSERT INTO battletag (userId, battletag, platform, identifier) VALUES (?, ?, ?, ?);`, battletagInput.UserID, battletagInput.Battletag, battletagInput.Platform, battletagInput.Identifier)
-
-	if err != nil {
-		panic(err.Error())
-	} else {
-		fmt.Println("Successfully inserted")
-	}
-
-	lastInsertedID, err := res.LastInsertId()
-
-	if err != nil {
-		panic(err.Error())
-	}
-
-	lastInserted := database.Db.QueryRow(`Select * from battletag where id=?;`, lastInsertedID)
-
-	if err != nil {
-		panic(err.Error())
-	}
-
-	var UserID, ID int
-	var battletag string
-	var identifier *int
-	var platform *model.Platform
-
-	err = lastInserted.Scan(&ID, &UserID, &battletag, &platform, &identifier)
-
-	insertedBattletag := model.Battletag{ID: ID, UserID: UserID, Battletag: battletag, Platform: platform, Identifier: identifier}
-
-	return &insertedBattletag, nil
+	return inserted, nil
 }
 
-func (r *mutationResolver) DeleteBattletag(ctx context.Context, input string) (model.MutateBattletagPayload, error) {
-	panic(fmt.Errorf("not implemented"))
-}
+func (r *mutationResolver) DeleteBattletag(ctx context.Context, input int) (model.MutateBattletagPayload, error) {
+	// database.DeleteBattletag(&input)
 
-func (r *queryResolver) Users(ctx context.Context) ([]*model.User, error) {
-	var data = database.SelectAllUsers()
+	payload := model.BattletagMutationSuccess{
+		ID:      1,
+		Success: true,
+		Message: "Successfully deleted",
+	}
 
-	return data, nil
+	return payload, nil
 }
 
 func (r *queryResolver) Battletags(ctx context.Context) ([]*model.Battletag, error) {
 	var data = database.SelectAllBattletags()
 
 	return data, nil
+
+	// or this?!?!??!
+	// return r.battletags, nil
 }
 
 // Mutation returns generated.MutationResolver implementation.

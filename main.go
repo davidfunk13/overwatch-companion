@@ -1,12 +1,15 @@
 package main
 
+/*
+to recompile all generated files with any changes to schemas, run
+`go run github.com/99designs/gqlgen generate`
+*/
 import (
 	"fmt"
 	"log"
 	"net/http"
 	"os"
 
-	"github.com/davidfunk13/overwatch-companion/database"
 	router "github.com/davidfunk13/overwatch-companion/router"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/joho/godotenv"
@@ -29,8 +32,6 @@ func main() {
 	if port == "" {
 		port = defaultPort
 	}
-
-	database.InitConnection()
 
 	r := router.NewRouter()
 
