@@ -49,16 +49,17 @@ type ComplexityRoot struct {
 		ID         func(childComplexity int) int
 		Identifier func(childComplexity int) int
 		Platform   func(childComplexity int) int
+		Sessions   func(childComplexity int) int
 		UserID     func(childComplexity int) int
 	}
 
-	BattletagMutationFailure struct {
+	MutateItemPayloadFailure struct {
 		Error   func(childComplexity int) int
 		ID      func(childComplexity int) int
 		Success func(childComplexity int) int
 	}
 
-	BattletagMutationSuccess struct {
+	MutateItemPayloadSuccess struct {
 		ID      func(childComplexity int) int
 		Message func(childComplexity int) int
 		Success func(childComplexity int) int
@@ -66,20 +67,32 @@ type ComplexityRoot struct {
 
 	Mutation struct {
 		CreateBattletag func(childComplexity int, input model.InputBattletag) int
+		CreateSession   func(childComplexity int, input model.InputSession) int
 		DeleteBattletag func(childComplexity int, input int) int
+		DeleteSession   func(childComplexity int, input int) int
 	}
 
 	Query struct {
 		Battletags func(childComplexity int) int
+		Sessions   func(childComplexity int) int
+	}
+
+	Session struct {
+		ID        func(childComplexity int) int
+		SessionID func(childComplexity int) int
+		UserID    func(childComplexity int) int
 	}
 }
 
 type MutationResolver interface {
 	CreateBattletag(ctx context.Context, input model.InputBattletag) (*model.Battletag, error)
-	DeleteBattletag(ctx context.Context, input int) (model.MutateBattletagPayload, error)
+	DeleteBattletag(ctx context.Context, input int) (model.MutateItemPayload, error)
+	CreateSession(ctx context.Context, input model.InputSession) (*model.Session, error)
+	DeleteSession(ctx context.Context, input int) (model.MutateItemPayload, error)
 }
 type QueryResolver interface {
 	Battletags(ctx context.Context) ([]*model.Battletag, error)
+	Sessions(ctx context.Context) ([]*model.Session, error)
 }
 
 type executableSchema struct {
@@ -125,6 +138,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Battletag.Platform(childComplexity), true
 
+	case "Battletag.sessions":
+		if e.complexity.Battletag.Sessions == nil {
+			break
+		}
+
+		return e.complexity.Battletag.Sessions(childComplexity), true
+
 	case "Battletag.userId":
 		if e.complexity.Battletag.UserID == nil {
 			break
@@ -132,47 +152,47 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Battletag.UserID(childComplexity), true
 
-	case "BattletagMutationFailure.error":
-		if e.complexity.BattletagMutationFailure.Error == nil {
+	case "MutateItemPayloadFailure.error":
+		if e.complexity.MutateItemPayloadFailure.Error == nil {
 			break
 		}
 
-		return e.complexity.BattletagMutationFailure.Error(childComplexity), true
+		return e.complexity.MutateItemPayloadFailure.Error(childComplexity), true
 
-	case "BattletagMutationFailure.id":
-		if e.complexity.BattletagMutationFailure.ID == nil {
+	case "MutateItemPayloadFailure.id":
+		if e.complexity.MutateItemPayloadFailure.ID == nil {
 			break
 		}
 
-		return e.complexity.BattletagMutationFailure.ID(childComplexity), true
+		return e.complexity.MutateItemPayloadFailure.ID(childComplexity), true
 
-	case "BattletagMutationFailure.success":
-		if e.complexity.BattletagMutationFailure.Success == nil {
+	case "MutateItemPayloadFailure.success":
+		if e.complexity.MutateItemPayloadFailure.Success == nil {
 			break
 		}
 
-		return e.complexity.BattletagMutationFailure.Success(childComplexity), true
+		return e.complexity.MutateItemPayloadFailure.Success(childComplexity), true
 
-	case "BattletagMutationSuccess.id":
-		if e.complexity.BattletagMutationSuccess.ID == nil {
+	case "MutateItemPayloadSuccess.id":
+		if e.complexity.MutateItemPayloadSuccess.ID == nil {
 			break
 		}
 
-		return e.complexity.BattletagMutationSuccess.ID(childComplexity), true
+		return e.complexity.MutateItemPayloadSuccess.ID(childComplexity), true
 
-	case "BattletagMutationSuccess.message":
-		if e.complexity.BattletagMutationSuccess.Message == nil {
+	case "MutateItemPayloadSuccess.message":
+		if e.complexity.MutateItemPayloadSuccess.Message == nil {
 			break
 		}
 
-		return e.complexity.BattletagMutationSuccess.Message(childComplexity), true
+		return e.complexity.MutateItemPayloadSuccess.Message(childComplexity), true
 
-	case "BattletagMutationSuccess.success":
-		if e.complexity.BattletagMutationSuccess.Success == nil {
+	case "MutateItemPayloadSuccess.success":
+		if e.complexity.MutateItemPayloadSuccess.Success == nil {
 			break
 		}
 
-		return e.complexity.BattletagMutationSuccess.Success(childComplexity), true
+		return e.complexity.MutateItemPayloadSuccess.Success(childComplexity), true
 
 	case "Mutation.createBattletag":
 		if e.complexity.Mutation.CreateBattletag == nil {
@@ -186,6 +206,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Mutation.CreateBattletag(childComplexity, args["input"].(model.InputBattletag)), true
 
+	case "Mutation.createSession":
+		if e.complexity.Mutation.CreateSession == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_createSession_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.CreateSession(childComplexity, args["input"].(model.InputSession)), true
+
 	case "Mutation.deleteBattletag":
 		if e.complexity.Mutation.DeleteBattletag == nil {
 			break
@@ -198,12 +230,52 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Mutation.DeleteBattletag(childComplexity, args["input"].(int)), true
 
+	case "Mutation.deleteSession":
+		if e.complexity.Mutation.DeleteSession == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_deleteSession_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.DeleteSession(childComplexity, args["input"].(int)), true
+
 	case "Query.battletags":
 		if e.complexity.Query.Battletags == nil {
 			break
 		}
 
 		return e.complexity.Query.Battletags(childComplexity), true
+
+	case "Query.sessions":
+		if e.complexity.Query.Sessions == nil {
+			break
+		}
+
+		return e.complexity.Query.Sessions(childComplexity), true
+
+	case "Session.id":
+		if e.complexity.Session.ID == nil {
+			break
+		}
+
+		return e.complexity.Session.ID(childComplexity), true
+
+	case "Session.sessionId":
+		if e.complexity.Session.SessionID == nil {
+			break
+		}
+
+		return e.complexity.Session.SessionID(childComplexity), true
+
+	case "Session.userId":
+		if e.complexity.Session.UserID == nil {
+			break
+		}
+
+		return e.complexity.Session.UserID(childComplexity), true
 
 	}
 	return 0, false
@@ -283,6 +355,7 @@ type Battletag {
   battletag: String!
   platform: Platform
   identifier: Int
+  sessions: [Session]
 }
 
 input InputBattletag {
@@ -292,33 +365,47 @@ input InputBattletag {
   identifier: Int
 }
 
-interface MutateBattletagPayload {
+interface MutateItemPayload {
   id: Int
   success: Boolean!
 }
 
-
-type BattletagMutationSuccess implements MutateBattletagPayload {
+type MutateItemPayloadSuccess implements MutateItemPayload {
   id: Int!
   success: Boolean!
   message: String!
 }
 
-type BattletagMutationFailure implements MutateBattletagPayload {
+type MutateItemPayloadFailure implements MutateItemPayload {
   id: Int!
   success: Boolean!
   error: String!
 }
 
+# Session schema
+type Session {
+  id: Int!
+  userId: Int!
+  sessionId: Int!
+}
+
+input InputSession {
+  userId: Int!
+  sessionId: Int!
+}
+
 # Queries 
 type Query {
   battletags: [Battletag!]!
+  sessions: [Session!]!
 }
 
 # Mutations
 type Mutation {
   createBattletag(input: InputBattletag!): Battletag!
-  deleteBattletag(input: Int!): MutateBattletagPayload!
+  deleteBattletag(input: Int!): MutateItemPayload!
+  createSession(input: InputSession!): Session!
+  deleteSession(input: Int!): MutateItemPayload!
 }`, BuiltIn: false},
 }
 var parsedSchema = gqlparser.MustLoadSchema(sources...)
@@ -342,7 +429,37 @@ func (ec *executionContext) field_Mutation_createBattletag_args(ctx context.Cont
 	return args, nil
 }
 
+func (ec *executionContext) field_Mutation_createSession_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 model.InputSession
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNInputSession2githubᚗcomᚋdavidfunk13ᚋoverwatchᚑcompanionᚋgraphᚋmodelᚐInputSession(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
 func (ec *executionContext) field_Mutation_deleteBattletag_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 int
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNInt2int(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_deleteSession_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
 	var arg0 int
@@ -579,7 +696,7 @@ func (ec *executionContext) _Battletag_identifier(ctx context.Context, field gra
 	return ec.marshalOInt2ᚖint(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _BattletagMutationFailure_id(ctx context.Context, field graphql.CollectedField, obj *model.BattletagMutationFailure) (ret graphql.Marshaler) {
+func (ec *executionContext) _Battletag_sessions(ctx context.Context, field graphql.CollectedField, obj *model.Battletag) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -587,7 +704,39 @@ func (ec *executionContext) _BattletagMutationFailure_id(ctx context.Context, fi
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:     "BattletagMutationFailure",
+		Object:     "Battletag",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Sessions, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.([]*model.Session)
+	fc.Result = res
+	return ec.marshalOSession2ᚕᚖgithubᚗcomᚋdavidfunk13ᚋoverwatchᚑcompanionᚋgraphᚋmodelᚐSession(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _MutateItemPayloadFailure_id(ctx context.Context, field graphql.CollectedField, obj *model.MutateItemPayloadFailure) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "MutateItemPayloadFailure",
 		Field:      field,
 		Args:       nil,
 		IsMethod:   false,
@@ -614,7 +763,7 @@ func (ec *executionContext) _BattletagMutationFailure_id(ctx context.Context, fi
 	return ec.marshalNInt2int(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _BattletagMutationFailure_success(ctx context.Context, field graphql.CollectedField, obj *model.BattletagMutationFailure) (ret graphql.Marshaler) {
+func (ec *executionContext) _MutateItemPayloadFailure_success(ctx context.Context, field graphql.CollectedField, obj *model.MutateItemPayloadFailure) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -622,7 +771,7 @@ func (ec *executionContext) _BattletagMutationFailure_success(ctx context.Contex
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:     "BattletagMutationFailure",
+		Object:     "MutateItemPayloadFailure",
 		Field:      field,
 		Args:       nil,
 		IsMethod:   false,
@@ -649,7 +798,7 @@ func (ec *executionContext) _BattletagMutationFailure_success(ctx context.Contex
 	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _BattletagMutationFailure_error(ctx context.Context, field graphql.CollectedField, obj *model.BattletagMutationFailure) (ret graphql.Marshaler) {
+func (ec *executionContext) _MutateItemPayloadFailure_error(ctx context.Context, field graphql.CollectedField, obj *model.MutateItemPayloadFailure) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -657,7 +806,7 @@ func (ec *executionContext) _BattletagMutationFailure_error(ctx context.Context,
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:     "BattletagMutationFailure",
+		Object:     "MutateItemPayloadFailure",
 		Field:      field,
 		Args:       nil,
 		IsMethod:   false,
@@ -684,7 +833,7 @@ func (ec *executionContext) _BattletagMutationFailure_error(ctx context.Context,
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _BattletagMutationSuccess_id(ctx context.Context, field graphql.CollectedField, obj *model.BattletagMutationSuccess) (ret graphql.Marshaler) {
+func (ec *executionContext) _MutateItemPayloadSuccess_id(ctx context.Context, field graphql.CollectedField, obj *model.MutateItemPayloadSuccess) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -692,7 +841,7 @@ func (ec *executionContext) _BattletagMutationSuccess_id(ctx context.Context, fi
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:     "BattletagMutationSuccess",
+		Object:     "MutateItemPayloadSuccess",
 		Field:      field,
 		Args:       nil,
 		IsMethod:   false,
@@ -719,7 +868,7 @@ func (ec *executionContext) _BattletagMutationSuccess_id(ctx context.Context, fi
 	return ec.marshalNInt2int(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _BattletagMutationSuccess_success(ctx context.Context, field graphql.CollectedField, obj *model.BattletagMutationSuccess) (ret graphql.Marshaler) {
+func (ec *executionContext) _MutateItemPayloadSuccess_success(ctx context.Context, field graphql.CollectedField, obj *model.MutateItemPayloadSuccess) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -727,7 +876,7 @@ func (ec *executionContext) _BattletagMutationSuccess_success(ctx context.Contex
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:     "BattletagMutationSuccess",
+		Object:     "MutateItemPayloadSuccess",
 		Field:      field,
 		Args:       nil,
 		IsMethod:   false,
@@ -754,7 +903,7 @@ func (ec *executionContext) _BattletagMutationSuccess_success(ctx context.Contex
 	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _BattletagMutationSuccess_message(ctx context.Context, field graphql.CollectedField, obj *model.BattletagMutationSuccess) (ret graphql.Marshaler) {
+func (ec *executionContext) _MutateItemPayloadSuccess_message(ctx context.Context, field graphql.CollectedField, obj *model.MutateItemPayloadSuccess) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -762,7 +911,7 @@ func (ec *executionContext) _BattletagMutationSuccess_message(ctx context.Contex
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:     "BattletagMutationSuccess",
+		Object:     "MutateItemPayloadSuccess",
 		Field:      field,
 		Args:       nil,
 		IsMethod:   false,
@@ -868,9 +1017,93 @@ func (ec *executionContext) _Mutation_deleteBattletag(ctx context.Context, field
 		}
 		return graphql.Null
 	}
-	res := resTmp.(model.MutateBattletagPayload)
+	res := resTmp.(model.MutateItemPayload)
 	fc.Result = res
-	return ec.marshalNMutateBattletagPayload2githubᚗcomᚋdavidfunk13ᚋoverwatchᚑcompanionᚋgraphᚋmodelᚐMutateBattletagPayload(ctx, field.Selections, res)
+	return ec.marshalNMutateItemPayload2githubᚗcomᚋdavidfunk13ᚋoverwatchᚑcompanionᚋgraphᚋmodelᚐMutateItemPayload(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_createSession(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_createSession_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().CreateSession(rctx, args["input"].(model.InputSession))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.Session)
+	fc.Result = res
+	return ec.marshalNSession2ᚖgithubᚗcomᚋdavidfunk13ᚋoverwatchᚑcompanionᚋgraphᚋmodelᚐSession(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_deleteSession(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_deleteSession_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().DeleteSession(rctx, args["input"].(int))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(model.MutateItemPayload)
+	fc.Result = res
+	return ec.marshalNMutateItemPayload2githubᚗcomᚋdavidfunk13ᚋoverwatchᚑcompanionᚋgraphᚋmodelᚐMutateItemPayload(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Query_battletags(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -906,6 +1139,41 @@ func (ec *executionContext) _Query_battletags(ctx context.Context, field graphql
 	res := resTmp.([]*model.Battletag)
 	fc.Result = res
 	return ec.marshalNBattletag2ᚕᚖgithubᚗcomᚋdavidfunk13ᚋoverwatchᚑcompanionᚋgraphᚋmodelᚐBattletagᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Query_sessions(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().Sessions(rctx)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]*model.Session)
+	fc.Result = res
+	return ec.marshalNSession2ᚕᚖgithubᚗcomᚋdavidfunk13ᚋoverwatchᚑcompanionᚋgraphᚋmodelᚐSessionᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Query___type(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -977,6 +1245,111 @@ func (ec *executionContext) _Query___schema(ctx context.Context, field graphql.C
 	res := resTmp.(*introspection.Schema)
 	fc.Result = res
 	return ec.marshalO__Schema2ᚖgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐSchema(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Session_id(ctx context.Context, field graphql.CollectedField, obj *model.Session) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Session",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Session_userId(ctx context.Context, field graphql.CollectedField, obj *model.Session) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Session",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.UserID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Session_sessionId(ctx context.Context, field graphql.CollectedField, obj *model.Session) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Session",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.SessionID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) ___Directive_name(ctx context.Context, field graphql.CollectedField, obj *introspection.Directive) (ret graphql.Marshaler) {
@@ -2110,28 +2483,56 @@ func (ec *executionContext) unmarshalInputInputBattletag(ctx context.Context, ob
 	return it, nil
 }
 
+func (ec *executionContext) unmarshalInputInputSession(ctx context.Context, obj interface{}) (model.InputSession, error) {
+	var it model.InputSession
+	var asMap = obj.(map[string]interface{})
+
+	for k, v := range asMap {
+		switch k {
+		case "userId":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("userId"))
+			it.UserID, err = ec.unmarshalNInt2int(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "sessionId":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("sessionId"))
+			it.SessionID, err = ec.unmarshalNInt2int(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
 // endregion **************************** input.gotpl *****************************
 
 // region    ************************** interface.gotpl ***************************
 
-func (ec *executionContext) _MutateBattletagPayload(ctx context.Context, sel ast.SelectionSet, obj model.MutateBattletagPayload) graphql.Marshaler {
+func (ec *executionContext) _MutateItemPayload(ctx context.Context, sel ast.SelectionSet, obj model.MutateItemPayload) graphql.Marshaler {
 	switch obj := (obj).(type) {
 	case nil:
 		return graphql.Null
-	case model.BattletagMutationSuccess:
-		return ec._BattletagMutationSuccess(ctx, sel, &obj)
-	case *model.BattletagMutationSuccess:
+	case model.MutateItemPayloadSuccess:
+		return ec._MutateItemPayloadSuccess(ctx, sel, &obj)
+	case *model.MutateItemPayloadSuccess:
 		if obj == nil {
 			return graphql.Null
 		}
-		return ec._BattletagMutationSuccess(ctx, sel, obj)
-	case model.BattletagMutationFailure:
-		return ec._BattletagMutationFailure(ctx, sel, &obj)
-	case *model.BattletagMutationFailure:
+		return ec._MutateItemPayloadSuccess(ctx, sel, obj)
+	case model.MutateItemPayloadFailure:
+		return ec._MutateItemPayloadFailure(ctx, sel, &obj)
+	case *model.MutateItemPayloadFailure:
 		if obj == nil {
 			return graphql.Null
 		}
-		return ec._BattletagMutationFailure(ctx, sel, obj)
+		return ec._MutateItemPayloadFailure(ctx, sel, obj)
 	default:
 		panic(fmt.Errorf("unexpected type %T", obj))
 	}
@@ -2171,6 +2572,8 @@ func (ec *executionContext) _Battletag(ctx context.Context, sel ast.SelectionSet
 			out.Values[i] = ec._Battletag_platform(ctx, field, obj)
 		case "identifier":
 			out.Values[i] = ec._Battletag_identifier(ctx, field, obj)
+		case "sessions":
+			out.Values[i] = ec._Battletag_sessions(ctx, field, obj)
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -2182,29 +2585,29 @@ func (ec *executionContext) _Battletag(ctx context.Context, sel ast.SelectionSet
 	return out
 }
 
-var battletagMutationFailureImplementors = []string{"BattletagMutationFailure", "MutateBattletagPayload"}
+var mutateItemPayloadFailureImplementors = []string{"MutateItemPayloadFailure", "MutateItemPayload"}
 
-func (ec *executionContext) _BattletagMutationFailure(ctx context.Context, sel ast.SelectionSet, obj *model.BattletagMutationFailure) graphql.Marshaler {
-	fields := graphql.CollectFields(ec.OperationContext, sel, battletagMutationFailureImplementors)
+func (ec *executionContext) _MutateItemPayloadFailure(ctx context.Context, sel ast.SelectionSet, obj *model.MutateItemPayloadFailure) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, mutateItemPayloadFailureImplementors)
 
 	out := graphql.NewFieldSet(fields)
 	var invalids uint32
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
-			out.Values[i] = graphql.MarshalString("BattletagMutationFailure")
+			out.Values[i] = graphql.MarshalString("MutateItemPayloadFailure")
 		case "id":
-			out.Values[i] = ec._BattletagMutationFailure_id(ctx, field, obj)
+			out.Values[i] = ec._MutateItemPayloadFailure_id(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
 		case "success":
-			out.Values[i] = ec._BattletagMutationFailure_success(ctx, field, obj)
+			out.Values[i] = ec._MutateItemPayloadFailure_success(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
 		case "error":
-			out.Values[i] = ec._BattletagMutationFailure_error(ctx, field, obj)
+			out.Values[i] = ec._MutateItemPayloadFailure_error(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
@@ -2219,29 +2622,29 @@ func (ec *executionContext) _BattletagMutationFailure(ctx context.Context, sel a
 	return out
 }
 
-var battletagMutationSuccessImplementors = []string{"BattletagMutationSuccess", "MutateBattletagPayload"}
+var mutateItemPayloadSuccessImplementors = []string{"MutateItemPayloadSuccess", "MutateItemPayload"}
 
-func (ec *executionContext) _BattletagMutationSuccess(ctx context.Context, sel ast.SelectionSet, obj *model.BattletagMutationSuccess) graphql.Marshaler {
-	fields := graphql.CollectFields(ec.OperationContext, sel, battletagMutationSuccessImplementors)
+func (ec *executionContext) _MutateItemPayloadSuccess(ctx context.Context, sel ast.SelectionSet, obj *model.MutateItemPayloadSuccess) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, mutateItemPayloadSuccessImplementors)
 
 	out := graphql.NewFieldSet(fields)
 	var invalids uint32
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
-			out.Values[i] = graphql.MarshalString("BattletagMutationSuccess")
+			out.Values[i] = graphql.MarshalString("MutateItemPayloadSuccess")
 		case "id":
-			out.Values[i] = ec._BattletagMutationSuccess_id(ctx, field, obj)
+			out.Values[i] = ec._MutateItemPayloadSuccess_id(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
 		case "success":
-			out.Values[i] = ec._BattletagMutationSuccess_success(ctx, field, obj)
+			out.Values[i] = ec._MutateItemPayloadSuccess_success(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
 		case "message":
-			out.Values[i] = ec._BattletagMutationSuccess_message(ctx, field, obj)
+			out.Values[i] = ec._MutateItemPayloadSuccess_message(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
@@ -2278,6 +2681,16 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			}
 		case "deleteBattletag":
 			out.Values[i] = ec._Mutation_deleteBattletag(ctx, field)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "createSession":
+			out.Values[i] = ec._Mutation_createSession(ctx, field)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "deleteSession":
+			out.Values[i] = ec._Mutation_deleteSession(ctx, field)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
@@ -2321,10 +2734,61 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 				}
 				return res
 			})
+		case "sessions":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_sessions(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
 		case "__type":
 			out.Values[i] = ec._Query___type(ctx, field)
 		case "__schema":
 			out.Values[i] = ec._Query___schema(ctx, field)
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var sessionImplementors = []string{"Session"}
+
+func (ec *executionContext) _Session(ctx context.Context, sel ast.SelectionSet, obj *model.Session) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, sessionImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("Session")
+		case "id":
+			out.Values[i] = ec._Session_id(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "userId":
+			out.Values[i] = ec._Session_userId(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "sessionId":
+			out.Values[i] = ec._Session_sessionId(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -2652,6 +3116,11 @@ func (ec *executionContext) unmarshalNInputBattletag2githubᚗcomᚋdavidfunk13�
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
+func (ec *executionContext) unmarshalNInputSession2githubᚗcomᚋdavidfunk13ᚋoverwatchᚑcompanionᚋgraphᚋmodelᚐInputSession(ctx context.Context, v interface{}) (model.InputSession, error) {
+	res, err := ec.unmarshalInputInputSession(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
 func (ec *executionContext) unmarshalNInt2int(ctx context.Context, v interface{}) (int, error) {
 	res, err := graphql.UnmarshalInt(v)
 	return res, graphql.ErrorOnPath(ctx, err)
@@ -2667,14 +3136,14 @@ func (ec *executionContext) marshalNInt2int(ctx context.Context, sel ast.Selecti
 	return res
 }
 
-func (ec *executionContext) marshalNMutateBattletagPayload2githubᚗcomᚋdavidfunk13ᚋoverwatchᚑcompanionᚋgraphᚋmodelᚐMutateBattletagPayload(ctx context.Context, sel ast.SelectionSet, v model.MutateBattletagPayload) graphql.Marshaler {
+func (ec *executionContext) marshalNMutateItemPayload2githubᚗcomᚋdavidfunk13ᚋoverwatchᚑcompanionᚋgraphᚋmodelᚐMutateItemPayload(ctx context.Context, sel ast.SelectionSet, v model.MutateItemPayload) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "must not be null")
 		}
 		return graphql.Null
 	}
-	return ec._MutateBattletagPayload(ctx, sel, v)
+	return ec._MutateItemPayload(ctx, sel, v)
 }
 
 func (ec *executionContext) unmarshalNPlatform2githubᚗcomᚋdavidfunk13ᚋoverwatchᚑcompanionᚋgraphᚋmodelᚐPlatform(ctx context.Context, v interface{}) (model.Platform, error) {
@@ -2685,6 +3154,57 @@ func (ec *executionContext) unmarshalNPlatform2githubᚗcomᚋdavidfunk13ᚋover
 
 func (ec *executionContext) marshalNPlatform2githubᚗcomᚋdavidfunk13ᚋoverwatchᚑcompanionᚋgraphᚋmodelᚐPlatform(ctx context.Context, sel ast.SelectionSet, v model.Platform) graphql.Marshaler {
 	return v
+}
+
+func (ec *executionContext) marshalNSession2githubᚗcomᚋdavidfunk13ᚋoverwatchᚑcompanionᚋgraphᚋmodelᚐSession(ctx context.Context, sel ast.SelectionSet, v model.Session) graphql.Marshaler {
+	return ec._Session(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNSession2ᚕᚖgithubᚗcomᚋdavidfunk13ᚋoverwatchᚑcompanionᚋgraphᚋmodelᚐSessionᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Session) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNSession2ᚖgithubᚗcomᚋdavidfunk13ᚋoverwatchᚑcompanionᚋgraphᚋmodelᚐSession(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+	return ret
+}
+
+func (ec *executionContext) marshalNSession2ᚖgithubᚗcomᚋdavidfunk13ᚋoverwatchᚑcompanionᚋgraphᚋmodelᚐSession(ctx context.Context, sel ast.SelectionSet, v *model.Session) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	return ec._Session(ctx, sel, v)
 }
 
 func (ec *executionContext) unmarshalNString2string(ctx context.Context, v interface{}) (string, error) {
@@ -2984,6 +3504,53 @@ func (ec *executionContext) marshalOPlatform2ᚖgithubᚗcomᚋdavidfunk13ᚋove
 		return graphql.Null
 	}
 	return v
+}
+
+func (ec *executionContext) marshalOSession2ᚕᚖgithubᚗcomᚋdavidfunk13ᚋoverwatchᚑcompanionᚋgraphᚋmodelᚐSession(ctx context.Context, sel ast.SelectionSet, v []*model.Session) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalOSession2ᚖgithubᚗcomᚋdavidfunk13ᚋoverwatchᚑcompanionᚋgraphᚋmodelᚐSession(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+	return ret
+}
+
+func (ec *executionContext) marshalOSession2ᚖgithubᚗcomᚋdavidfunk13ᚋoverwatchᚑcompanionᚋgraphᚋmodelᚐSession(ctx context.Context, sel ast.SelectionSet, v *model.Session) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._Session(ctx, sel, v)
 }
 
 func (ec *executionContext) unmarshalOString2string(ctx context.Context, v interface{}) (string, error) {

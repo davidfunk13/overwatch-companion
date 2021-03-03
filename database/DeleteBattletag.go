@@ -1,25 +1,49 @@
 package database
 
+import (
+	"strconv"
+
+	"github.com/davidfunk13/overwatch-companion/graph/model"
+)
+
 //DeleteBattletag deletes a single battletag from the database by id
-// func DeleteBattletag(id *int) (model.MutateBattletagPayload, error) {
-// var success bool
-// var message string
+func DeleteBattletag(id *int) (model.MutateItemPayload, error) {
+	db, err := OpenConnection()
 
-// var userId int
-// var identifier *int
-// var battletag string
-// var platform *model.Platform
-// res := Db.QueryRow("DELETE FROM battletag where id=?", id)
+	defer db.Close()
+	statement, err := db.Prepare("DELETE FROM battletag where id=?")
 
-// row := res.Scan(&id, &userId, &battletag, &platform, &identifier)
+	if err != nil {
+		panic(err.Error())
+	}
 
-// payload := model.BattletagMutationSuccess{
-// 	ID:      1,
-// 	Success: true,
-// 	Message: "Successfully deleted",
-// }
+	res, err := statement.Exec(strconv.Itoa(*id))
 
-// // payload := res.Scan()
-// return payload, nil
+	if err != nil {
+		panic(err.Error())
+	}
 
-// }
+	rowsAffected, err := res.RowsAffected()
+
+	var payload model.MutateItemPayload
+
+	if rowsAffected == 1 {
+		payload = model.MutateItemPayloadSuccess{
+			ID:      *id,
+			Success: true,
+			Message: "Battletag with id of " + strconv.Itoa(*id) + " has been deleted",
+		}
+	}
+
+	if rowsAffected == 0 {
+		payload = model.MutateItemPayloadFailure{
+			ID:      *id,
+			Success: false,
+			Error:   "Delete operation not successful or did not exist.",
+		}
+	}
+
+	// // payload := res.Scan()
+	return payload, nil
+
+}

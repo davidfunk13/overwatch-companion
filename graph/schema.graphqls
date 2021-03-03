@@ -12,6 +12,7 @@ type Battletag {
   battletag: String!
   platform: Platform
   identifier: Int
+  sessions: [Session]
 }
 
 input InputBattletag {
@@ -21,31 +22,45 @@ input InputBattletag {
   identifier: Int
 }
 
-interface MutateBattletagPayload {
+interface MutateItemPayload {
   id: Int
   success: Boolean!
 }
 
-
-type BattletagMutationSuccess implements MutateBattletagPayload {
+type MutateItemPayloadSuccess implements MutateItemPayload {
   id: Int!
   success: Boolean!
   message: String!
 }
 
-type BattletagMutationFailure implements MutateBattletagPayload {
+type MutateItemPayloadFailure implements MutateItemPayload {
   id: Int!
   success: Boolean!
   error: String!
 }
 
+# Session schema
+type Session {
+  id: Int!
+  userId: Int!
+  sessionId: Int!
+}
+
+input InputSession {
+  userId: Int!
+  sessionId: Int!
+}
+
 # Queries 
 type Query {
   battletags: [Battletag!]!
+  sessions: [Session!]!
 }
 
 # Mutations
 type Mutation {
   createBattletag(input: InputBattletag!): Battletag!
-  deleteBattletag(input: Int!): MutateBattletagPayload!
+  deleteBattletag(input: Int!): MutateItemPayload!
+  createSession(input: InputSession!): Session!
+  deleteSession(input: Int!): MutateItemPayload!
 }

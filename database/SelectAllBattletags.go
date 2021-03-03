@@ -5,7 +5,7 @@ import (
 )
 
 // SelectAllBattletags Selects and returns all battletags that belong to a user from the database.
-func SelectAllBattletags() []*model.Battletag {
+func SelectAllBattletags() ([]*model.Battletag, error) {
 	db, err := OpenConnection()
 
 	if err != nil {
@@ -37,5 +37,5 @@ func SelectAllBattletags() []*model.Battletag {
 		data = append(data, &b)
 	}
 
-	return data
+	return data, nil
 }

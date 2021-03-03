@@ -5,6 +5,7 @@ package graph
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/davidfunk13/overwatch-companion/database"
 	"github.com/davidfunk13/overwatch-companion/graph/generated"
@@ -20,25 +21,36 @@ func (r *mutationResolver) CreateBattletag(ctx context.Context, input model.Inpu
 	return inserted, nil
 }
 
-func (r *mutationResolver) DeleteBattletag(ctx context.Context, input int) (model.MutateBattletagPayload, error) {
-	// database.DeleteBattletag(&input)
+func (r *mutationResolver) DeleteBattletag(ctx context.Context, input int) (model.MutateItemPayload, error) {
+	deleted, err := database.DeleteBattletag(&input)
 
-	payload := model.BattletagMutationSuccess{
-		ID:      1,
-		Success: true,
-		Message: "Successfully deleted",
+	if err != nil {
+		panic(err.Error())
 	}
 
-	return payload, nil
+	return deleted, nil
+}
+
+func (r *mutationResolver) CreateSession(ctx context.Context, input model.InputSession) (*model.Session, error) {
+	panic(fmt.Errorf("not implemented"))
+}
+
+func (r *mutationResolver) DeleteSession(ctx context.Context, input int) (model.MutateItemPayload, error) {
+	panic(fmt.Errorf("not implemented"))
 }
 
 func (r *queryResolver) Battletags(ctx context.Context) ([]*model.Battletag, error) {
-	var data = database.SelectAllBattletags()
+	battletags, err := database.SelectAllBattletags()
 
-	return data, nil
+	if err != nil {
+		panic(err.Error())
+	}
 
-	// or this?!?!??!
-	// return r.battletags, nil
+	return battletags, nil
+}
+
+func (r *queryResolver) Sessions(ctx context.Context) ([]*model.Session, error) {
+	panic(fmt.Errorf("not implemented"))
 }
 
 // Mutation returns generated.MutationResolver implementation.

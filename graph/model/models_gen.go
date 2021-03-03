@@ -8,39 +8,51 @@ import (
 	"strconv"
 )
 
-type MutateBattletagPayload interface {
-	IsMutateBattletagPayload()
+type MutateItemPayload interface {
+	IsMutateItemPayload()
 }
 
 type Battletag struct {
-	ID         int       `json:"id"`
-	UserID     int       `json:"userId"`
-	Battletag  string    `json:"battletag"`
-	Platform   *Platform `json:"platform"`
-	Identifier *int      `json:"identifier"`
+	ID         int        `json:"id"`
+	UserID     int        `json:"userId"`
+	Battletag  string     `json:"battletag"`
+	Platform   *Platform  `json:"platform"`
+	Identifier *int       `json:"identifier"`
+	Sessions   []*Session `json:"sessions"`
 }
-
-type BattletagMutationFailure struct {
-	ID      int    `json:"id"`
-	Success bool   `json:"success"`
-	Error   string `json:"error"`
-}
-
-func (BattletagMutationFailure) IsMutateBattletagPayload() {}
-
-type BattletagMutationSuccess struct {
-	ID      int    `json:"id"`
-	Success bool   `json:"success"`
-	Message string `json:"message"`
-}
-
-func (BattletagMutationSuccess) IsMutateBattletagPayload() {}
 
 type InputBattletag struct {
 	UserID     int      `json:"userId"`
 	Battletag  string   `json:"battletag"`
 	Platform   Platform `json:"platform"`
 	Identifier *int     `json:"identifier"`
+}
+
+type InputSession struct {
+	UserID    int `json:"userId"`
+	SessionID int `json:"sessionId"`
+}
+
+type MutateItemPayloadFailure struct {
+	ID      int    `json:"id"`
+	Success bool   `json:"success"`
+	Error   string `json:"error"`
+}
+
+func (MutateItemPayloadFailure) IsMutateItemPayload() {}
+
+type MutateItemPayloadSuccess struct {
+	ID      int    `json:"id"`
+	Success bool   `json:"success"`
+	Message string `json:"message"`
+}
+
+func (MutateItemPayloadSuccess) IsMutateItemPayload() {}
+
+type Session struct {
+	ID        int `json:"id"`
+	UserID    int `json:"userId"`
+	SessionID int `json:"sessionId"`
 }
 
 type Platform string
