@@ -4,7 +4,7 @@ import (
 	"github.com/davidfunk13/overwatch-companion/graph/model"
 )
 
-// SelectAllBattletags Selects and returns all battletags that belong to a user from the database.
+// SelectAllBattletags Selects and returns all battletags from the database. This function will be refined to only fetch a user's battletags.
 func SelectAllBattletags() ([]*model.Battletag, error) {
 	db, err := OpenConnection()
 
@@ -28,9 +28,9 @@ func SelectAllBattletags() ([]*model.Battletag, error) {
 		var ID, userID int
 		var identifier *int
 		var battletag string
-		var platform *model.Platform
+		var platform model.Platform
 
-		err = res.Scan(&ID, &userID, &battletag, &identifier, &platform)
+		err = res.Scan(&ID, &userID, &battletag, &platform,  &identifier)
 
 		b := model.Battletag{ID: ID, Battletag: battletag, UserID: userID, Identifier: identifier, Platform: platform}
 

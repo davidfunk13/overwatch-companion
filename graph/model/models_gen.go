@@ -13,12 +13,11 @@ type MutateItemPayload interface {
 }
 
 type Battletag struct {
-	ID         int        `json:"id"`
-	UserID     int        `json:"userId"`
-	Battletag  string     `json:"battletag"`
-	Platform   *Platform  `json:"platform"`
-	Identifier *int       `json:"identifier"`
-	Sessions   []*Session `json:"sessions"`
+	ID         int      `json:"id"`
+	UserID     int      `json:"userId"`
+	Battletag  string   `json:"battletag"`
+	Platform   Platform `json:"platform"`
+	Identifier *int     `json:"identifier"`
 }
 
 type InputBattletag struct {
@@ -29,8 +28,8 @@ type InputBattletag struct {
 }
 
 type InputSession struct {
-	UserID    int `json:"userId"`
-	SessionID int `json:"sessionId"`
+	UserID   int  `json:"userId"`
+	RoleType Role `json:"roleType"`
 }
 
 type MutateItemPayloadFailure struct {
@@ -50,9 +49,9 @@ type MutateItemPayloadSuccess struct {
 func (MutateItemPayloadSuccess) IsMutateItemPayload() {}
 
 type Session struct {
-	ID        int `json:"id"`
-	UserID    int `json:"userId"`
-	SessionID int `json:"sessionId"`
+	ID       int  `json:"id"`
+	UserID   int  `json:"userId"`
+	RoleType Role `json:"roleType"`
 }
 
 type Platform string
@@ -97,5 +96,48 @@ func (e *Platform) UnmarshalGQL(v interface{}) error {
 }
 
 func (e Platform) MarshalGQL(w io.Writer) {
+	fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+type Role string
+
+const (
+	RoleTank    Role = "TANK"
+	RoleDamage  Role = "DAMAGE"
+	RoleSupport Role = "SUPPORT"
+)
+
+var AllRole = []Role{
+	RoleTank,
+	RoleDamage,
+	RoleSupport,
+}
+
+func (e Role) IsValid() bool {
+	switch e {
+	case RoleTank, RoleDamage, RoleSupport:
+		return true
+	}
+	return false
+}
+
+func (e Role) String() string {
+	return string(e)
+}
+
+func (e *Role) UnmarshalGQL(v interface{}) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = Role(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid Role", str)
+	}
+	return nil
+}
+
+func (e Role) MarshalGQL(w io.Writer) {
 	fmt.Fprint(w, strconv.Quote(e.String()))
 }

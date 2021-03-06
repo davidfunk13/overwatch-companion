@@ -5,7 +5,6 @@ package graph
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/davidfunk13/overwatch-companion/database"
 	"github.com/davidfunk13/overwatch-companion/graph/generated"
@@ -32,11 +31,22 @@ func (r *mutationResolver) DeleteBattletag(ctx context.Context, input int) (mode
 }
 
 func (r *mutationResolver) CreateSession(ctx context.Context, input model.InputSession) (*model.Session, error) {
-	panic(fmt.Errorf("not implemented"))
+	inserted := database.CreateSession(input)
+
+	//why do we do this?!? why not just create and return; query and return? why append to resolver?
+	r.sessions = append(r.sessions, inserted)
+
+	return &inserted, nil
 }
 
 func (r *mutationResolver) DeleteSession(ctx context.Context, input int) (model.MutateItemPayload, error) {
-	panic(fmt.Errorf("not implemented"))
+	deleted, err := database.DeleteSession(&input)
+
+	if err != nil {
+		panic(err.Error())
+	}
+
+	return deleted, nil
 }
 
 func (r *queryResolver) Battletags(ctx context.Context) ([]*model.Battletag, error) {
@@ -50,7 +60,13 @@ func (r *queryResolver) Battletags(ctx context.Context) ([]*model.Battletag, err
 }
 
 func (r *queryResolver) Sessions(ctx context.Context) ([]*model.Session, error) {
-	panic(fmt.Errorf("not implemented"))
+	sessions, err := database.SelectAllSessions()
+
+	if err != nil {
+		panic(err.Error())
+	}
+
+	return sessions, nil
 }
 
 // Mutation returns generated.MutationResolver implementation.

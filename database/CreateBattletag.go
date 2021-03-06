@@ -16,10 +16,10 @@ func CreateBattletag(input model.InputBattletag) *model.Battletag {
 
 	defer db.Close()
 
-	battletagInput := &model.Battletag{
+	battletagInput := &model.InputBattletag{
 		UserID:     input.UserID,
 		Battletag:  input.Battletag,
-		Platform:   &input.Platform,
+		Platform:   input.Platform,
 		Identifier: input.Identifier,
 	}
 
@@ -48,7 +48,7 @@ func CreateBattletag(input model.InputBattletag) *model.Battletag {
 	var userId, id int
 	var battletag string
 	var identifier *int
-	var platform *model.Platform
+	var platform model.Platform
 
 	err = lastInserted.Scan(&id, &userId, &battletag, &identifier, &platform)
 

@@ -5,14 +5,20 @@ enum Platform{
   PLAYSTATION
 }
 
+enum Role{
+  TANK
+  DAMAGE
+  SUPPORT
+}
+
+
 # Battletag schemas
 type Battletag {
   id: Int!
   userId: Int!
   battletag: String!
-  platform: Platform
+  platform: Platform!
   identifier: Int
-  sessions: [Session]
 }
 
 input InputBattletag {
@@ -43,12 +49,12 @@ type MutateItemPayloadFailure implements MutateItemPayload {
 type Session {
   id: Int!
   userId: Int!
-  sessionId: Int!
+  roleType: Role!
 }
 
 input InputSession {
   userId: Int!
-  sessionId: Int!
+  roleType: Role!
 }
 
 # Queries 
