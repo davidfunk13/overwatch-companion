@@ -1,18 +1,87 @@
-type User {
-  id: ID!
-  name: String!
-  email: String!
+enum Platform{
+  PC
+  NINTENDO
+  XBOX
+  PLAYSTATION
 }
 
-input NewUser {
-  name: String!
-  email: String!
+enum Role{
+  TANK
+  DAMAGE
+  SUPPORT
 }
 
+
+# Battletag schemas
+type Battletag {
+  id: Int!
+  userId: Int!
+  battletag: String!
+  platform: Platform!
+  identifier: Int
+}
+
+input InputBattletag {
+  userId: Int!
+  battletag: String!
+  platform: Platform!
+  identifier: Int
+}
+
+interface MutateItemPayload {
+  id: Int
+  success: Boolean!
+}
+
+type MutateItemPayloadSuccess implements MutateItemPayload {
+  id: Int!
+  success: Boolean!
+  message: String!
+}
+
+type MutateItemPayloadFailure implements MutateItemPayload {
+  id: Int!
+  success: Boolean!
+  error: String!
+}
+
+# Session schema
+type Session {
+  id: Int!
+  userId: Int!
+  roleType: Role!
+}
+
+input InputSession {
+  userId: Int!
+  roleType: Role!
+}
+
+# Game schema
+type Game {
+  id: Int!
+  userId: Int!
+  sessonId: Int!
+}
+
+input InputGame {
+  userId: Int!
+  sessionId: Int!
+}
+
+# Queries 
 type Query {
-  users: [User!]!
+  battletags: [Battletag!]!
+  sessions: [Session!]!
+  games: [Game!]!
 }
 
+# Mutations
 type Mutation {
-  createUser(input: NewUser!): User!
+  createBattletag(input: InputBattletag!): Battletag!
+  deleteBattletag(input: Int!): MutateItemPayload!
+  createSession(input: InputSession!): Session!
+  deleteSession(input: Int!): MutateItemPayload!
+  createGame(input: InputGame!): Game!
+  deleteGame(input: Int!): MutateItemPayload!
 }

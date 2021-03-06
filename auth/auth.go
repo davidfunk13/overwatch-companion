@@ -62,6 +62,7 @@ var JWTMiddleware = jwtmiddleware.New(jwtmiddleware.Options{
 		}
 
 		cert, err := getPemCert(token)
+
 		if err != nil {
 			panic(err.Error())
 		}

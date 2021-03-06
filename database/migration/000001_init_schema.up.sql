@@ -1,18 +1,22 @@
-CREATE TABLE `user` (
+CREATE TABLE `battletag` (
   `id` int NOT NULL AUTO_INCREMENT,
-  `name` varchar(30) NOT NULL,
-  `email` varchar(30) NOT NULL,
+  `userId` int NOT NULL,
+  `battletag` varchar(100) NOT NULL,
+  `platform` varchar(100) NOT NULL,
+  `identifier` int,
   PRIMARY KEY (`id`)
 );
 
-INSERT INTO user (id, name, email)
-VALUES (2352, "IAmLorde", "poo@gmail.com");
+CREATE TABLE `session` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `userId` int NOT NULL,
+  `roleType` ENUM('DAMAGE', "SUPPORT", "TANK") NOT NULL,
+  PRIMARY KEY (`id`)
+);
 
-INSERT INTO user (id, name, email)
-VALUES (9148, "Fablorgian", "doctorflaborgian@gmail.com");
-
-INSERT INTO user (id, name, email)
-VALUES (6986, "Yourmom", "yourmom@gmail.com");
-
-INSERT INTO user (id, name, email)
-VALUES (5719, "TurdFergason", "thatsnotmyname@gmail.com");
+CREATE TABLE `game` (
+  `id` int NOT NULL AUTO_INCREMENT, 
+  `userId` int NOT NULL,
+  `sessionId` int NOT NULL,
+  PRIMARY KEY (`id`)
+);

@@ -5,39 +5,97 @@ package graph
 
 import (
 	"context"
-	"fmt"
-	"math/rand"
 
 	"github.com/davidfunk13/overwatch-companion/database"
 	"github.com/davidfunk13/overwatch-companion/graph/generated"
 	"github.com/davidfunk13/overwatch-companion/graph/model"
 )
 
-func (r *mutationResolver) CreateUser(ctx context.Context, input model.NewUser) (*model.User, error) {
-	user := &model.User{
-		ID:    "u" + fmt.Sprintf("%d", rand.Intn(50000)),
-		Name:  input.Name,
-		Email: input.Email,
-	}
+func (r *mutationResolver) CreateBattletag(ctx context.Context, input model.InputBattletag) (*model.Battletag, error) {
+	inserted := database.CreateBattletag(input)
 
-	r.users = append(r.users, user)
+	//why do we do this?!? why not just create and return; query and return? why append to resolver?
+	r.battletags = append(r.battletags, inserted)
 
-	// res, err := Db.Exec(`INSERT INTO user (id, name, email) VALUES (?, ?, ?);`, randi, "Dave", "davefunk135@gmail.com")
-
-	// if err != nil {
-	// 	panic(err.Error())
-	// } else {
-	// 	fmt.Println("Successfully inserted?")
-	// 	fmt.Println(res)
-	// }
-
-	return user, nil
+	return inserted, nil
 }
 
-func (r *queryResolver) Users(ctx context.Context) ([]*model.User, error) {
-	var data = database.SelectAllUsers()
+func (r *mutationResolver) DeleteBattletag(ctx context.Context, input int) (model.MutateItemPayload, error) {
+	deleted, err := database.DeleteBattletag(&input)
 
-	return data, nil
+	if err != nil {
+		panic(err.Error())
+	}
+
+	return deleted, nil
+}
+
+func (r *mutationResolver) CreateSession(ctx context.Context, input model.InputSession) (*model.Session, error) {
+	inserted := database.CreateSession(input)
+
+	//why do we do this?!? why not just create and return; query and return? why append to resolver?
+	r.sessions = append(r.sessions, inserted)
+
+	return &inserted, nil
+}
+
+func (r *mutationResolver) DeleteSession(ctx context.Context, input int) (model.MutateItemPayload, error) {
+	deleted, err := database.DeleteSession(&input)
+
+	if err != nil {
+		panic(err.Error())
+	}
+
+	return deleted, nil
+}
+
+func (r *mutationResolver) CreateGame(ctx context.Context, input model.InputGame) (*model.Game, error) {
+	inserted := database.CreateGame(input)
+
+	//why do we do this?!? why not just create and return; query and return? why append to resolver?
+	r.games = append(r.games, inserted)
+
+	return &inserted, nil
+}
+
+func (r *mutationResolver) DeleteGame(ctx context.Context, input int) (model.MutateItemPayload, error) {
+	deleted, err := database.DeleteSession(&input)
+
+	if err != nil {
+		panic(err.Error())
+	}
+
+	return deleted, nil
+}
+
+func (r *queryResolver) Battletags(ctx context.Context) ([]*model.Battletag, error) {
+	battletags, err := database.SelectAllBattletags()
+
+	if err != nil {
+		panic(err.Error())
+	}
+
+	return battletags, nil
+}
+
+func (r *queryResolver) Sessions(ctx context.Context) ([]*model.Session, error) {
+	sessions, err := database.SelectAllSessions()
+
+	if err != nil {
+		panic(err.Error())
+	}
+
+	return sessions, nil
+}
+
+func (r *queryResolver) Games(ctx context.Context) ([]*model.Game, error) {
+	games, err := database.SelectAllGames()
+
+	if err != nil {
+		panic(err.Error())
+	}
+
+	return games, nil
 }
 
 // Mutation returns generated.MutationResolver implementation.

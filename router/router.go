@@ -25,14 +25,13 @@ func NewRouter() *mux.Router {
 
 	origin := os.Getenv("ALLOWED_ORIGIN")
 
-	fmt.Printf("What is this: \n %s", origin)
+	fmt.Printf("What is this: \n %s \n", origin)
 
 	//wrap all requests in cors handler
 	r.Use(cors.New(cors.Options{
 		AllowedOrigins:   []string{origin},
 		AllowedHeaders:   []string{"Authorization", "Content-Type"},
 		AllowCredentials: true,
-		Debug:            true,
 	}).Handler)
 
 	//create a sub router for the graph api so we can protect only it with a jwt
