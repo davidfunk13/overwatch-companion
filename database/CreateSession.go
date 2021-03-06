@@ -17,8 +17,8 @@ func CreateSession(input model.InputSession) model.Session {
 	defer db.Close()
 
 	sessionInput := model.InputSession{
-		UserID: 3333,
-		RoleType: "DAMAGE",
+		UserID: input.UserID,
+		RoleType: input.RoleType,
 	}
 
 	statement, err := db.Prepare(`INSERT INTO session (userId, roleType) VALUES (?, ?);`)
@@ -41,7 +41,7 @@ func CreateSession(input model.InputSession) model.Session {
 		panic(err.Error())
 	}
 	
-	lastInserted := db.QueryRow(`Select * from battletag where id=?;`, lastInsertedID)
+	lastInserted := db.QueryRow(`Select * from session where id=?;`, lastInsertedID)
 
 	var userId, id int
 	var roleType model.Role

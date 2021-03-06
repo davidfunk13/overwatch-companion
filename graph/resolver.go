@@ -12,4 +12,5 @@ import "github.com/davidfunk13/overwatch-companion/graph/model"
 type Resolver struct {
 	battletags []*model.Battletag
 	sessions []model.Session
+	games []model.Game
 }

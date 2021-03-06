@@ -20,11 +20,22 @@ type Battletag struct {
 	Identifier *int     `json:"identifier"`
 }
 
+type Game struct {
+	ID       int `json:"id"`
+	UserID   int `json:"userId"`
+	SessonID int `json:"sessonId"`
+}
+
 type InputBattletag struct {
 	UserID     int      `json:"userId"`
 	Battletag  string   `json:"battletag"`
 	Platform   Platform `json:"platform"`
 	Identifier *int     `json:"identifier"`
+}
+
+type InputGame struct {
+	UserID    int `json:"userId"`
+	SessionID int `json:"sessionId"`
 }
 
 type InputSession struct {

@@ -14,7 +14,7 @@ func CreateBattletag(input model.InputBattletag) *model.Battletag {
 		panic(err.Error())
 	}
 
-	defer db.Close()
+	defer db.Close() 
 
 	battletagInput := &model.InputBattletag{
 		UserID:     input.UserID,

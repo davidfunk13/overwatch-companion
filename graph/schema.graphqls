@@ -57,10 +57,23 @@ input InputSession {
   roleType: Role!
 }
 
+# Game schema
+type Game {
+  id: Int!
+  userId: Int!
+  sessonId: Int!
+}
+
+input InputGame {
+  userId: Int!
+  sessionId: Int!
+}
+
 # Queries 
 type Query {
   battletags: [Battletag!]!
   sessions: [Session!]!
+  games: [Game!]!
 }
 
 # Mutations
@@ -69,4 +82,6 @@ type Mutation {
   deleteBattletag(input: Int!): MutateItemPayload!
   createSession(input: InputSession!): Session!
   deleteSession(input: Int!): MutateItemPayload!
+  createGame(input: InputGame!): Game!
+  deleteGame(input: Int!): MutateItemPayload!
 }

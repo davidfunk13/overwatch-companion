@@ -49,6 +49,25 @@ func (r *mutationResolver) DeleteSession(ctx context.Context, input int) (model.
 	return deleted, nil
 }
 
+func (r *mutationResolver) CreateGame(ctx context.Context, input model.InputGame) (*model.Game, error) {
+	inserted := database.CreateGame(input)
+
+	//why do we do this?!? why not just create and return; query and return? why append to resolver?
+	r.games = append(r.games, inserted)
+
+	return &inserted, nil
+}
+
+func (r *mutationResolver) DeleteGame(ctx context.Context, input int) (model.MutateItemPayload, error) {
+	deleted, err := database.DeleteSession(&input)
+
+	if err != nil {
+		panic(err.Error())
+	}
+
+	return deleted, nil
+}
+
 func (r *queryResolver) Battletags(ctx context.Context) ([]*model.Battletag, error) {
 	battletags, err := database.SelectAllBattletags()
 
@@ -67,6 +86,16 @@ func (r *queryResolver) Sessions(ctx context.Context) ([]*model.Session, error) 
 	}
 
 	return sessions, nil
+}
+
+func (r *queryResolver) Games(ctx context.Context) ([]*model.Game, error) {
+	games, err := database.SelectAllGames()
+
+	if err != nil {
+		panic(err.Error())
+	}
+
+	return games, nil
 }
 
 // Mutation returns generated.MutationResolver implementation.

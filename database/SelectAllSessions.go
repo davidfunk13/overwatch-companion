@@ -25,12 +25,12 @@ func SelectAllSessions() ([]*model.Session, error) {
 	defer res.Close()
 
 	for res.Next() {
-		var ID, userID int
+		var id, userId int
 		var roleType model.Role
 
-		err = res.Scan(&ID, &userID, &roleType)
+		err = res.Scan(&id, &userId, &roleType)
 
-		s := model.Session{ID: ID, UserID: userID}
+		s := model.Session{ID: id, UserID: userId, RoleType: roleType}
 
 		data = append(data, &s)
 	}
