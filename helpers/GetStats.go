@@ -16,6 +16,8 @@ const (
 
 // GetStats takes a battletag and a set of rules
 func GetStats(b string) []byte { 
+
+	// dont forget about platform too. this will need to be passed in as well!
 	url := "https://playoverwatch.com/en-us/career/pc/" + b
 
 	fmt.Printf("HTML code of %s ...\n", url)
