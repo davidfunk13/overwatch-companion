@@ -16,7 +16,7 @@ func SelectAllBattletags() ([]*model.Battletag, error) {
 
 	var data []*model.Battletag
 
-	res, err := db.Query("SELECT * FROM battletag where ")
+	res, err := db.Query("SELECT * FROM battletag")
 
 	if err != nil {
 		panic(err.Error())
@@ -40,8 +40,8 @@ func SelectAllBattletags() ([]*model.Battletag, error) {
 			&blizzId,
 			&level,
 			&playerLevel,
-			&isPublic,
 			&platform,
+			&isPublic,
 			&portrait,
 		)
 
@@ -53,8 +53,8 @@ func SelectAllBattletags() ([]*model.Battletag, error) {
 			BlizzID: blizzId,
 			Level: level,
 			PlayerLevel: playerLevel,
-			IsPublic: &isPublic,
 			Platform: platform,
+			IsPublic: &isPublic,
 			Portrait: portrait,
 		}
 

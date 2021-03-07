@@ -28,7 +28,7 @@ func CreateBattletag(input model.InputBattletag) *model.Battletag {
 		Portrait: input.Portrait,
 	}
 
-	statement, err := db.Prepare(`INSERT INTO battletag (userId, name, urlName, blizzId, level, playerLevel, platform, isPublic, portrait) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);`)
+	statement, err := db.Prepare(`INSERT INTO battletag (userId, name, urlName, blizzId, level, playerLevel, isPublic, platform, portrait) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);`)
 
 	if err != nil {
 		panic(err.Error())

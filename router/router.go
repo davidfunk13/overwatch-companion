@@ -1,6 +1,7 @@
 package router
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"os"
@@ -60,13 +61,34 @@ func NewRouter() *mux.Router {
 	r.HandleFunc("/search/{battletag}", func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		b := vars["battletag"]
+
 		data := helpers.SearchBattletags(b)
+
+		jsonResponse, err := json.Marshal(data)
+
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(200)
+		w.Write(jsonResponse)
+	})
+
+	r.HandleFunc("/stats/{battletag}", func(w http.ResponseWriter, r *http.Request) {
+		vars := mux.Vars(r)
+		b := vars["battletag"]
+		data := helpers.GetStats(b)
+
+
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(200)
 		w.Write(data)
+
 	})
 
-	r.HandleFunc("/stats", func(w http.ResponseWriter, r *http.Request) {
+	r.HandleFunc("/public", func(w http.ResponseWriter, r *http.Request) {
 		message := "This is a public, restful api endpoint that will be used to return statstics from another api."
 		helpers.SendResponseJSON(message, w, 200)
 	})

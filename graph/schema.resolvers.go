@@ -5,7 +5,6 @@ package graph
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/davidfunk13/overwatch-companion/database"
 	"github.com/davidfunk13/overwatch-companion/graph/generated"
@@ -67,10 +66,6 @@ func (r *mutationResolver) DeleteGame(ctx context.Context, input int) (model.Mut
 	}
 
 	return deleted, nil
-}
-
-func (r *mutationResolver) SearchBattletags(ctx context.Context, input string) ([]*model.Battletag, error) {
-	panic(fmt.Errorf("not implemented"))
 }
 
 func (r *queryResolver) Battletags(ctx context.Context) ([]*model.Battletag, error) {
