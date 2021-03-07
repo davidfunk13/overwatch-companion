@@ -57,6 +57,17 @@ type ComplexityRoot struct {
 		UserID      func(childComplexity int) int
 	}
 
+	BlizzBattletag struct {
+		BlizzID     func(childComplexity int) int
+		IsPublic    func(childComplexity int) int
+		Level       func(childComplexity int) int
+		Name        func(childComplexity int) int
+		Platform    func(childComplexity int) int
+		PlayerLevel func(childComplexity int) int
+		Portrait    func(childComplexity int) int
+		URLName     func(childComplexity int) int
+	}
+
 	Game struct {
 		ID       func(childComplexity int) int
 		SessonID func(childComplexity int) int
@@ -76,13 +87,12 @@ type ComplexityRoot struct {
 	}
 
 	Mutation struct {
-		CreateBattletag  func(childComplexity int, input model.InputBattletag) int
-		CreateGame       func(childComplexity int, input model.InputGame) int
-		CreateSession    func(childComplexity int, input model.InputSession) int
-		DeleteBattletag  func(childComplexity int, input int) int
-		DeleteGame       func(childComplexity int, input int) int
-		DeleteSession    func(childComplexity int, input int) int
-		SearchBattletags func(childComplexity int, input string) int
+		CreateBattletag func(childComplexity int, input model.InputBattletag) int
+		CreateGame      func(childComplexity int, input model.InputGame) int
+		CreateSession   func(childComplexity int, input model.InputSession) int
+		DeleteBattletag func(childComplexity int, input int) int
+		DeleteGame      func(childComplexity int, input int) int
+		DeleteSession   func(childComplexity int, input int) int
 	}
 
 	Query struct {
@@ -105,7 +115,6 @@ type MutationResolver interface {
 	DeleteSession(ctx context.Context, input int) (model.MutateItemPayload, error)
 	CreateGame(ctx context.Context, input model.InputGame) (*model.Game, error)
 	DeleteGame(ctx context.Context, input int) (model.MutateItemPayload, error)
-	SearchBattletags(ctx context.Context, input string) ([]*model.Battletag, error)
 }
 type QueryResolver interface {
 	Battletags(ctx context.Context) ([]*model.Battletag, error)
@@ -197,6 +206,62 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Battletag.UserID(childComplexity), true
+
+	case "BlizzBattletag.blizzId":
+		if e.complexity.BlizzBattletag.BlizzID == nil {
+			break
+		}
+
+		return e.complexity.BlizzBattletag.BlizzID(childComplexity), true
+
+	case "BlizzBattletag.isPublic":
+		if e.complexity.BlizzBattletag.IsPublic == nil {
+			break
+		}
+
+		return e.complexity.BlizzBattletag.IsPublic(childComplexity), true
+
+	case "BlizzBattletag.level":
+		if e.complexity.BlizzBattletag.Level == nil {
+			break
+		}
+
+		return e.complexity.BlizzBattletag.Level(childComplexity), true
+
+	case "BlizzBattletag.name":
+		if e.complexity.BlizzBattletag.Name == nil {
+			break
+		}
+
+		return e.complexity.BlizzBattletag.Name(childComplexity), true
+
+	case "BlizzBattletag.platform":
+		if e.complexity.BlizzBattletag.Platform == nil {
+			break
+		}
+
+		return e.complexity.BlizzBattletag.Platform(childComplexity), true
+
+	case "BlizzBattletag.playerLevel":
+		if e.complexity.BlizzBattletag.PlayerLevel == nil {
+			break
+		}
+
+		return e.complexity.BlizzBattletag.PlayerLevel(childComplexity), true
+
+	case "BlizzBattletag.portrait":
+		if e.complexity.BlizzBattletag.Portrait == nil {
+			break
+		}
+
+		return e.complexity.BlizzBattletag.Portrait(childComplexity), true
+
+	case "BlizzBattletag.urlName":
+		if e.complexity.BlizzBattletag.URLName == nil {
+			break
+		}
+
+		return e.complexity.BlizzBattletag.URLName(childComplexity), true
 
 	case "Game.id":
 		if e.complexity.Game.ID == nil {
@@ -333,18 +398,6 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Mutation.DeleteSession(childComplexity, args["input"].(int)), true
 
-	case "Mutation.searchBattletags":
-		if e.complexity.Mutation.SearchBattletags == nil {
-			break
-		}
-
-		args, err := ec.field_Mutation_searchBattletags_args(context.TODO(), rawArgs)
-		if err != nil {
-			return 0, false
-		}
-
-		return e.complexity.Mutation.SearchBattletags(childComplexity, args["input"].(string)), true
-
 	case "Query.battletags":
 		if e.complexity.Query.Battletags == nil {
 			break
@@ -453,7 +506,7 @@ func (ec *executionContext) introspectType(name string) (*introspection.Type, er
 var sources = []*ast.Source{
 	{Name: "graph/schema.graphqls", Input: `enum Platform{
   PC 
-  NINTENDO
+  NINTENDOSWITCH
   XBOX
   PLAYSTATION
 }
@@ -486,8 +539,19 @@ input InputBattletag {
   level: Int!
   playerLevel: Int!
   platform: Platform!
-  isPublic: Boolean,
-  portrait: String!,
+  isPublic: Boolean!
+  portrait: String!
+}
+
+type BlizzBattletag {
+  name: String!
+  urlName: String!
+  blizzId: Int!
+  level: Int!
+  playerLevel: Int!
+  platform: Platform!
+  isPublic: Boolean!
+  portrait: String!
 }
 
 interface MutateItemPayload {
@@ -546,7 +610,6 @@ type Mutation {
   deleteSession(input: Int!): MutateItemPayload!
   createGame(input: InputGame!): Game!
   deleteGame(input: Int!): MutateItemPayload!
-  searchBattletags(input: String!): [Battletag]! 
 }`, BuiltIn: false},
 }
 var parsedSchema = gqlparser.MustLoadSchema(sources...)
@@ -637,21 +700,6 @@ func (ec *executionContext) field_Mutation_deleteSession_args(ctx context.Contex
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
 		arg0, err = ec.unmarshalNInt2int(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["input"] = arg0
-	return args, nil
-}
-
-func (ec *executionContext) field_Mutation_searchBattletags_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
-	var err error
-	args := map[string]interface{}{}
-	var arg0 string
-	if tmp, ok := rawArgs["input"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNString2string(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -1034,6 +1082,286 @@ func (ec *executionContext) _Battletag_portrait(ctx context.Context, field graph
 	}()
 	fc := &graphql.FieldContext{
 		Object:     "Battletag",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Portrait, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _BlizzBattletag_name(ctx context.Context, field graphql.CollectedField, obj *model.BlizzBattletag) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "BlizzBattletag",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Name, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _BlizzBattletag_urlName(ctx context.Context, field graphql.CollectedField, obj *model.BlizzBattletag) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "BlizzBattletag",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.URLName, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _BlizzBattletag_blizzId(ctx context.Context, field graphql.CollectedField, obj *model.BlizzBattletag) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "BlizzBattletag",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.BlizzID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _BlizzBattletag_level(ctx context.Context, field graphql.CollectedField, obj *model.BlizzBattletag) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "BlizzBattletag",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Level, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _BlizzBattletag_playerLevel(ctx context.Context, field graphql.CollectedField, obj *model.BlizzBattletag) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "BlizzBattletag",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.PlayerLevel, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _BlizzBattletag_platform(ctx context.Context, field graphql.CollectedField, obj *model.BlizzBattletag) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "BlizzBattletag",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Platform, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(model.Platform)
+	fc.Result = res
+	return ec.marshalNPlatform2githubᚗcomᚋdavidfunk13ᚋoverwatchᚑcompanionᚋgraphᚋmodelᚐPlatform(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _BlizzBattletag_isPublic(ctx context.Context, field graphql.CollectedField, obj *model.BlizzBattletag) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "BlizzBattletag",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.IsPublic, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	fc.Result = res
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _BlizzBattletag_portrait(ctx context.Context, field graphql.CollectedField, obj *model.BlizzBattletag) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "BlizzBattletag",
 		Field:      field,
 		Args:       nil,
 		IsMethod:   false,
@@ -1625,48 +1953,6 @@ func (ec *executionContext) _Mutation_deleteGame(ctx context.Context, field grap
 	res := resTmp.(model.MutateItemPayload)
 	fc.Result = res
 	return ec.marshalNMutateItemPayload2githubᚗcomᚋdavidfunk13ᚋoverwatchᚑcompanionᚋgraphᚋmodelᚐMutateItemPayload(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Mutation_searchBattletags(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:     "Mutation",
-		Field:      field,
-		Args:       nil,
-		IsMethod:   true,
-		IsResolver: true,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	rawArgs := field.ArgumentMap(ec.Variables)
-	args, err := ec.field_Mutation_searchBattletags_args(ctx, rawArgs)
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	fc.Args = args
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().SearchBattletags(rctx, args["input"].(string))
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.([]*model.Battletag)
-	fc.Result = res
-	return ec.marshalNBattletag2ᚕᚖgithubᚗcomᚋdavidfunk13ᚋoverwatchᚑcompanionᚋgraphᚋmodelᚐBattletag(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Query_battletags(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -3103,7 +3389,7 @@ func (ec *executionContext) unmarshalInputInputBattletag(ctx context.Context, ob
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("isPublic"))
-			it.IsPublic, err = ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			it.IsPublic, err = ec.unmarshalNBoolean2bool(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -3277,6 +3563,68 @@ func (ec *executionContext) _Battletag(ctx context.Context, sel ast.SelectionSet
 	return out
 }
 
+var blizzBattletagImplementors = []string{"BlizzBattletag"}
+
+func (ec *executionContext) _BlizzBattletag(ctx context.Context, sel ast.SelectionSet, obj *model.BlizzBattletag) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, blizzBattletagImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("BlizzBattletag")
+		case "name":
+			out.Values[i] = ec._BlizzBattletag_name(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "urlName":
+			out.Values[i] = ec._BlizzBattletag_urlName(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "blizzId":
+			out.Values[i] = ec._BlizzBattletag_blizzId(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "level":
+			out.Values[i] = ec._BlizzBattletag_level(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "playerLevel":
+			out.Values[i] = ec._BlizzBattletag_playerLevel(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "platform":
+			out.Values[i] = ec._BlizzBattletag_platform(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "isPublic":
+			out.Values[i] = ec._BlizzBattletag_isPublic(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "portrait":
+			out.Values[i] = ec._BlizzBattletag_portrait(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
 var gameImplementors = []string{"Game"}
 
 func (ec *executionContext) _Game(ctx context.Context, sel ast.SelectionSet, obj *model.Game) graphql.Marshaler {
@@ -3430,11 +3778,6 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			}
 		case "deleteGame":
 			out.Values[i] = ec._Mutation_deleteGame(ctx, field)
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
-		case "searchBattletags":
-			out.Values[i] = ec._Mutation_searchBattletags(ctx, field)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
@@ -3805,43 +4148,6 @@ func (ec *executionContext) ___Type(ctx context.Context, sel ast.SelectionSet, o
 
 func (ec *executionContext) marshalNBattletag2githubᚗcomᚋdavidfunk13ᚋoverwatchᚑcompanionᚋgraphᚋmodelᚐBattletag(ctx context.Context, sel ast.SelectionSet, v model.Battletag) graphql.Marshaler {
 	return ec._Battletag(ctx, sel, &v)
-}
-
-func (ec *executionContext) marshalNBattletag2ᚕᚖgithubᚗcomᚋdavidfunk13ᚋoverwatchᚑcompanionᚋgraphᚋmodelᚐBattletag(ctx context.Context, sel ast.SelectionSet, v []*model.Battletag) graphql.Marshaler {
-	ret := make(graphql.Array, len(v))
-	var wg sync.WaitGroup
-	isLen1 := len(v) == 1
-	if !isLen1 {
-		wg.Add(len(v))
-	}
-	for i := range v {
-		i := i
-		fc := &graphql.FieldContext{
-			Index:  &i,
-			Result: &v[i],
-		}
-		ctx := graphql.WithFieldContext(ctx, fc)
-		f := func(i int) {
-			defer func() {
-				if r := recover(); r != nil {
-					ec.Error(ctx, ec.Recover(ctx, r))
-					ret = nil
-				}
-			}()
-			if !isLen1 {
-				defer wg.Done()
-			}
-			ret[i] = ec.marshalOBattletag2ᚖgithubᚗcomᚋdavidfunk13ᚋoverwatchᚑcompanionᚋgraphᚋmodelᚐBattletag(ctx, sel, v[i])
-		}
-		if isLen1 {
-			f(i)
-		} else {
-			go f(i)
-		}
-
-	}
-	wg.Wait()
-	return ret
 }
 
 func (ec *executionContext) marshalNBattletag2ᚕᚖgithubᚗcomᚋdavidfunk13ᚋoverwatchᚑcompanionᚋgraphᚋmodelᚐBattletagᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Battletag) graphql.Marshaler {
@@ -4310,13 +4616,6 @@ func (ec *executionContext) marshalN__TypeKind2string(ctx context.Context, sel a
 		}
 	}
 	return res
-}
-
-func (ec *executionContext) marshalOBattletag2ᚖgithubᚗcomᚋdavidfunk13ᚋoverwatchᚑcompanionᚋgraphᚋmodelᚐBattletag(ctx context.Context, sel ast.SelectionSet, v *model.Battletag) graphql.Marshaler {
-	if v == nil {
-		return graphql.Null
-	}
-	return ec._Battletag(ctx, sel, v)
 }
 
 func (ec *executionContext) unmarshalOBoolean2bool(ctx context.Context, v interface{}) (bool, error) {

@@ -1,6 +1,6 @@
 enum Platform{
   PC 
-  NINTENDO
+  NINTENDOSWITCH
   XBOX
   PLAYSTATION
 }
@@ -33,8 +33,19 @@ input InputBattletag {
   level: Int!
   playerLevel: Int!
   platform: Platform!
-  isPublic: Boolean,
-  portrait: String!,
+  isPublic: Boolean!
+  portrait: String!
+}
+
+type BlizzBattletag {
+  name: String!
+  urlName: String!
+  blizzId: Int!
+  level: Int!
+  playerLevel: Int!
+  platform: Platform!
+  isPublic: Boolean!
+  portrait: String!
 }
 
 interface MutateItemPayload {
@@ -93,5 +104,4 @@ type Mutation {
   deleteSession(input: Int!): MutateItemPayload!
   createGame(input: InputGame!): Game!
   deleteGame(input: Int!): MutateItemPayload!
-  searchBattletags(input: String!): [Battletag]! 
 }

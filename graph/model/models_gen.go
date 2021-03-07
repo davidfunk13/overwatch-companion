@@ -25,6 +25,17 @@ type Battletag struct {
 	Portrait    string   `json:"portrait"`
 }
 
+type BlizzBattletag struct {
+	Name        string   `json:"name"`
+	URLName     string   `json:"urlName"`
+	BlizzID     int      `json:"blizzId"`
+	Level       int      `json:"level"`
+	PlayerLevel int      `json:"playerLevel"`
+	Platform    Platform `json:"platform"`
+	IsPublic    bool     `json:"isPublic"`
+	Portrait    string   `json:"portrait"`
+}
+
 type Game struct {
 	ID       int `json:"id"`
 	UserID   int `json:"userId"`
@@ -39,7 +50,7 @@ type InputBattletag struct {
 	Level       int      `json:"level"`
 	PlayerLevel int      `json:"playerLevel"`
 	Platform    Platform `json:"platform"`
-	IsPublic    *bool    `json:"isPublic"`
+	IsPublic    bool     `json:"isPublic"`
 	Portrait    string   `json:"portrait"`
 }
 
@@ -78,22 +89,22 @@ type Session struct {
 type Platform string
 
 const (
-	PlatformPc          Platform = "PC"
-	PlatformNintendo    Platform = "NINTENDO"
-	PlatformXbox        Platform = "XBOX"
-	PlatformPlaystation Platform = "PLAYSTATION"
+	PlatformPc             Platform = "PC"
+	PlatformNintendoswitch Platform = "NINTENDOSWITCH"
+	PlatformXbox           Platform = "XBOX"
+	PlatformPlaystation    Platform = "PLAYSTATION"
 )
 
 var AllPlatform = []Platform{
 	PlatformPc,
-	PlatformNintendo,
+	PlatformNintendoswitch,
 	PlatformXbox,
 	PlatformPlaystation,
 }
 
 func (e Platform) IsValid() bool {
 	switch e {
-	case PlatformPc, PlatformNintendo, PlatformXbox, PlatformPlaystation:
+	case PlatformPc, PlatformNintendoswitch, PlatformXbox, PlatformPlaystation:
 		return true
 	}
 	return false
