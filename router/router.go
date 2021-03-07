@@ -57,6 +57,15 @@ func NewRouter() *mux.Router {
 	api.Handle("/graph", srv)
 
 	//Heres a public route.
+	r.HandleFunc("/search/{battletag}", func(w http.ResponseWriter, r *http.Request) {
+		vars := mux.Vars(r)
+		b := vars["battletag"]
+		data := helpers.SearchBattletags(b)
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(200)
+		w.Write(data)
+	})
+
 	r.HandleFunc("/stats", func(w http.ResponseWriter, r *http.Request) {
 		message := "This is a public, restful api endpoint that will be used to return statstics from another api."
 		helpers.SendResponseJSON(message, w, 200)

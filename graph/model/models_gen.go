@@ -13,11 +13,16 @@ type MutateItemPayload interface {
 }
 
 type Battletag struct {
-	ID         int      `json:"id"`
-	UserID     int      `json:"userId"`
-	Battletag  string   `json:"battletag"`
-	Platform   Platform `json:"platform"`
-	Identifier *int     `json:"identifier"`
+	ID          int      `json:"id"`
+	UserID      int      `json:"userId"`
+	Name        string   `json:"name"`
+	URLName     string   `json:"urlName"`
+	BlizzID     int      `json:"blizzId"`
+	Level       int      `json:"level"`
+	PlayerLevel int      `json:"playerLevel"`
+	Platform    Platform `json:"platform"`
+	IsPublic    *bool    `json:"isPublic"`
+	Portrait    string   `json:"portrait"`
 }
 
 type Game struct {
@@ -27,10 +32,15 @@ type Game struct {
 }
 
 type InputBattletag struct {
-	UserID     int      `json:"userId"`
-	Battletag  string   `json:"battletag"`
-	Platform   Platform `json:"platform"`
-	Identifier *int     `json:"identifier"`
+	UserID      int      `json:"userId"`
+	Name        string   `json:"name"`
+	URLName     string   `json:"urlName"`
+	BlizzID     int      `json:"blizzId"`
+	Level       int      `json:"level"`
+	PlayerLevel int      `json:"playerLevel"`
+	Platform    Platform `json:"platform"`
+	IsPublic    *bool    `json:"isPublic"`
+	Portrait    string   `json:"portrait"`
 }
 
 type InputGame struct {

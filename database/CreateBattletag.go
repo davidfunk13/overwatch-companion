@@ -14,22 +14,37 @@ func CreateBattletag(input model.InputBattletag) *model.Battletag {
 		panic(err.Error())
 	}
 
-	defer db.Close() 
+	defer db.Close()
 
 	battletagInput := &model.InputBattletag{
 		UserID:     input.UserID,
-		Battletag:  input.Battletag,
-		Platform:   input.Platform,
-		Identifier: input.Identifier,
+		Name:  input.Name,
+		URLName:   input.URLName,
+		BlizzID: input.BlizzID,
+		Level: input.Level,
+		PlayerLevel: input.PlayerLevel,
+		IsPublic: input.IsPublic,
+		Platform: input.Platform,
+		Portrait: input.Portrait,
 	}
 
-	statement, err := db.Prepare(`INSERT INTO battletag (userId, battletag, platform, identifier) VALUES (?, ?, ?, ?);`)
+	statement, err := db.Prepare(`INSERT INTO battletag (userId, name, urlName, blizzId, level, playerLevel, platform, isPublic, portrait) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);`)
 
 	if err != nil {
 		panic(err.Error())
 	}
 
-	res, err := statement.Exec(battletagInput.UserID, battletagInput.Battletag, battletagInput.Platform, battletagInput.Identifier)
+	res, err := statement.Exec(
+		battletagInput.UserID,
+		battletagInput.Name,
+		battletagInput.URLName,
+		battletagInput.BlizzID,
+		battletagInput.Level,
+		battletagInput.PlayerLevel,
+		battletagInput.IsPublic,
+		battletagInput.Platform,
+		battletagInput.Portrait,
+	)
 
 	if err != nil {
 		panic(err.Error())
@@ -45,14 +60,26 @@ func CreateBattletag(input model.InputBattletag) *model.Battletag {
 
 	lastInserted := db.QueryRow(`Select * from battletag where id=?;`, lastInsertedID)
 
-	var userId, id int
-	var battletag string
-	var identifier *int
-	var platform model.Platform
+	var (
+		userId, id, blizzId, level, playerLevel int
+		isPublic bool
+		name, urlName, portrait  string 
+		platform   model.Platform
+	)
+	err = lastInserted.Scan(&id, &userId, &name, &urlName, &blizzId, &level, &playerLevel, &isPublic, &platform, &portrait )
 
-	err = lastInserted.Scan(&id, &userId, &battletag, &identifier, &platform)
-
-	insertedBattletag := model.Battletag{ID: id, UserID: userId, Battletag: battletag, Identifier: identifier, Platform: platform}
+	insertedBattletag := model.Battletag{
+		ID: id,
+		UserID: userId,
+		Name: name,
+		URLName: urlName,
+		BlizzID: blizzId, 
+		Level: level, 
+		PlayerLevel: playerLevel,
+		IsPublic: &isPublic,
+		Platform: platform,
+		Portrait: portrait,
+	}
 
 	return &insertedBattletag
 }

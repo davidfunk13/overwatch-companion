@@ -17,7 +17,7 @@ func CreateSession(input model.InputSession) model.Session {
 	defer db.Close()
 
 	sessionInput := model.InputSession{
-		UserID: input.UserID,
+		UserID:   input.UserID,
 		RoleType: input.RoleType,
 	}
 
@@ -28,7 +28,7 @@ func CreateSession(input model.InputSession) model.Session {
 	}
 
 	res, err := statement.Exec(sessionInput.UserID, sessionInput.RoleType)
-	
+
 	if err != nil {
 		panic(err.Error())
 	}
@@ -40,17 +40,18 @@ func CreateSession(input model.InputSession) model.Session {
 	if err != nil {
 		panic(err.Error())
 	}
-	
+
 	lastInserted := db.QueryRow(`Select * from session where id=?;`, lastInsertedID)
 
-	var userId, id int
-	var roleType model.Role
-
+	var (
+		userId, id int
+		roleType   model.Role
+	)
 	err = lastInserted.Scan(&id, &userId, &roleType)
 
 	insertedSession := model.Session{
-		ID: id,
-		UserID: id,
+		ID:       id,
+		UserID:   id,
 		RoleType: roleType,
 	}
 

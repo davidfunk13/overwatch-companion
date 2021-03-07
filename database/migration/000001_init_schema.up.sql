@@ -1,9 +1,14 @@
 CREATE TABLE `battletag` (
   `id` int NOT NULL AUTO_INCREMENT,
   `userId` int NOT NULL,
-  `battletag` varchar(100) NOT NULL,
+  `name` varchar(100) NOT NULL,
+  `urlName` varchar(100) NOT NULL,
+  `blizzId` int NOT NULL,
+  `level` int NOT NULL,
+  `playerLevel` int NOT NULL,
   `platform` varchar(100) NOT NULL,
-  `identifier` int,
+  `isPublic` bool NOT NULL,
+  `portrait` varchar(100) NOT NULL,
   PRIMARY KEY (`id`)
 );
 

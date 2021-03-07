@@ -1,5 +1,5 @@
 enum Platform{
-  PC
+  PC 
   NINTENDO
   XBOX
   PLAYSTATION
@@ -11,21 +11,30 @@ enum Role{
   SUPPORT
 }
 
-
 # Battletag schemas
 type Battletag {
   id: Int!
   userId: Int!
-  battletag: String!
+  name: String!
+  urlName: String!
+  blizzId: Int!
+  level: Int!
+  playerLevel: Int!
   platform: Platform!
-  identifier: Int
+  isPublic: Boolean,
+  portrait: String!,
 }
 
 input InputBattletag {
   userId: Int!
-  battletag: String!
+  name: String!
+  urlName: String!
+  blizzId: Int!
+  level: Int!
+  playerLevel: Int!
   platform: Platform!
-  identifier: Int
+  isPublic: Boolean,
+  portrait: String!,
 }
 
 interface MutateItemPayload {
@@ -84,4 +93,5 @@ type Mutation {
   deleteSession(input: Int!): MutateItemPayload!
   createGame(input: InputGame!): Game!
   deleteGame(input: Int!): MutateItemPayload!
+  searchBattletags(input: String!): [Battletag]! 
 }

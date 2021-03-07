@@ -25,8 +25,10 @@ func SelectAllSessions() ([]*model.Session, error) {
 	defer res.Close()
 
 	for res.Next() {
-		var id, userId int
-		var roleType model.Role
+		var (
+			id, userId int
+			roleType   model.Role
+		)
 
 		err = res.Scan(&id, &userId, &roleType)
 

@@ -16,7 +16,7 @@ func SelectAllBattletags() ([]*model.Battletag, error) {
 
 	var data []*model.Battletag
 
-	res, err := db.Query("SELECT * FROM battletag")
+	res, err := db.Query("SELECT * FROM battletag where ")
 
 	if err != nil {
 		panic(err.Error())
@@ -25,14 +25,38 @@ func SelectAllBattletags() ([]*model.Battletag, error) {
 	defer res.Close()
 
 	for res.Next() {
-		var ID, userID int
-		var identifier *int
-		var battletag string
-		var platform model.Platform
+		var (
+			id, userId, blizzId, level, playerLevel int
+			isPublic bool
+			name, urlName, portrait  string 
+			platform   model.Platform
+		)
 
-		err = res.Scan(&ID, &userID, &battletag, &platform,  &identifier)
+		err = res.Scan(
+			&id,
+			&userId,
+			&name,
+			&urlName,
+			&blizzId,
+			&level,
+			&playerLevel,
+			&isPublic,
+			&platform,
+			&portrait,
+		)
 
-		b := model.Battletag{ID: ID, Battletag: battletag, UserID: userID, Identifier: identifier, Platform: platform}
+		b := model.Battletag{
+			ID: id,
+			UserID: userId,
+			Name: name,
+			URLName: urlName,
+			BlizzID: blizzId,
+			Level: level,
+			PlayerLevel: playerLevel,
+			IsPublic: &isPublic,
+			Platform: platform,
+			Portrait: portrait,
+		}
 
 		data = append(data, &b)
 	}
