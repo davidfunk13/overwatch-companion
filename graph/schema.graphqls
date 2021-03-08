@@ -12,9 +12,9 @@ enum Role{
 }
 
 enum MatchOutcome{
-  LOSS = 0
-  WIN = 1
-  DRAW = 2
+  LOSS
+  WIN 
+  DRAW
 }
 
 enum Location{
@@ -98,9 +98,23 @@ type Session {
   id: Int!
   userId: Int!
   battletagId: Int!
+  starting_sr_tank: Int!
+  sr_tank: Int!
+  starting_sr_damage: Int!
+  sr_damage: Int!
+  starting_sr_support: Int!
+  sr_support: Int!
 }
 
 input InputSession {
+  userId: Int!
+  battletagId: Int!
+  starting_sr_tank: Int
+  starting_sr_damage: Int
+  starting_sr_support: Int
+}
+
+input InputGetSessions {
   userId: Int!
   battletagId: Int!
 }
@@ -111,28 +125,54 @@ type Game {
   userId: Int!
   battletagId: Int!
   sessonId: Int!
-  location:
+  location: Location!
   role: Role!
   sr_in: Int!
   sr_out: Int!
-  match_outcome: MatchOutcome 
+  match_outcome: MatchOutcome!
 }
 
 input InputGame {
   userId: Int!
   battletagId: Int!
-  sessionId: Int!
+  sessonId: Int!
+  location: Location!
   role: Role!
   sr_in: Int!
   sr_out: Int!
+  match_outcome: MatchOutcome!
+}
 
+input InputGetGames {
+  userId: Int!
+  battletagId: Int!
+  sessionId: Int!
+}
+
+interface GetGames {
+  userId: Int!
+  battletagId: Int!
+  sessionId: Int!
+}
+
+type GetAllGames implements GetGames {
+  userId: Int!
+  battletagId: Int!
+  sessionId: Int!
+}
+
+type GetRoleGames implements GetGames {
+  userId: Int!
+  battletagId: Int!
+  sessionId: Int!
+  role: Role
 }
 
 # Queries 
 type Query {
   battletags(input: Int!): [Battletag!]!
-  sessions(input:InputSession): [Session!]!
-  games: [Game!]!
+  sessions(input: InputGetSessions): [Session!]!
+  games(input: InputGetGames): [Game!]!
 }
 
 # Mutations

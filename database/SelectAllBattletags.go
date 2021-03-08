@@ -27,9 +27,9 @@ func SelectAllBattletags(uId int) ([]*model.Battletag, error) {
 	for res.Next() {
 		var (
 			id, userId, blizzId, level, playerLevel int
-			isPublic bool
-			name, urlName, portrait  string 
-			platform   model.Platform
+			isPublic                                bool
+			name, urlName, portrait                 string
+			platform                                model.Platform
 		)
 
 		err = res.Scan(
@@ -46,16 +46,16 @@ func SelectAllBattletags(uId int) ([]*model.Battletag, error) {
 		)
 
 		b := model.Battletag{
-			ID: id,
-			UserID: userId,
-			Name: name,
-			URLName: urlName,
-			BlizzID: blizzId,
-			Level: level,
+			ID:          id,
+			UserID:      userId,
+			Name:        name,
+			URLName:     urlName,
+			BlizzID:     blizzId,
+			Level:       level,
 			PlayerLevel: playerLevel,
-			Platform: platform,
-			IsPublic: &isPublic,
-			Portrait: portrait,
+			Platform:    platform,
+			IsPublic:    &isPublic,
+			Portrait:    portrait,
 		}
 
 		data = append(data, &b)

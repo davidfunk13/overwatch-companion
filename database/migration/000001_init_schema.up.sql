@@ -16,6 +16,12 @@ CREATE TABLE `session` (
   `id` int NOT NULL AUTO_INCREMENT,
   `userId` int NOT NULL,
   `battletagId` int NOT NULL,
+  `starting_sr_tank` int DEFAULT 0,
+  `sr_tank` int DEFAULT 0,
+  `starting_sr_damage` int DEFAULT 0,
+  `sr_damage` int DEFAULT 0,
+  `starting_sr_support` int DEFAULT 0,
+  `sr_support` int DEFAULT 0,
   PRIMARY KEY (`id`)
 );
 

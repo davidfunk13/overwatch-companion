@@ -25,13 +25,31 @@ func SelectAllSessions(uid int, bid int) ([]*model.Session, error) {
 	defer res.Close()
 
 	for res.Next() {
-		var (
-			id, userId, battletagId int
+		var id, userId, battletagId, starting_sr_tank, sr_tank, starting_sr_damage, sr_damage, starting_sr_support, sr_support int
+
+		err = res.Scan(
+			&id,
+			&userId,
+			&battletagId,
+			&starting_sr_tank,
+			&sr_tank,
+			&starting_sr_damage,
+			&sr_damage,
+			&starting_sr_support,
+			&sr_support,
 		)
 
-		err = res.Scan(&id, &userId, &battletagId)
-
-		s := model.Session{ID: id, UserID: userId, BattletagID: battletagId}
+		s := model.Session{
+			ID:                id,
+			UserID:            userId,
+			BattletagID:       battletagId,
+			StartingSrTank:    starting_sr_tank,
+			SrTank:            sr_tank,
+			StartingSrDamage:  starting_sr_damage,
+			SrDamage:          sr_damage,
+			StartingSrSupport: starting_sr_support,
+			SrSupport:         sr_support,
+		}
 
 		data = append(data, &s)
 	}

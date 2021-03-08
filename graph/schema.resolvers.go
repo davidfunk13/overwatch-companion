@@ -78,7 +78,7 @@ func (r *queryResolver) Battletags(ctx context.Context, input int) ([]*model.Bat
 	return battletags, nil
 }
 
-func (r *queryResolver) Sessions(ctx context.Context, input *model.InputSession) ([]*model.Session, error) {
+func (r *queryResolver) Sessions(ctx context.Context, input *model.InputGetSessions) ([]*model.Session, error) {
 	sessions, err := database.SelectAllSessions(input.UserID, input.BattletagID)
 
 	if err != nil {
@@ -88,7 +88,7 @@ func (r *queryResolver) Sessions(ctx context.Context, input *model.InputSession)
 	return sessions, nil
 }
 
-func (r *queryResolver) Games(ctx context.Context) ([]*model.Game, error) {
+func (r *queryResolver) Games(ctx context.Context, input *model.InputGetGames) ([]*model.Game, error) {
 	games, err := database.SelectAllGames()
 
 	if err != nil {

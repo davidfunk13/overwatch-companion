@@ -69,9 +69,28 @@ type ComplexityRoot struct {
 	}
 
 	Game struct {
-		ID       func(childComplexity int) int
-		SessonID func(childComplexity int) int
-		UserID   func(childComplexity int) int
+		BattletagID  func(childComplexity int) int
+		ID           func(childComplexity int) int
+		Location     func(childComplexity int) int
+		MatchOutcome func(childComplexity int) int
+		Role         func(childComplexity int) int
+		SessonID     func(childComplexity int) int
+		SrIn         func(childComplexity int) int
+		SrOut        func(childComplexity int) int
+		UserID       func(childComplexity int) int
+	}
+
+	GetAllGames struct {
+		BattletagID func(childComplexity int) int
+		SessionID   func(childComplexity int) int
+		UserID      func(childComplexity int) int
+	}
+
+	GetRoleGames struct {
+		BattletagID func(childComplexity int) int
+		Role        func(childComplexity int) int
+		SessionID   func(childComplexity int) int
+		UserID      func(childComplexity int) int
 	}
 
 	MutateItemPayloadFailure struct {
@@ -97,14 +116,20 @@ type ComplexityRoot struct {
 
 	Query struct {
 		Battletags func(childComplexity int, input int) int
-		Games      func(childComplexity int) int
-		Sessions   func(childComplexity int, input *model.InputSession) int
+		Games      func(childComplexity int, input *model.InputGetGames) int
+		Sessions   func(childComplexity int, input *model.InputGetSessions) int
 	}
 
 	Session struct {
-		BattletagID func(childComplexity int) int
-		ID          func(childComplexity int) int
-		UserID      func(childComplexity int) int
+		BattletagID       func(childComplexity int) int
+		ID                func(childComplexity int) int
+		SrDamage          func(childComplexity int) int
+		SrSupport         func(childComplexity int) int
+		SrTank            func(childComplexity int) int
+		StartingSrDamage  func(childComplexity int) int
+		StartingSrSupport func(childComplexity int) int
+		StartingSrTank    func(childComplexity int) int
+		UserID            func(childComplexity int) int
 	}
 }
 
@@ -118,8 +143,8 @@ type MutationResolver interface {
 }
 type QueryResolver interface {
 	Battletags(ctx context.Context, input int) ([]*model.Battletag, error)
-	Sessions(ctx context.Context, input *model.InputSession) ([]*model.Session, error)
-	Games(ctx context.Context) ([]*model.Game, error)
+	Sessions(ctx context.Context, input *model.InputGetSessions) ([]*model.Session, error)
+	Games(ctx context.Context, input *model.InputGetGames) ([]*model.Game, error)
 }
 
 type executableSchema struct {
@@ -263,12 +288,40 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.BlizzBattletag.URLName(childComplexity), true
 
+	case "Game.battletagId":
+		if e.complexity.Game.BattletagID == nil {
+			break
+		}
+
+		return e.complexity.Game.BattletagID(childComplexity), true
+
 	case "Game.id":
 		if e.complexity.Game.ID == nil {
 			break
 		}
 
 		return e.complexity.Game.ID(childComplexity), true
+
+	case "Game.location":
+		if e.complexity.Game.Location == nil {
+			break
+		}
+
+		return e.complexity.Game.Location(childComplexity), true
+
+	case "Game.match_outcome":
+		if e.complexity.Game.MatchOutcome == nil {
+			break
+		}
+
+		return e.complexity.Game.MatchOutcome(childComplexity), true
+
+	case "Game.role":
+		if e.complexity.Game.Role == nil {
+			break
+		}
+
+		return e.complexity.Game.Role(childComplexity), true
 
 	case "Game.sessonId":
 		if e.complexity.Game.SessonID == nil {
@@ -277,12 +330,75 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Game.SessonID(childComplexity), true
 
+	case "Game.sr_in":
+		if e.complexity.Game.SrIn == nil {
+			break
+		}
+
+		return e.complexity.Game.SrIn(childComplexity), true
+
+	case "Game.sr_out":
+		if e.complexity.Game.SrOut == nil {
+			break
+		}
+
+		return e.complexity.Game.SrOut(childComplexity), true
+
 	case "Game.userId":
 		if e.complexity.Game.UserID == nil {
 			break
 		}
 
 		return e.complexity.Game.UserID(childComplexity), true
+
+	case "GetAllGames.battletagId":
+		if e.complexity.GetAllGames.BattletagID == nil {
+			break
+		}
+
+		return e.complexity.GetAllGames.BattletagID(childComplexity), true
+
+	case "GetAllGames.sessionId":
+		if e.complexity.GetAllGames.SessionID == nil {
+			break
+		}
+
+		return e.complexity.GetAllGames.SessionID(childComplexity), true
+
+	case "GetAllGames.userId":
+		if e.complexity.GetAllGames.UserID == nil {
+			break
+		}
+
+		return e.complexity.GetAllGames.UserID(childComplexity), true
+
+	case "GetRoleGames.battletagId":
+		if e.complexity.GetRoleGames.BattletagID == nil {
+			break
+		}
+
+		return e.complexity.GetRoleGames.BattletagID(childComplexity), true
+
+	case "GetRoleGames.role":
+		if e.complexity.GetRoleGames.Role == nil {
+			break
+		}
+
+		return e.complexity.GetRoleGames.Role(childComplexity), true
+
+	case "GetRoleGames.sessionId":
+		if e.complexity.GetRoleGames.SessionID == nil {
+			break
+		}
+
+		return e.complexity.GetRoleGames.SessionID(childComplexity), true
+
+	case "GetRoleGames.userId":
+		if e.complexity.GetRoleGames.UserID == nil {
+			break
+		}
+
+		return e.complexity.GetRoleGames.UserID(childComplexity), true
 
 	case "MutateItemPayloadFailure.error":
 		if e.complexity.MutateItemPayloadFailure.Error == nil {
@@ -415,7 +531,12 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			break
 		}
 
-		return e.complexity.Query.Games(childComplexity), true
+		args, err := ec.field_Query_games_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.Games(childComplexity, args["input"].(*model.InputGetGames)), true
 
 	case "Query.sessions":
 		if e.complexity.Query.Sessions == nil {
@@ -427,7 +548,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Query.Sessions(childComplexity, args["input"].(*model.InputSession)), true
+		return e.complexity.Query.Sessions(childComplexity, args["input"].(*model.InputGetSessions)), true
 
 	case "Session.battletagId":
 		if e.complexity.Session.BattletagID == nil {
@@ -442,6 +563,48 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Session.ID(childComplexity), true
+
+	case "Session.sr_damage":
+		if e.complexity.Session.SrDamage == nil {
+			break
+		}
+
+		return e.complexity.Session.SrDamage(childComplexity), true
+
+	case "Session.sr_support":
+		if e.complexity.Session.SrSupport == nil {
+			break
+		}
+
+		return e.complexity.Session.SrSupport(childComplexity), true
+
+	case "Session.sr_tank":
+		if e.complexity.Session.SrTank == nil {
+			break
+		}
+
+		return e.complexity.Session.SrTank(childComplexity), true
+
+	case "Session.starting_sr_damage":
+		if e.complexity.Session.StartingSrDamage == nil {
+			break
+		}
+
+		return e.complexity.Session.StartingSrDamage(childComplexity), true
+
+	case "Session.starting_sr_support":
+		if e.complexity.Session.StartingSrSupport == nil {
+			break
+		}
+
+		return e.complexity.Session.StartingSrSupport(childComplexity), true
+
+	case "Session.starting_sr_tank":
+		if e.complexity.Session.StartingSrTank == nil {
+			break
+		}
+
+		return e.complexity.Session.StartingSrTank(childComplexity), true
 
 	case "Session.userId":
 		if e.complexity.Session.UserID == nil {
@@ -527,6 +690,34 @@ enum Role{
   SUPPORT
 }
 
+enum MatchOutcome{
+  LOSS
+  WIN 
+  DRAW
+}
+
+enum Location{
+  BUSAN
+  ILIOS
+  LIJIANGTOWER
+  NEPAL
+  OASIS
+  HANAMURA
+  TEMPLEOFANUBIS
+  VOLSKAYAINDUSTRIES
+  DORADO
+  HAVANA
+  JUNKERTOWN
+  RIALTO
+  ROUTE66
+  WATCHPOINTGIBRALTAR
+  BLIZZARDWORLD
+  EICHENWALDE
+  HOLLYWOOD
+  KINGSROW
+  NUMBANI
+}
+
 # Battletag schemas
 type Battletag {
   id: Int!
@@ -586,9 +777,23 @@ type Session {
   id: Int!
   userId: Int!
   battletagId: Int!
+  starting_sr_tank: Int!
+  sr_tank: Int!
+  starting_sr_damage: Int!
+  sr_damage: Int!
+  starting_sr_support: Int!
+  sr_support: Int!
 }
 
 input InputSession {
+  userId: Int!
+  battletagId: Int!
+  starting_sr_tank: Int
+  starting_sr_damage: Int
+  starting_sr_support: Int
+}
+
+input InputGetSessions {
   userId: Int!
   battletagId: Int!
 }
@@ -597,19 +802,56 @@ input InputSession {
 type Game {
   id: Int!
   userId: Int!
+  battletagId: Int!
   sessonId: Int!
+  location: Location!
+  role: Role!
+  sr_in: Int!
+  sr_out: Int!
+  match_outcome: MatchOutcome!
 }
 
 input InputGame {
   userId: Int!
+  battletagId: Int!
+  sessonId: Int!
+  location: Location!
+  role: Role!
+  sr_in: Int!
+  sr_out: Int!
+  match_outcome: MatchOutcome!
+}
+
+input InputGetGames {
+  userId: Int!
+  battletagId: Int!
   sessionId: Int!
+}
+
+interface GetGames {
+  userId: Int!
+  battletagId: Int!
+  sessionId: Int!
+}
+
+type GetAllGames implements GetGames {
+  userId: Int!
+  battletagId: Int!
+  sessionId: Int!
+}
+
+type GetRoleGames implements GetGames {
+  userId: Int!
+  battletagId: Int!
+  sessionId: Int!
+  role: Role
 }
 
 # Queries 
 type Query {
   battletags(input: Int!): [Battletag!]!
-  sessions(input:InputSession): [Session!]!
-  games: [Game!]!
+  sessions(input: InputGetSessions): [Session!]!
+  games(input: InputGetGames): [Game!]!
 }
 
 # Mutations
@@ -748,13 +990,28 @@ func (ec *executionContext) field_Query_battletags_args(ctx context.Context, raw
 	return args, nil
 }
 
+func (ec *executionContext) field_Query_games_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 *model.InputGetGames
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalOInputGetGames2ᚖgithubᚗcomᚋdavidfunk13ᚋoverwatchᚑcompanionᚋgraphᚋmodelᚐInputGetGames(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
 func (ec *executionContext) field_Query_sessions_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 *model.InputSession
+	var arg0 *model.InputGetSessions
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalOInputSession2ᚖgithubᚗcomᚋdavidfunk13ᚋoverwatchᚑcompanionᚋgraphᚋmodelᚐInputSession(ctx, tmp)
+		arg0, err = ec.unmarshalOInputGetSessions2ᚖgithubᚗcomᚋdavidfunk13ᚋoverwatchᚑcompanionᚋgraphᚋmodelᚐInputGetSessions(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -1498,6 +1755,41 @@ func (ec *executionContext) _Game_userId(ctx context.Context, field graphql.Coll
 	return ec.marshalNInt2int(ctx, field.Selections, res)
 }
 
+func (ec *executionContext) _Game_battletagId(ctx context.Context, field graphql.CollectedField, obj *model.Game) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Game",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.BattletagID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
 func (ec *executionContext) _Game_sessonId(ctx context.Context, field graphql.CollectedField, obj *model.Game) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -1531,6 +1823,423 @@ func (ec *executionContext) _Game_sessonId(ctx context.Context, field graphql.Co
 	res := resTmp.(int)
 	fc.Result = res
 	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Game_location(ctx context.Context, field graphql.CollectedField, obj *model.Game) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Game",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Location, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(model.Location)
+	fc.Result = res
+	return ec.marshalNLocation2githubᚗcomᚋdavidfunk13ᚋoverwatchᚑcompanionᚋgraphᚋmodelᚐLocation(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Game_role(ctx context.Context, field graphql.CollectedField, obj *model.Game) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Game",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Role, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(model.Role)
+	fc.Result = res
+	return ec.marshalNRole2githubᚗcomᚋdavidfunk13ᚋoverwatchᚑcompanionᚋgraphᚋmodelᚐRole(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Game_sr_in(ctx context.Context, field graphql.CollectedField, obj *model.Game) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Game",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.SrIn, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Game_sr_out(ctx context.Context, field graphql.CollectedField, obj *model.Game) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Game",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.SrOut, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Game_match_outcome(ctx context.Context, field graphql.CollectedField, obj *model.Game) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Game",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.MatchOutcome, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(model.MatchOutcome)
+	fc.Result = res
+	return ec.marshalNMatchOutcome2githubᚗcomᚋdavidfunk13ᚋoverwatchᚑcompanionᚋgraphᚋmodelᚐMatchOutcome(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _GetAllGames_userId(ctx context.Context, field graphql.CollectedField, obj *model.GetAllGames) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "GetAllGames",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.UserID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _GetAllGames_battletagId(ctx context.Context, field graphql.CollectedField, obj *model.GetAllGames) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "GetAllGames",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.BattletagID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _GetAllGames_sessionId(ctx context.Context, field graphql.CollectedField, obj *model.GetAllGames) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "GetAllGames",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.SessionID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _GetRoleGames_userId(ctx context.Context, field graphql.CollectedField, obj *model.GetRoleGames) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "GetRoleGames",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.UserID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _GetRoleGames_battletagId(ctx context.Context, field graphql.CollectedField, obj *model.GetRoleGames) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "GetRoleGames",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.BattletagID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _GetRoleGames_sessionId(ctx context.Context, field graphql.CollectedField, obj *model.GetRoleGames) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "GetRoleGames",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.SessionID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _GetRoleGames_role(ctx context.Context, field graphql.CollectedField, obj *model.GetRoleGames) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "GetRoleGames",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Role, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*model.Role)
+	fc.Result = res
+	return ec.marshalORole2ᚖgithubᚗcomᚋdavidfunk13ᚋoverwatchᚑcompanionᚋgraphᚋmodelᚐRole(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _MutateItemPayloadFailure_id(ctx context.Context, field graphql.CollectedField, obj *model.MutateItemPayloadFailure) (ret graphql.Marshaler) {
@@ -2062,7 +2771,7 @@ func (ec *executionContext) _Query_sessions(ctx context.Context, field graphql.C
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().Sessions(rctx, args["input"].(*model.InputSession))
+		return ec.resolvers.Query().Sessions(rctx, args["input"].(*model.InputGetSessions))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -2095,9 +2804,16 @@ func (ec *executionContext) _Query_games(ctx context.Context, field graphql.Coll
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Query_games_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().Games(rctx)
+		return ec.resolvers.Query().Games(rctx, args["input"].(*model.InputGetGames))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -2274,6 +2990,216 @@ func (ec *executionContext) _Session_battletagId(ctx context.Context, field grap
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.BattletagID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Session_starting_sr_tank(ctx context.Context, field graphql.CollectedField, obj *model.Session) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Session",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.StartingSrTank, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Session_sr_tank(ctx context.Context, field graphql.CollectedField, obj *model.Session) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Session",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.SrTank, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Session_starting_sr_damage(ctx context.Context, field graphql.CollectedField, obj *model.Session) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Session",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.StartingSrDamage, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Session_sr_damage(ctx context.Context, field graphql.CollectedField, obj *model.Session) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Session",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.SrDamage, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Session_starting_sr_support(ctx context.Context, field graphql.CollectedField, obj *model.Session) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Session",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.StartingSrSupport, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Session_sr_support(ctx context.Context, field graphql.CollectedField, obj *model.Session) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Session",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.SrSupport, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -3475,11 +4401,123 @@ func (ec *executionContext) unmarshalInputInputGame(ctx context.Context, obj int
 			if err != nil {
 				return it, err
 			}
+		case "battletagId":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("battletagId"))
+			it.BattletagID, err = ec.unmarshalNInt2int(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "sessonId":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("sessonId"))
+			it.SessonID, err = ec.unmarshalNInt2int(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "location":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("location"))
+			it.Location, err = ec.unmarshalNLocation2githubᚗcomᚋdavidfunk13ᚋoverwatchᚑcompanionᚋgraphᚋmodelᚐLocation(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "role":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("role"))
+			it.Role, err = ec.unmarshalNRole2githubᚗcomᚋdavidfunk13ᚋoverwatchᚑcompanionᚋgraphᚋmodelᚐRole(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "sr_in":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("sr_in"))
+			it.SrIn, err = ec.unmarshalNInt2int(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "sr_out":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("sr_out"))
+			it.SrOut, err = ec.unmarshalNInt2int(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "match_outcome":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("match_outcome"))
+			it.MatchOutcome, err = ec.unmarshalNMatchOutcome2githubᚗcomᚋdavidfunk13ᚋoverwatchᚑcompanionᚋgraphᚋmodelᚐMatchOutcome(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputInputGetGames(ctx context.Context, obj interface{}) (model.InputGetGames, error) {
+	var it model.InputGetGames
+	var asMap = obj.(map[string]interface{})
+
+	for k, v := range asMap {
+		switch k {
+		case "userId":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("userId"))
+			it.UserID, err = ec.unmarshalNInt2int(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "battletagId":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("battletagId"))
+			it.BattletagID, err = ec.unmarshalNInt2int(ctx, v)
+			if err != nil {
+				return it, err
+			}
 		case "sessionId":
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("sessionId"))
 			it.SessionID, err = ec.unmarshalNInt2int(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputInputGetSessions(ctx context.Context, obj interface{}) (model.InputGetSessions, error) {
+	var it model.InputGetSessions
+	var asMap = obj.(map[string]interface{})
+
+	for k, v := range asMap {
+		switch k {
+		case "userId":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("userId"))
+			it.UserID, err = ec.unmarshalNInt2int(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "battletagId":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("battletagId"))
+			it.BattletagID, err = ec.unmarshalNInt2int(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -3511,6 +4549,30 @@ func (ec *executionContext) unmarshalInputInputSession(ctx context.Context, obj 
 			if err != nil {
 				return it, err
 			}
+		case "starting_sr_tank":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("starting_sr_tank"))
+			it.StartingSrTank, err = ec.unmarshalOInt2ᚖint(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "starting_sr_damage":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("starting_sr_damage"))
+			it.StartingSrDamage, err = ec.unmarshalOInt2ᚖint(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "starting_sr_support":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("starting_sr_support"))
+			it.StartingSrSupport, err = ec.unmarshalOInt2ᚖint(ctx, v)
+			if err != nil {
+				return it, err
+			}
 		}
 	}
 
@@ -3520,6 +4582,29 @@ func (ec *executionContext) unmarshalInputInputSession(ctx context.Context, obj 
 // endregion **************************** input.gotpl *****************************
 
 // region    ************************** interface.gotpl ***************************
+
+func (ec *executionContext) _GetGames(ctx context.Context, sel ast.SelectionSet, obj model.GetGames) graphql.Marshaler {
+	switch obj := (obj).(type) {
+	case nil:
+		return graphql.Null
+	case model.GetAllGames:
+		return ec._GetAllGames(ctx, sel, &obj)
+	case *model.GetAllGames:
+		if obj == nil {
+			return graphql.Null
+		}
+		return ec._GetAllGames(ctx, sel, obj)
+	case model.GetRoleGames:
+		return ec._GetRoleGames(ctx, sel, &obj)
+	case *model.GetRoleGames:
+		if obj == nil {
+			return graphql.Null
+		}
+		return ec._GetRoleGames(ctx, sel, obj)
+	default:
+		panic(fmt.Errorf("unexpected type %T", obj))
+	}
+}
 
 func (ec *executionContext) _MutateItemPayload(ctx context.Context, sel ast.SelectionSet, obj model.MutateItemPayload) graphql.Marshaler {
 	switch obj := (obj).(type) {
@@ -3700,11 +4785,117 @@ func (ec *executionContext) _Game(ctx context.Context, sel ast.SelectionSet, obj
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
+		case "battletagId":
+			out.Values[i] = ec._Game_battletagId(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
 		case "sessonId":
 			out.Values[i] = ec._Game_sessonId(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
+		case "location":
+			out.Values[i] = ec._Game_location(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "role":
+			out.Values[i] = ec._Game_role(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "sr_in":
+			out.Values[i] = ec._Game_sr_in(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "sr_out":
+			out.Values[i] = ec._Game_sr_out(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "match_outcome":
+			out.Values[i] = ec._Game_match_outcome(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var getAllGamesImplementors = []string{"GetAllGames", "GetGames"}
+
+func (ec *executionContext) _GetAllGames(ctx context.Context, sel ast.SelectionSet, obj *model.GetAllGames) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, getAllGamesImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("GetAllGames")
+		case "userId":
+			out.Values[i] = ec._GetAllGames_userId(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "battletagId":
+			out.Values[i] = ec._GetAllGames_battletagId(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "sessionId":
+			out.Values[i] = ec._GetAllGames_sessionId(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var getRoleGamesImplementors = []string{"GetRoleGames", "GetGames"}
+
+func (ec *executionContext) _GetRoleGames(ctx context.Context, sel ast.SelectionSet, obj *model.GetRoleGames) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, getRoleGamesImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("GetRoleGames")
+		case "userId":
+			out.Values[i] = ec._GetRoleGames_userId(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "battletagId":
+			out.Values[i] = ec._GetRoleGames_battletagId(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "sessionId":
+			out.Values[i] = ec._GetRoleGames_sessionId(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "role":
+			out.Values[i] = ec._GetRoleGames_role(ctx, field, obj)
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -3941,6 +5132,36 @@ func (ec *executionContext) _Session(ctx context.Context, sel ast.SelectionSet, 
 			}
 		case "battletagId":
 			out.Values[i] = ec._Session_battletagId(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "starting_sr_tank":
+			out.Values[i] = ec._Session_starting_sr_tank(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "sr_tank":
+			out.Values[i] = ec._Session_sr_tank(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "starting_sr_damage":
+			out.Values[i] = ec._Session_starting_sr_damage(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "sr_damage":
+			out.Values[i] = ec._Session_sr_damage(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "starting_sr_support":
+			out.Values[i] = ec._Session_starting_sr_support(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "sr_support":
+			out.Values[i] = ec._Session_sr_support(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
@@ -4347,6 +5568,26 @@ func (ec *executionContext) marshalNInt2int(ctx context.Context, sel ast.Selecti
 	return res
 }
 
+func (ec *executionContext) unmarshalNLocation2githubᚗcomᚋdavidfunk13ᚋoverwatchᚑcompanionᚋgraphᚋmodelᚐLocation(ctx context.Context, v interface{}) (model.Location, error) {
+	var res model.Location
+	err := res.UnmarshalGQL(v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNLocation2githubᚗcomᚋdavidfunk13ᚋoverwatchᚑcompanionᚋgraphᚋmodelᚐLocation(ctx context.Context, sel ast.SelectionSet, v model.Location) graphql.Marshaler {
+	return v
+}
+
+func (ec *executionContext) unmarshalNMatchOutcome2githubᚗcomᚋdavidfunk13ᚋoverwatchᚑcompanionᚋgraphᚋmodelᚐMatchOutcome(ctx context.Context, v interface{}) (model.MatchOutcome, error) {
+	var res model.MatchOutcome
+	err := res.UnmarshalGQL(v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNMatchOutcome2githubᚗcomᚋdavidfunk13ᚋoverwatchᚑcompanionᚋgraphᚋmodelᚐMatchOutcome(ctx context.Context, sel ast.SelectionSet, v model.MatchOutcome) graphql.Marshaler {
+	return v
+}
+
 func (ec *executionContext) marshalNMutateItemPayload2githubᚗcomᚋdavidfunk13ᚋoverwatchᚑcompanionᚋgraphᚋmodelᚐMutateItemPayload(ctx context.Context, sel ast.SelectionSet, v model.MutateItemPayload) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
@@ -4364,6 +5605,16 @@ func (ec *executionContext) unmarshalNPlatform2githubᚗcomᚋdavidfunk13ᚋover
 }
 
 func (ec *executionContext) marshalNPlatform2githubᚗcomᚋdavidfunk13ᚋoverwatchᚑcompanionᚋgraphᚋmodelᚐPlatform(ctx context.Context, sel ast.SelectionSet, v model.Platform) graphql.Marshaler {
+	return v
+}
+
+func (ec *executionContext) unmarshalNRole2githubᚗcomᚋdavidfunk13ᚋoverwatchᚑcompanionᚋgraphᚋmodelᚐRole(ctx context.Context, v interface{}) (model.Role, error) {
+	var res model.Role
+	err := res.UnmarshalGQL(v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNRole2githubᚗcomᚋdavidfunk13ᚋoverwatchᚑcompanionᚋgraphᚋmodelᚐRole(ctx context.Context, sel ast.SelectionSet, v model.Role) graphql.Marshaler {
 	return v
 }
 
@@ -4686,12 +5937,51 @@ func (ec *executionContext) marshalOBoolean2ᚖbool(ctx context.Context, sel ast
 	return graphql.MarshalBoolean(*v)
 }
 
-func (ec *executionContext) unmarshalOInputSession2ᚖgithubᚗcomᚋdavidfunk13ᚋoverwatchᚑcompanionᚋgraphᚋmodelᚐInputSession(ctx context.Context, v interface{}) (*model.InputSession, error) {
+func (ec *executionContext) unmarshalOInputGetGames2ᚖgithubᚗcomᚋdavidfunk13ᚋoverwatchᚑcompanionᚋgraphᚋmodelᚐInputGetGames(ctx context.Context, v interface{}) (*model.InputGetGames, error) {
 	if v == nil {
 		return nil, nil
 	}
-	res, err := ec.unmarshalInputInputSession(ctx, v)
+	res, err := ec.unmarshalInputInputGetGames(ctx, v)
 	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalOInputGetSessions2ᚖgithubᚗcomᚋdavidfunk13ᚋoverwatchᚑcompanionᚋgraphᚋmodelᚐInputGetSessions(ctx context.Context, v interface{}) (*model.InputGetSessions, error) {
+	if v == nil {
+		return nil, nil
+	}
+	res, err := ec.unmarshalInputInputGetSessions(ctx, v)
+	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalOInt2ᚖint(ctx context.Context, v interface{}) (*int, error) {
+	if v == nil {
+		return nil, nil
+	}
+	res, err := graphql.UnmarshalInt(v)
+	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalOInt2ᚖint(ctx context.Context, sel ast.SelectionSet, v *int) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return graphql.MarshalInt(*v)
+}
+
+func (ec *executionContext) unmarshalORole2ᚖgithubᚗcomᚋdavidfunk13ᚋoverwatchᚑcompanionᚋgraphᚋmodelᚐRole(ctx context.Context, v interface{}) (*model.Role, error) {
+	if v == nil {
+		return nil, nil
+	}
+	var res = new(model.Role)
+	err := res.UnmarshalGQL(v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalORole2ᚖgithubᚗcomᚋdavidfunk13ᚋoverwatchᚑcompanionᚋgraphᚋmodelᚐRole(ctx context.Context, sel ast.SelectionSet, v *model.Role) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return v
 }
 
 func (ec *executionContext) unmarshalOString2string(ctx context.Context, v interface{}) (string, error) {

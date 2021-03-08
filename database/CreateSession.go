@@ -17,17 +17,39 @@ func CreateSession(input model.InputSession) model.Session {
 	defer db.Close()
 
 	sessionInput := model.InputSession{
-		UserID:   input.UserID,
-		BattletagID: input.BattletagID,
+		UserID:            input.UserID,
+		BattletagID:       input.BattletagID,
+		StartingSrTank:    input.StartingSrTank,
+		StartingSrDamage:  input.StartingSrDamage,
+		StartingSrSupport: input.StartingSrSupport,
 	}
+	qstr := `INSERT INTO session (
+		userId,
+		battletagId,
+		starting_sr_tank,
+		sr_tank,
+		starting_sr_damage,
+		sr_damage, 
+		starting_sr_support,
+		sr_support
+	 ) VALUES (?, ?, ?, ?, ?, ?, ?, ?);`
 
-	statement, err := db.Prepare(`INSERT INTO session (userId, battletagId) VALUES (?, ?);`)
+	statement, err := db.Prepare(qstr)
 
 	if err != nil {
 		panic(err.Error())
 	}
 
-	res, err := statement.Exec(sessionInput.UserID, sessionInput.BattletagID)
+	res, err := statement.Exec(
+		sessionInput.UserID,
+		sessionInput.BattletagID,
+		sessionInput.StartingSrTank,
+		sessionInput.StartingSrTank,
+		sessionInput.StartingSrDamage,
+		sessionInput.StartingSrDamage,
+		sessionInput.StartingSrSupport,
+		sessionInput.StartingSrSupport,
+	)
 
 	if err != nil {
 		panic(err.Error())
@@ -44,14 +66,31 @@ func CreateSession(input model.InputSession) model.Session {
 	lastInserted := db.QueryRow(`Select * from session where id=?;`, lastInsertedID)
 
 	var (
-		id, userId, battletagId int
+		id, userId, battletagId, starting_sr_tank, sr_tank, starting_sr_damage, sr_damage, starting_sr_support, sr_support int
 	)
-	err = lastInserted.Scan(&id, &userId, &battletagId)
+
+	err = lastInserted.Scan(
+		&id,
+		&userId,
+		&battletagId,
+		&starting_sr_tank,
+		&sr_tank,
+		&starting_sr_damage,
+		&sr_damage,
+		&starting_sr_support,
+		&sr_support,
+	)
 
 	insertedSession := model.Session{
-		ID:       id,
-		UserID:   id,
-		BattletagID: battletagId,
+		ID:                id,
+		UserID:            userId,
+		BattletagID:       battletagId,
+		StartingSrTank:    starting_sr_tank,
+		SrTank:            sr_tank,
+		StartingSrDamage:  starting_sr_damage,
+		SrDamage:          sr_damage,
+		StartingSrSupport: starting_sr_support,
+		SrSupport:         sr_support,
 	}
 
 	return insertedSession

@@ -17,18 +17,37 @@ func CreateBattletag(input model.InputBattletag) *model.Battletag {
 	defer db.Close()
 
 	battletagInput := &model.InputBattletag{
-		UserID:     input.UserID,
-		Name:  input.Name,
-		URLName:   input.URLName,
-		BlizzID: input.BlizzID,
-		Level: input.Level,
+		UserID:      input.UserID,
+		Name:        input.Name,
+		URLName:     input.URLName,
+		BlizzID:     input.BlizzID,
+		Level:       input.Level,
 		PlayerLevel: input.PlayerLevel,
-		IsPublic: input.IsPublic,
-		Platform: input.Platform,
-		Portrait: input.Portrait,
+		IsPublic:    input.IsPublic,
+		Platform:    input.Platform,
+		Portrait:    input.Portrait,
 	}
 
-	statement, err := db.Prepare(`INSERT INTO battletag (userId, name, urlName, blizzId, level, playerLevel, isPublic, platform, portrait) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);`)
+	//implement a check to see if it exists before inserting when priority allows.
+	// exists, err := db.Query(`Select * from battletag where userId=? AND blizzId=?;`, input.UserID, input.BlizzID)
+
+	// if err != nil {
+	// 	panic(err.Error())
+	// }
+
+	qstr := `INSERT INTO battletag (
+		userId,
+		name,
+		urlName,
+		blizzId,
+		level,
+		playerLevel,
+		isPublic,
+		platform,
+		portrait
+	) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);`
+
+	statement, err := db.Prepare(qstr)
 
 	if err != nil {
 		panic(err.Error())
@@ -62,23 +81,23 @@ func CreateBattletag(input model.InputBattletag) *model.Battletag {
 
 	var (
 		userId, id, blizzId, level, playerLevel int
-		isPublic bool
-		name, urlName, portrait  string 
-		platform   model.Platform
+		isPublic                                bool
+		name, urlName, portrait                 string
+		platform                                model.Platform
 	)
-	err = lastInserted.Scan(&id, &userId, &name, &urlName, &blizzId, &level, &playerLevel, &platform, &isPublic, &portrait )
+	err = lastInserted.Scan(&id, &userId, &name, &urlName, &blizzId, &level, &playerLevel, &platform, &isPublic, &portrait)
 
 	insertedBattletag := model.Battletag{
-		ID: id,
-		UserID: userId,
-		Name: name,
-		URLName: urlName,
-		BlizzID: blizzId, 
-		Level: level, 
+		ID:          id,
+		UserID:      userId,
+		Name:        name,
+		URLName:     urlName,
+		BlizzID:     blizzId,
+		Level:       level,
 		PlayerLevel: playerLevel,
-		Platform: platform,
-		IsPublic: &isPublic,
-		Portrait: portrait,
+		Platform:    platform,
+		IsPublic:    &isPublic,
+		Portrait:    portrait,
 	}
 
 	return &insertedBattletag

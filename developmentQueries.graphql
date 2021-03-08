@@ -1,10 +1,12 @@
 # # # # # # QUERIES # # # # # #
 
 # # # Battletag Queries # # # 
+
 # Select battletag belonging to a user. takes an id.
 query{
-  battletags(input:1){
+  battletags(input: 1){
 		id
+    userId
     name
     blizzId
     urlName
@@ -13,23 +15,31 @@ query{
 }
 
 # # # Session Queries # # # 
+
 # Get a user's sessions belonging to a particular battletag. Takes a userId and a battletagId 
 query{
-  sessions(input:{userId:1, battletagId:6 }) {
+  sessions(input:{ userId: 1, battletagId: 2 }) {
   	id
     userId
   	battletagId
+    starting_sr_tank
+    sr_tank
+    starting_sr_damage
+    sr_damage
+    starting_sr_support
+    sr_support
   }
 }
 
 # # # # # # MUTATIONS # # # # # #
 
 # # # Battletag Mutations # # # 
+
 # Create a battletag. takes all this junk below as an argument.
 mutation {
   createBattletag(
     input: { 
-    userId:1,
+    userId: 1,
     name: "buttkegels#1602",
     urlName: "buttkegels-1602",
 		blizzId: 802120090,
@@ -66,15 +76,25 @@ mutation{
   }
 }
 
-# # # Battletag Mutations # # # 
+# # # Session Mutations # # # 
+
 # Create a session. takes a userId and a battletagId as input. 
 mutation{
-  createSession(input: {
-    userId:1
-    battletagId: 6
+  createSession(input:{
+    userId: 1
+    battletagId: 2
+    starting_sr_tank: 2000
+    starting_sr_damage: 3200
+    starting_sr_support: 2893
   }){
     id
     userId
     battletagId
+    sr_tank
+    starting_sr_tank
+    sr_damage
+    starting_sr_damage
+    sr_support
+    starting_sr_support
   }
 }

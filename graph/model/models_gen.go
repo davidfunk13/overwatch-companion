@@ -8,6 +8,10 @@ import (
 	"strconv"
 )
 
+type GetGames interface {
+	IsGetGames()
+}
+
 type MutateItemPayload interface {
 	IsMutateItemPayload()
 }
@@ -37,10 +41,33 @@ type BlizzBattletag struct {
 }
 
 type Game struct {
-	ID       int `json:"id"`
-	UserID   int `json:"userId"`
-	SessonID int `json:"sessonId"`
+	ID           int          `json:"id"`
+	UserID       int          `json:"userId"`
+	BattletagID  int          `json:"battletagId"`
+	SessonID     int          `json:"sessonId"`
+	Location     Location     `json:"location"`
+	Role         Role         `json:"role"`
+	SrIn         int          `json:"sr_in"`
+	SrOut        int          `json:"sr_out"`
+	MatchOutcome MatchOutcome `json:"match_outcome"`
 }
+
+type GetAllGames struct {
+	UserID      int `json:"userId"`
+	BattletagID int `json:"battletagId"`
+	SessionID   int `json:"sessionId"`
+}
+
+func (GetAllGames) IsGetGames() {}
+
+type GetRoleGames struct {
+	UserID      int   `json:"userId"`
+	BattletagID int   `json:"battletagId"`
+	SessionID   int   `json:"sessionId"`
+	Role        *Role `json:"role"`
+}
+
+func (GetRoleGames) IsGetGames() {}
 
 type InputBattletag struct {
 	UserID      int      `json:"userId"`
@@ -55,13 +82,33 @@ type InputBattletag struct {
 }
 
 type InputGame struct {
-	UserID    int `json:"userId"`
-	SessionID int `json:"sessionId"`
+	UserID       int          `json:"userId"`
+	BattletagID  int          `json:"battletagId"`
+	SessonID     int          `json:"sessonId"`
+	Location     Location     `json:"location"`
+	Role         Role         `json:"role"`
+	SrIn         int          `json:"sr_in"`
+	SrOut        int          `json:"sr_out"`
+	MatchOutcome MatchOutcome `json:"match_outcome"`
+}
+
+type InputGetGames struct {
+	UserID      int `json:"userId"`
+	BattletagID int `json:"battletagId"`
+	SessionID   int `json:"sessionId"`
+}
+
+type InputGetSessions struct {
+	UserID      int `json:"userId"`
+	BattletagID int `json:"battletagId"`
 }
 
 type InputSession struct {
-	UserID      int `json:"userId"`
-	BattletagID int `json:"battletagId"`
+	UserID            int  `json:"userId"`
+	BattletagID       int  `json:"battletagId"`
+	StartingSrTank    *int `json:"starting_sr_tank"`
+	StartingSrDamage  *int `json:"starting_sr_damage"`
+	StartingSrSupport *int `json:"starting_sr_support"`
 }
 
 type MutateItemPayloadFailure struct {
@@ -81,9 +128,133 @@ type MutateItemPayloadSuccess struct {
 func (MutateItemPayloadSuccess) IsMutateItemPayload() {}
 
 type Session struct {
-	ID          int `json:"id"`
-	UserID      int `json:"userId"`
-	BattletagID int `json:"battletagId"`
+	ID                int `json:"id"`
+	UserID            int `json:"userId"`
+	BattletagID       int `json:"battletagId"`
+	StartingSrTank    int `json:"starting_sr_tank"`
+	SrTank            int `json:"sr_tank"`
+	StartingSrDamage  int `json:"starting_sr_damage"`
+	SrDamage          int `json:"sr_damage"`
+	StartingSrSupport int `json:"starting_sr_support"`
+	SrSupport         int `json:"sr_support"`
+}
+
+type Location string
+
+const (
+	LocationBusan               Location = "BUSAN"
+	LocationIlios               Location = "ILIOS"
+	LocationLijiangtower        Location = "LIJIANGTOWER"
+	LocationNepal               Location = "NEPAL"
+	LocationOasis               Location = "OASIS"
+	LocationHanamura            Location = "HANAMURA"
+	LocationTempleofanubis      Location = "TEMPLEOFANUBIS"
+	LocationVolskayaindustries  Location = "VOLSKAYAINDUSTRIES"
+	LocationDorado              Location = "DORADO"
+	LocationHavana              Location = "HAVANA"
+	LocationJunkertown          Location = "JUNKERTOWN"
+	LocationRialto              Location = "RIALTO"
+	LocationRoute66             Location = "ROUTE66"
+	LocationWatchpointgibraltar Location = "WATCHPOINTGIBRALTAR"
+	LocationBlizzardworld       Location = "BLIZZARDWORLD"
+	LocationEichenwalde         Location = "EICHENWALDE"
+	LocationHollywood           Location = "HOLLYWOOD"
+	LocationKingsrow            Location = "KINGSROW"
+	LocationNumbani             Location = "NUMBANI"
+)
+
+var AllLocation = []Location{
+	LocationBusan,
+	LocationIlios,
+	LocationLijiangtower,
+	LocationNepal,
+	LocationOasis,
+	LocationHanamura,
+	LocationTempleofanubis,
+	LocationVolskayaindustries,
+	LocationDorado,
+	LocationHavana,
+	LocationJunkertown,
+	LocationRialto,
+	LocationRoute66,
+	LocationWatchpointgibraltar,
+	LocationBlizzardworld,
+	LocationEichenwalde,
+	LocationHollywood,
+	LocationKingsrow,
+	LocationNumbani,
+}
+
+func (e Location) IsValid() bool {
+	switch e {
+	case LocationBusan, LocationIlios, LocationLijiangtower, LocationNepal, LocationOasis, LocationHanamura, LocationTempleofanubis, LocationVolskayaindustries, LocationDorado, LocationHavana, LocationJunkertown, LocationRialto, LocationRoute66, LocationWatchpointgibraltar, LocationBlizzardworld, LocationEichenwalde, LocationHollywood, LocationKingsrow, LocationNumbani:
+		return true
+	}
+	return false
+}
+
+func (e Location) String() string {
+	return string(e)
+}
+
+func (e *Location) UnmarshalGQL(v interface{}) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = Location(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid Location", str)
+	}
+	return nil
+}
+
+func (e Location) MarshalGQL(w io.Writer) {
+	fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+type MatchOutcome string
+
+const (
+	MatchOutcomeLoss MatchOutcome = "LOSS"
+	MatchOutcomeWin  MatchOutcome = "WIN"
+	MatchOutcomeDraw MatchOutcome = "DRAW"
+)
+
+var AllMatchOutcome = []MatchOutcome{
+	MatchOutcomeLoss,
+	MatchOutcomeWin,
+	MatchOutcomeDraw,
+}
+
+func (e MatchOutcome) IsValid() bool {
+	switch e {
+	case MatchOutcomeLoss, MatchOutcomeWin, MatchOutcomeDraw:
+		return true
+	}
+	return false
+}
+
+func (e MatchOutcome) String() string {
+	return string(e)
+}
+
+func (e *MatchOutcome) UnmarshalGQL(v interface{}) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = MatchOutcome(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid MatchOutcome", str)
+	}
+	return nil
+}
+
+func (e MatchOutcome) MarshalGQL(w io.Writer) {
+	fmt.Fprint(w, strconv.Quote(e.String()))
 }
 
 type Platform string
