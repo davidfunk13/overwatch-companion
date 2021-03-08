@@ -96,15 +96,15 @@ type ComplexityRoot struct {
 	}
 
 	Query struct {
-		Battletags func(childComplexity int) int
+		Battletags func(childComplexity int, input int) int
 		Games      func(childComplexity int) int
-		Sessions   func(childComplexity int) int
+		Sessions   func(childComplexity int, input *model.InputSession) int
 	}
 
 	Session struct {
-		ID       func(childComplexity int) int
-		RoleType func(childComplexity int) int
-		UserID   func(childComplexity int) int
+		BattletagID func(childComplexity int) int
+		ID          func(childComplexity int) int
+		UserID      func(childComplexity int) int
 	}
 }
 
@@ -117,8 +117,8 @@ type MutationResolver interface {
 	DeleteGame(ctx context.Context, input int) (model.MutateItemPayload, error)
 }
 type QueryResolver interface {
-	Battletags(ctx context.Context) ([]*model.Battletag, error)
-	Sessions(ctx context.Context) ([]*model.Session, error)
+	Battletags(ctx context.Context, input int) ([]*model.Battletag, error)
+	Sessions(ctx context.Context, input *model.InputSession) ([]*model.Session, error)
 	Games(ctx context.Context) ([]*model.Game, error)
 }
 
@@ -403,7 +403,12 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			break
 		}
 
-		return e.complexity.Query.Battletags(childComplexity), true
+		args, err := ec.field_Query_battletags_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.Battletags(childComplexity, args["input"].(int)), true
 
 	case "Query.games":
 		if e.complexity.Query.Games == nil {
@@ -417,7 +422,19 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			break
 		}
 
-		return e.complexity.Query.Sessions(childComplexity), true
+		args, err := ec.field_Query_sessions_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.Sessions(childComplexity, args["input"].(*model.InputSession)), true
+
+	case "Session.battletagId":
+		if e.complexity.Session.BattletagID == nil {
+			break
+		}
+
+		return e.complexity.Session.BattletagID(childComplexity), true
 
 	case "Session.id":
 		if e.complexity.Session.ID == nil {
@@ -425,13 +442,6 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Session.ID(childComplexity), true
-
-	case "Session.roleType":
-		if e.complexity.Session.RoleType == nil {
-			break
-		}
-
-		return e.complexity.Session.RoleType(childComplexity), true
 
 	case "Session.userId":
 		if e.complexity.Session.UserID == nil {
@@ -575,12 +585,12 @@ type MutateItemPayloadFailure implements MutateItemPayload {
 type Session {
   id: Int!
   userId: Int!
-  roleType: Role!
+  battletagId: Int!
 }
 
 input InputSession {
   userId: Int!
-  roleType: Role!
+  battletagId: Int!
 }
 
 # Game schema
@@ -597,8 +607,8 @@ input InputGame {
 
 # Queries 
 type Query {
-  battletags: [Battletag!]!
-  sessions: [Session!]!
+  battletags(input: Int!): [Battletag!]!
+  sessions(input:InputSession): [Session!]!
   games: [Game!]!
 }
 
@@ -720,6 +730,36 @@ func (ec *executionContext) field_Query___type_args(ctx context.Context, rawArgs
 		}
 	}
 	args["name"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_battletags_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 int
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNInt2int(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_sessions_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 *model.InputSession
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalOInputSession2ᚖgithubᚗcomᚋdavidfunk13ᚋoverwatchᚑcompanionᚋgraphᚋmodelᚐInputSession(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
 	return args, nil
 }
 
@@ -1971,9 +2011,16 @@ func (ec *executionContext) _Query_battletags(ctx context.Context, field graphql
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Query_battletags_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().Battletags(rctx)
+		return ec.resolvers.Query().Battletags(rctx, args["input"].(int))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -2006,9 +2053,16 @@ func (ec *executionContext) _Query_sessions(ctx context.Context, field graphql.C
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Query_sessions_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().Sessions(rctx)
+		return ec.resolvers.Query().Sessions(rctx, args["input"].(*model.InputSession))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -2201,7 +2255,7 @@ func (ec *executionContext) _Session_userId(ctx context.Context, field graphql.C
 	return ec.marshalNInt2int(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Session_roleType(ctx context.Context, field graphql.CollectedField, obj *model.Session) (ret graphql.Marshaler) {
+func (ec *executionContext) _Session_battletagId(ctx context.Context, field graphql.CollectedField, obj *model.Session) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -2219,7 +2273,7 @@ func (ec *executionContext) _Session_roleType(ctx context.Context, field graphql
 	ctx = graphql.WithFieldContext(ctx, fc)
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.RoleType, nil
+		return obj.BattletagID, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -2231,9 +2285,9 @@ func (ec *executionContext) _Session_roleType(ctx context.Context, field graphql
 		}
 		return graphql.Null
 	}
-	res := resTmp.(model.Role)
+	res := resTmp.(int)
 	fc.Result = res
-	return ec.marshalNRole2githubᚗcomᚋdavidfunk13ᚋoverwatchᚑcompanionᚋgraphᚋmodelᚐRole(ctx, field.Selections, res)
+	return ec.marshalNInt2int(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) ___Directive_name(ctx context.Context, field graphql.CollectedField, obj *introspection.Directive) (ret graphql.Marshaler) {
@@ -3449,11 +3503,11 @@ func (ec *executionContext) unmarshalInputInputSession(ctx context.Context, obj 
 			if err != nil {
 				return it, err
 			}
-		case "roleType":
+		case "battletagId":
 			var err error
 
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("roleType"))
-			it.RoleType, err = ec.unmarshalNRole2githubᚗcomᚋdavidfunk13ᚋoverwatchᚑcompanionᚋgraphᚋmodelᚐRole(ctx, v)
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("battletagId"))
+			it.BattletagID, err = ec.unmarshalNInt2int(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -3885,8 +3939,8 @@ func (ec *executionContext) _Session(ctx context.Context, sel ast.SelectionSet, 
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
-		case "roleType":
-			out.Values[i] = ec._Session_roleType(ctx, field, obj)
+		case "battletagId":
+			out.Values[i] = ec._Session_battletagId(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
@@ -4313,16 +4367,6 @@ func (ec *executionContext) marshalNPlatform2githubᚗcomᚋdavidfunk13ᚋoverwa
 	return v
 }
 
-func (ec *executionContext) unmarshalNRole2githubᚗcomᚋdavidfunk13ᚋoverwatchᚑcompanionᚋgraphᚋmodelᚐRole(ctx context.Context, v interface{}) (model.Role, error) {
-	var res model.Role
-	err := res.UnmarshalGQL(v)
-	return res, graphql.ErrorOnPath(ctx, err)
-}
-
-func (ec *executionContext) marshalNRole2githubᚗcomᚋdavidfunk13ᚋoverwatchᚑcompanionᚋgraphᚋmodelᚐRole(ctx context.Context, sel ast.SelectionSet, v model.Role) graphql.Marshaler {
-	return v
-}
-
 func (ec *executionContext) marshalNSession2githubᚗcomᚋdavidfunk13ᚋoverwatchᚑcompanionᚋgraphᚋmodelᚐSession(ctx context.Context, sel ast.SelectionSet, v model.Session) graphql.Marshaler {
 	return ec._Session(ctx, sel, &v)
 }
@@ -4640,6 +4684,14 @@ func (ec *executionContext) marshalOBoolean2ᚖbool(ctx context.Context, sel ast
 		return graphql.Null
 	}
 	return graphql.MarshalBoolean(*v)
+}
+
+func (ec *executionContext) unmarshalOInputSession2ᚖgithubᚗcomᚋdavidfunk13ᚋoverwatchᚑcompanionᚋgraphᚋmodelᚐInputSession(ctx context.Context, v interface{}) (*model.InputSession, error) {
+	if v == nil {
+		return nil, nil
+	}
+	res, err := ec.unmarshalInputInputSession(ctx, v)
+	return &res, graphql.ErrorOnPath(ctx, err)
 }
 
 func (ec *executionContext) unmarshalOString2string(ctx context.Context, v interface{}) (string, error) {

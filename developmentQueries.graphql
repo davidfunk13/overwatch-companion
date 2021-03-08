@@ -1,0 +1,80 @@
+# # # # # # QUERIES # # # # # #
+
+# # # Battletag Queries # # # 
+# Select battletag belonging to a user. takes an id.
+query{
+  battletags(input:1){
+		id
+    name
+    blizzId
+    urlName
+  
+  }
+}
+
+# # # Session Queries # # # 
+# Get a user's sessions belonging to a particular battletag. Takes a userId and a battletagId 
+query{
+  sessions(input:{userId:1, battletagId:6 }) {
+  	id
+    userId
+  	battletagId
+  }
+}
+
+# # # # # # MUTATIONS # # # # # #
+
+# # # Battletag Mutations # # # 
+# Create a battletag. takes all this junk below as an argument.
+mutation {
+  createBattletag(
+    input: { 
+    userId:1,
+    name: "buttkegels#1602",
+    urlName: "buttkegels-1602",
+		blizzId: 802120090,
+		level: 117,
+		playerLevel: 117,
+		platform: PC,
+		isPublic: true,
+		portrait: "0x02500000000002F7"
+  }){
+    id
+    userId
+    name
+    urlName
+    blizzId
+    level
+    playerLevel
+    platform
+    isPublic
+    portrait
+  }
+}
+  
+# Delete battletag. takes id of battletag as input.
+mutation{
+  deleteBattletag(input: 5){
+    id
+    success
+    ... on MutateItemPayloadSuccess{
+      message
+    }
+    ... on MutateItemPayloadFailure {
+      error
+    }
+  }
+}
+
+# # # Battletag Mutations # # # 
+# Create a session. takes a userId and a battletagId as input. 
+mutation{
+  createSession(input: {
+    userId:1
+    battletagId: 6
+  }){
+    id
+    userId
+    battletagId
+  }
+}

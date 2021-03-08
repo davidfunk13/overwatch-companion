@@ -68,8 +68,8 @@ func (r *mutationResolver) DeleteGame(ctx context.Context, input int) (model.Mut
 	return deleted, nil
 }
 
-func (r *queryResolver) Battletags(ctx context.Context) ([]*model.Battletag, error) {
-	battletags, err := database.SelectAllBattletags()
+func (r *queryResolver) Battletags(ctx context.Context, input int) ([]*model.Battletag, error) {
+	battletags, err := database.SelectAllBattletags(input)
 
 	if err != nil {
 		panic(err.Error())
@@ -78,8 +78,8 @@ func (r *queryResolver) Battletags(ctx context.Context) ([]*model.Battletag, err
 	return battletags, nil
 }
 
-func (r *queryResolver) Sessions(ctx context.Context) ([]*model.Session, error) {
-	sessions, err := database.SelectAllSessions()
+func (r *queryResolver) Sessions(ctx context.Context, input *model.InputSession) ([]*model.Session, error) {
+	sessions, err := database.SelectAllSessions(input.UserID, input.BattletagID)
 
 	if err != nil {
 		panic(err.Error())

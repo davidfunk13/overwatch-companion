@@ -18,16 +18,16 @@ func CreateSession(input model.InputSession) model.Session {
 
 	sessionInput := model.InputSession{
 		UserID:   input.UserID,
-		RoleType: input.RoleType,
+		BattletagID: input.BattletagID,
 	}
 
-	statement, err := db.Prepare(`INSERT INTO session (userId, roleType) VALUES (?, ?);`)
+	statement, err := db.Prepare(`INSERT INTO session (userId, battletagId) VALUES (?, ?);`)
 
 	if err != nil {
 		panic(err.Error())
 	}
 
-	res, err := statement.Exec(sessionInput.UserID, sessionInput.RoleType)
+	res, err := statement.Exec(sessionInput.UserID, sessionInput.BattletagID)
 
 	if err != nil {
 		panic(err.Error())
@@ -44,15 +44,14 @@ func CreateSession(input model.InputSession) model.Session {
 	lastInserted := db.QueryRow(`Select * from session where id=?;`, lastInsertedID)
 
 	var (
-		userId, id int
-		roleType   model.Role
+		id, userId, battletagId int
 	)
-	err = lastInserted.Scan(&id, &userId, &roleType)
+	err = lastInserted.Scan(&id, &userId, &battletagId)
 
 	insertedSession := model.Session{
 		ID:       id,
 		UserID:   id,
-		RoleType: roleType,
+		BattletagID: battletagId,
 	}
 
 	return insertedSession

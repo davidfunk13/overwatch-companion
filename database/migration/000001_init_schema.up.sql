@@ -15,7 +15,7 @@ CREATE TABLE `battletag` (
 CREATE TABLE `session` (
   `id` int NOT NULL AUTO_INCREMENT,
   `userId` int NOT NULL,
-  `roleType` ENUM('DAMAGE', "SUPPORT", "TANK") NOT NULL,
+  `battletagId` int NOT NULL,
   PRIMARY KEY (`id`)
 );
 

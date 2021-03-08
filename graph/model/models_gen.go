@@ -60,8 +60,8 @@ type InputGame struct {
 }
 
 type InputSession struct {
-	UserID   int  `json:"userId"`
-	RoleType Role `json:"roleType"`
+	UserID      int `json:"userId"`
+	BattletagID int `json:"battletagId"`
 }
 
 type MutateItemPayloadFailure struct {
@@ -81,9 +81,9 @@ type MutateItemPayloadSuccess struct {
 func (MutateItemPayloadSuccess) IsMutateItemPayload() {}
 
 type Session struct {
-	ID       int  `json:"id"`
-	UserID   int  `json:"userId"`
-	RoleType Role `json:"roleType"`
+	ID          int `json:"id"`
+	UserID      int `json:"userId"`
+	BattletagID int `json:"battletagId"`
 }
 
 type Platform string

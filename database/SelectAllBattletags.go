@@ -5,7 +5,7 @@ import (
 )
 
 // SelectAllBattletags Selects and returns all battletags from the database. This function will be refined to only fetch a user's battletags.
-func SelectAllBattletags() ([]*model.Battletag, error) {
+func SelectAllBattletags(uId int) ([]*model.Battletag, error) {
 	db, err := OpenConnection()
 
 	if err != nil {
@@ -16,7 +16,7 @@ func SelectAllBattletags() ([]*model.Battletag, error) {
 
 	var data []*model.Battletag
 
-	res, err := db.Query("SELECT * FROM battletag")
+	res, err := db.Query("SELECT * FROM battletag where userId=?", uId)
 
 	if err != nil {
 		panic(err.Error())

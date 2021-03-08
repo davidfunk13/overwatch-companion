@@ -11,6 +11,34 @@ enum Role{
   SUPPORT
 }
 
+enum MatchOutcome{
+  LOSS = 0
+  WIN = 1
+  DRAW = 2
+}
+
+enum Location{
+  BUSAN
+  ILIOS
+  LIJIANGTOWER
+  NEPAL
+  OASIS
+  HANAMURA
+  TEMPLEOFANUBIS
+  VOLSKAYAINDUSTRIES
+  DORADO
+  HAVANA
+  JUNKERTOWN
+  RIALTO
+  ROUTE66
+  WATCHPOINTGIBRALTAR
+  BLIZZARDWORLD
+  EICHENWALDE
+  HOLLYWOOD
+  KINGSROW
+  NUMBANI
+}
+
 # Battletag schemas
 type Battletag {
   id: Int!
@@ -69,30 +97,41 @@ type MutateItemPayloadFailure implements MutateItemPayload {
 type Session {
   id: Int!
   userId: Int!
-  roleType: Role!
+  battletagId: Int!
 }
 
 input InputSession {
   userId: Int!
-  roleType: Role!
+  battletagId: Int!
 }
 
 # Game schema
 type Game {
   id: Int!
   userId: Int!
+  battletagId: Int!
   sessonId: Int!
+  location:
+  role: Role!
+  sr_in: Int!
+  sr_out: Int!
+  match_outcome: MatchOutcome 
 }
 
 input InputGame {
   userId: Int!
+  battletagId: Int!
   sessionId: Int!
+  role: Role!
+  sr_in: Int!
+  sr_out: Int!
+
 }
 
 # Queries 
 type Query {
-  battletags: [Battletag!]!
-  sessions: [Session!]!
+  battletags(input: Int!): [Battletag!]!
+  sessions(input:InputSession): [Session!]!
   games: [Game!]!
 }
 

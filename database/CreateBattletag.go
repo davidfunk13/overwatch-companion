@@ -66,7 +66,7 @@ func CreateBattletag(input model.InputBattletag) *model.Battletag {
 		name, urlName, portrait  string 
 		platform   model.Platform
 	)
-	err = lastInserted.Scan(&id, &userId, &name, &urlName, &blizzId, &level, &playerLevel, &isPublic, &platform, &portrait )
+	err = lastInserted.Scan(&id, &userId, &name, &urlName, &blizzId, &level, &playerLevel, &platform, &isPublic, &portrait )
 
 	insertedBattletag := model.Battletag{
 		ID: id,
@@ -76,8 +76,8 @@ func CreateBattletag(input model.InputBattletag) *model.Battletag {
 		BlizzID: blizzId, 
 		Level: level, 
 		PlayerLevel: playerLevel,
-		IsPublic: &isPublic,
 		Platform: platform,
+		IsPublic: &isPublic,
 		Portrait: portrait,
 	}
 
