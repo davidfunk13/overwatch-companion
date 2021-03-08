@@ -817,7 +817,6 @@ input InputGame {
   sessonId: Int!
   location: Location!
   role: Role!
-  sr_in: Int!
   sr_out: Int!
   match_outcome: MatchOutcome!
 }
@@ -4430,14 +4429,6 @@ func (ec *executionContext) unmarshalInputInputGame(ctx context.Context, obj int
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("role"))
 			it.Role, err = ec.unmarshalNRole2githubᚗcomᚋdavidfunk13ᚋoverwatchᚑcompanionᚋgraphᚋmodelᚐRole(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "sr_in":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("sr_in"))
-			it.SrIn, err = ec.unmarshalNInt2int(ctx, v)
 			if err != nil {
 				return it, err
 			}

@@ -138,7 +138,6 @@ input InputGame {
   sessonId: Int!
   location: Location!
   role: Role!
-  sr_in: Int!
   sr_out: Int!
   match_outcome: MatchOutcome!
 }

@@ -87,7 +87,6 @@ type InputGame struct {
 	SessonID     int          `json:"sessonId"`
 	Location     Location     `json:"location"`
 	Role         Role         `json:"role"`
-	SrIn         int          `json:"sr_in"`
 	SrOut        int          `json:"sr_out"`
 	MatchOutcome MatchOutcome `json:"match_outcome"`
 }
