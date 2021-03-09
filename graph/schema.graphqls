@@ -124,7 +124,7 @@ type Game {
   id: Int!
   userId: Int!
   battletagId: Int!
-  sessonId: Int!
+  sessionId: Int!
   location: Location!
   role: Role!
   sr_in: Int!
@@ -135,7 +135,7 @@ type Game {
 input InputGame {
   userId: Int!
   battletagId: Int!
-  sessonId: Int!
+  sessionId: Int!
   location: Location!
   role: Role!
   sr_out: Int!
@@ -143,24 +143,6 @@ input InputGame {
 }
 
 input InputGetGames {
-  userId: Int!
-  battletagId: Int!
-  sessionId: Int!
-}
-
-interface GetGames {
-  userId: Int!
-  battletagId: Int!
-  sessionId: Int!
-}
-
-type GetAllGames implements GetGames {
-  userId: Int!
-  battletagId: Int!
-  sessionId: Int!
-}
-
-type GetRoleGames implements GetGames {
   userId: Int!
   battletagId: Int!
   sessionId: Int!

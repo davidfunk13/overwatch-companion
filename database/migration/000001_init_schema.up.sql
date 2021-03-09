@@ -11,7 +11,6 @@ CREATE TABLE `battletag` (
   `portrait` varchar(100) NOT NULL,
   PRIMARY KEY (`id`)
 );
-
 CREATE TABLE `session` (
   `id` int NOT NULL AUTO_INCREMENT,
   `userId` int NOT NULL,
@@ -24,10 +23,35 @@ CREATE TABLE `session` (
   `sr_support` int NOT NULL,
   PRIMARY KEY (`id`)
 );
-
 CREATE TABLE `game` (
-  `id` int NOT NULL AUTO_INCREMENT, 
+  `id` int NOT NULL AUTO_INCREMENT,
   `userId` int NOT NULL,
+  `battletagId` int NOT NULL,
   `sessionId` int NOT NULL,
+  `location` ENUM(
+    "BUSAN",
+    "ILIOS",
+    "LIJIANGTOWER",
+    "NEPAL",
+    "OASIS",
+    "HANAMURA",
+    "TEMPLEOFANUBIS",
+    "VOLSKAYAINDUSTRIES",
+    "DORADO",
+    "HAVANA",
+    "JUNKERTOWN",
+    "RIALTO",
+    "ROUTE66",
+    "WATCHPOINTGIBRALTAR",
+    "BLIZZARDWORLD",
+    "EICHENWALDE",
+    "HOLLYWOOD",
+    "KINGSROW",
+    "NUMBANI"
+  ) NOT NULL,
+  `role` ENUM ("TANK", "DAMAGE", "SUPPORT") NOT NULL,
+  `sr_in` int NOT NULL,
+  `sr_out` int NOT NULL,
+  `match_outcome` ENUM("WIN", "LOSS", "DRAW") NOT NULL,
   PRIMARY KEY (`id`)
 );

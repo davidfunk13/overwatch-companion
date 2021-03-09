@@ -8,10 +8,6 @@ import (
 	"strconv"
 )
 
-type GetGames interface {
-	IsGetGames()
-}
-
 type MutateItemPayload interface {
 	IsMutateItemPayload()
 }
@@ -44,30 +40,13 @@ type Game struct {
 	ID           int          `json:"id"`
 	UserID       int          `json:"userId"`
 	BattletagID  int          `json:"battletagId"`
-	SessonID     int          `json:"sessonId"`
+	SessionID    int          `json:"sessionId"`
 	Location     Location     `json:"location"`
 	Role         Role         `json:"role"`
 	SrIn         int          `json:"sr_in"`
 	SrOut        int          `json:"sr_out"`
 	MatchOutcome MatchOutcome `json:"match_outcome"`
 }
-
-type GetAllGames struct {
-	UserID      int `json:"userId"`
-	BattletagID int `json:"battletagId"`
-	SessionID   int `json:"sessionId"`
-}
-
-func (GetAllGames) IsGetGames() {}
-
-type GetRoleGames struct {
-	UserID      int   `json:"userId"`
-	BattletagID int   `json:"battletagId"`
-	SessionID   int   `json:"sessionId"`
-	Role        *Role `json:"role"`
-}
-
-func (GetRoleGames) IsGetGames() {}
 
 type InputBattletag struct {
 	UserID      int      `json:"userId"`
@@ -84,7 +63,7 @@ type InputBattletag struct {
 type InputGame struct {
 	UserID       int          `json:"userId"`
 	BattletagID  int          `json:"battletagId"`
-	SessonID     int          `json:"sessonId"`
+	SessionID    int          `json:"sessionId"`
 	Location     Location     `json:"location"`
 	Role         Role         `json:"role"`
 	SrOut        int          `json:"sr_out"`
@@ -92,9 +71,10 @@ type InputGame struct {
 }
 
 type InputGetGames struct {
-	UserID      int `json:"userId"`
-	BattletagID int `json:"battletagId"`
-	SessionID   int `json:"sessionId"`
+	UserID      int   `json:"userId"`
+	BattletagID int   `json:"battletagId"`
+	SessionID   int   `json:"sessionId"`
+	Role        *Role `json:"role"`
 }
 
 type InputGetSessions struct {

@@ -89,7 +89,7 @@ func (r *queryResolver) Sessions(ctx context.Context, input *model.InputGetSessi
 }
 
 func (r *queryResolver) Games(ctx context.Context, input *model.InputGetGames) ([]*model.Game, error) {
-	games, err := database.SelectAllGames()
+	games, err := database.SelectAllGames(*input)
 
 	if err != nil {
 		panic(err.Error())
