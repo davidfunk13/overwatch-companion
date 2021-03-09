@@ -4,11 +4,12 @@ import (
 	"github.com/davidfunk13/overwatch-companion/graph/model"
 )
 
+//THIS ROUTE SHOULD ONLY WORK IF THE SESSION DOES NOT CONTAIN ANY GAMES!
+
 // UpdateSessionStartingSR takes a role as inupt and a new starting SR value along with a session id.
 func UpdateSessionStartingSR(input model.InputUpdateSessionStartingSr) model.MutateItemPayload {
 	// variable to store our payload
 	var payload model.MutateItemPayload
-
 	//open connection to the database
 	db, err := OpenConnection()
 
@@ -18,6 +19,39 @@ func UpdateSessionStartingSR(input model.InputUpdateSessionStartingSr) model.Mut
 
 	//wait until function finishes running, then close connection.
 	defer db.Close()
+
+	getHasGames := &model.InputGetGames{
+		UserID:      input.UserID,
+		BattletagID: input.BattletagID,
+		SessionID:   input.ID,
+		Role:        &input.Role,
+	}
+
+	hasGames, err := SelectAllGames(*getHasGames)
+
+	if err != nil {
+		errorString := err.Error()
+
+		payload = model.MutateItemPayloadFailure{
+			Success: false,
+			Error:   "Error checking if this session has any games for the requested role.",
+			Data:    &errorString,
+		}
+
+		return payload
+	}
+
+	if len(hasGames) > 0 {
+		errorString := "This session already has games of this role type in it. You cannot update the starting sr of a role that has a game in it."
+
+		payload = model.MutateItemPayloadFailure{
+			Success: false,
+			Error:   "Error checking if this session has any games for the requested role.",
+			Data:    &errorString,
+		}
+
+		return payload
+	}
 
 	var updateSessionStr string
 
