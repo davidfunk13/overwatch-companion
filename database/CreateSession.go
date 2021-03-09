@@ -68,11 +68,11 @@ func CreateSession(input model.InputSession) model.MutateItemPayload {
 		sessionInput.UserID,
 		sessionInput.BattletagID,
 		sessionInput.StartingSrTank,
-		sessionInput.StartingSrTank,
+		0,
 		sessionInput.StartingSrDamage,
-		sessionInput.StartingSrDamage,
+		0,
 		sessionInput.StartingSrSupport,
-		sessionInput.StartingSrSupport,
+		0,
 	)
 
 	if err != nil {

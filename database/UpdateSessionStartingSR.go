@@ -1,6 +1,8 @@
 package database
 
 import (
+	"fmt"
+
 	"github.com/davidfunk13/overwatch-companion/graph/model"
 )
 
@@ -74,7 +76,8 @@ func UpdateSessionStartingSR(input model.InputUpdateSessionStartingSr) model.Mut
 	//try passing in a pointer to the string here, observe behavior.
 	updateSessionStatement, err := db.Prepare(updateSessionStr)
 
-	// srOut will be our value we use to update, and will be presumably going to the right place because of the above switch statement.
+	fmt.Printf("UPDATE STATEMENT: %s", updateSessionStr)
+
 	res, err := updateSessionStatement.Exec(
 		input.StartingSr,
 		input.ID,
@@ -94,28 +97,28 @@ func UpdateSessionStartingSR(input model.InputUpdateSessionStartingSr) model.Mut
 		return payload
 	}
 
-	//get the id of the new session record we just updated, store for reference.
-	lastInsertedID, err := res.LastInsertId()
+	affected, err := res.RowsAffected()
 
 	if err != nil {
-		errorString := err.Error()
+		panic(err.Error())
+	}
 
+	if affected == 0 {
 		payload = model.MutateItemPayloadFailure{
 			Success: false,
-			Error:   "Error getting ID of session just updated.",
-			Data:    &errorString,
+			Error:   "Session you are trying to update does not exist.",
 		}
 
 		return payload
 	}
 
 	// get the session we just updated
-	lastInserted := db.QueryRow(`Select * from session where id=?;`, lastInsertedID)
+	justUpdated := db.QueryRow(`Select * from session where id=?;`, input.ID)
 
 	// define new set of variables to hold values of game we just inserted.
 	var id, userId, battletagId, starting_sr_tank, starting_sr_damage, starting_sr_support, sr_tank, sr_damage, sr_support int
 
-	err = lastInserted.Scan(
+	err = justUpdated.Scan(
 		&id,
 		&userId,
 		&battletagId,
@@ -128,7 +131,15 @@ func UpdateSessionStartingSR(input model.InputUpdateSessionStartingSr) model.Mut
 	)
 
 	if err != nil {
-		panic(err.Error())
+		errorString := err.Error()
+
+		payload = model.MutateItemPayloadFailure{
+			Success: false,
+			Error:   "Error getting ID of session just updated.",
+			Data:    &errorString,
+		}
+
+		return payload
 	}
 
 	// marshal variables to game struct representing inserted game record.
