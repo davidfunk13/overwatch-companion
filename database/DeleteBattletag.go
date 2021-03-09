@@ -11,18 +11,22 @@ func DeleteBattletag(id *int) (model.MutateItemPayload, error) {
 	db, err := OpenConnection()
 
 	defer db.Close()
+	
+	//prepare statement to delete the battletag itself.
 	statement, err := db.Prepare("DELETE FROM battletag where id=?")
 
 	if err != nil {
 		panic(err.Error())
 	}
 
+	//delete the battletag
 	res, err := statement.Exec(strconv.Itoa(*id))
 
 	if err != nil {
 		panic(err.Error())
 	}
 
+	//lets us know if the delete was succeessful.
 	rowsAffected, err := res.RowsAffected()
 
 	var payload model.MutateItemPayload
@@ -43,7 +47,5 @@ func DeleteBattletag(id *int) (model.MutateItemPayload, error) {
 		}
 	}
 
-	// // payload := res.Scan()
 	return payload, nil
-
 }

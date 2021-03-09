@@ -21,6 +21,7 @@ CREATE TABLE `session` (
   `sr_damage` int NOT NULL,
   `starting_sr_support` int NOT NULL,
   `sr_support` int NOT NULL,
+  FOREIGN KEY (`battletagId`) REFERENCES `battletag` (`id`) ON DELETE CASCADE,
   PRIMARY KEY (`id`)
 );
 CREATE TABLE `game` (
@@ -33,7 +34,7 @@ CREATE TABLE `game` (
     "ILIOS",
     "LIJIANGTOWER",
     "NEPAL",
-    "OASIS",
+    0 "OASIS",
     "HANAMURA",
     "TEMPLEOFANUBIS",
     "VOLSKAYAINDUSTRIES",
@@ -53,5 +54,7 @@ CREATE TABLE `game` (
   `sr_in` int NOT NULL,
   `sr_out` int NOT NULL,
   `match_outcome` ENUM("WIN", "LOSS", "DRAW") NOT NULL,
+  FOREIGN KEY (`battletagId`) REFERENCES `battletag` (`id`) ON DELETE CASCADE,
+  FOREIGN KEY (`sessionId`) REFERENCES `session` (`id`) ON DELETE CASCADE,
   PRIMARY KEY (`id`)
 );

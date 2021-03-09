@@ -8,6 +8,7 @@ import (
 
 //CreateGame creates a game for the user to store against a session.
 func CreateGame(input model.InputGame) model.Game {
+	
 	//open connection to the database
 	db, err := OpenConnection()
 
@@ -68,6 +69,7 @@ func CreateGame(input model.InputGame) model.Game {
 	
 
 	// if we get any games back from the db (meaning there is a previous game to pull srIn from...)
+	// grab the sr_out of the most recent game.
 	var prevGameSrOut int
 	
 	if len(prevGames) > 0 {
@@ -76,7 +78,7 @@ func CreateGame(input model.InputGame) model.Game {
 		fmt.Println("Last Game: ", lastGame)
 	}
 
-	//prepare to insert this input type into the database as a game
+	//prepare to insert input type into the database as a new game
 	qstr := `INSERT INTO game (
 		userId,
 		battletagId,
@@ -94,14 +96,14 @@ func CreateGame(input model.InputGame) model.Game {
 		panic(err.Error())
 	}
 
-	//execute the insert game statement
+	//execute the insert game statement, with the previous game's sr_out value as the new game's sr_in value
 	res, err := statement.Exec(
 		gameInput.UserID,
 		gameInput.BattletagID,
 		gameInput.SessionID,
 		gameInput.Location,
 		gameInput.Role,
-		prevGameSrOut, //THIS IS TEMPORARILY REPLACING SR_IN WHILE WE DECIDE WHETHER WE LOOK UP PREVIOUS GAME SR TO UPDATE.
+		prevGameSrOut, 
 		gameInput.SrOut,
 		gameInput.MatchOutcome,
 	)
@@ -112,7 +114,7 @@ func CreateGame(input model.InputGame) model.Game {
 
 	fmt.Println("Successfully inserted game to session")
 	
-	//get the id of the game record we just inserted.
+	//get the id of the new game record we just inserted, store for reference.
 	lastInsertedID, err := res.LastInsertId()
 
 	if err != nil {
@@ -122,7 +124,7 @@ func CreateGame(input model.InputGame) model.Game {
 	// get the game we just inserted
 	lastInserted := db.QueryRow(`Select * from game where id=?;`, lastInsertedID)
 
-	// define set of variables to hold values of game we just inserted./ 
+	// define new set of variables to hold values of game we just inserted.
 	var (
 		id, userId, battletagId, sessionId, srIn, srOut int 
 		role model.Role
@@ -149,6 +151,7 @@ func CreateGame(input model.InputGame) model.Game {
 		MatchOutcome: matchOutcome,
 	}
 	
+	//variable to hold our statement to update the session's SR, depending on what role the game we just created is.
 	var updateSessionStr string
 	
 	switch role {
@@ -163,8 +166,7 @@ func CreateGame(input model.InputGame) model.Game {
 	//try passing in a pointer to the string here, observe behavior. 
 	updateSessionStatement, err := db.Prepare(updateSessionStr)
 
-	// prevGameSrOut will be our value we use to update, and will be presumably going to the right place because of the above switch statement.
-	// srOut will also work here, as it is the same value
+	// srOut will be our value we use to update, and will be presumably going to the right place because of the above switch statement.
 	updateSessionStatement.Exec(
 		srOut,
 		sessionId,

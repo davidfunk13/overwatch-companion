@@ -31,6 +31,29 @@ query{
   }
 }
 
+# # # Game Queries # # # 
+
+# Get a sessions games
+# ROLE IS OPTIONAL
+query{
+  games(input:{
+    userId: 1
+    sessionId:1
+    battletagId: 1
+    role:TANK
+  }){
+    id
+    userId
+    battletagId
+    sessionId
+    location
+		role
+    sr_in
+    sr_out
+    match_outcome
+  }
+}
+
 # # # # # # MUTATIONS # # # # # #
 
 # # # Battletag Mutations # # # 
@@ -96,5 +119,23 @@ mutation{
     starting_sr_damage
     sr_support
     starting_sr_support
+  }
+}
+
+# # # Game Mutations # # #
+
+# Create a game. takes all this junk as input
+
+mutation{
+  createGame(input: {userId: 1, battletagId: 7, sessionId: 2, location: ROUTE66, role: DAMAGE, sr_out: 3333, match_outcome: WIN}){
+    id
+    userId
+    battletagId
+    sessionId
+    location
+    role
+    sr_in
+    sr_out
+    match_outcome
   }
 }

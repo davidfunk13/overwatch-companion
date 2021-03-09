@@ -11,6 +11,7 @@ func DeleteSession(id *int) (model.MutateItemPayload, error) {
 	db, err := OpenConnection()
 
 	defer db.Close()
+
 	statement, err := db.Prepare("DELETE FROM session where id=?")
 
 	if err != nil {

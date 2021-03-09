@@ -39,6 +39,7 @@ func SelectAllGames(input model.InputGetGames) ([]*model.Game, error) {
 	defer res.Close()
 
 	for res.Next() {
+		
 		var (
 			id, userId, battletagId, sessionId, sr_in, sr_out int
 			location model.Location
