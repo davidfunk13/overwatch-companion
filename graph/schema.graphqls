@@ -123,6 +123,14 @@ input InputGetSessions {
   battletagId: Int!
 }
 
+input InputUpdateSessionStartingSR {
+  id: Int!
+  userId: Int!
+  battletagId: Int!
+  role: Role!
+  starting_sr: Int!
+}
+
 # Game schema
 type Game {
   id: Int!
@@ -165,6 +173,9 @@ type Mutation {
   createBattletag(input: InputBattletag!): MutateItemPayload!
   deleteBattletag(input: Int!): MutateItemPayload!
   createSession(input: InputSession!): MutateItemPayload!
+  updateSessionStartingSR(
+    input: InputUpdateSessionStartingSR!
+  ): MutateItemPayload!
   deleteSession(input: Int!): MutateItemPayload!
   createGame(input: InputGame!): MutateItemPayload!
   deleteGame(input: Int!): MutateItemPayload!

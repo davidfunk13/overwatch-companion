@@ -95,12 +95,13 @@ type ComplexityRoot struct {
 	}
 
 	Mutation struct {
-		CreateBattletag func(childComplexity int, input model.InputBattletag) int
-		CreateGame      func(childComplexity int, input model.InputGame) int
-		CreateSession   func(childComplexity int, input model.InputSession) int
-		DeleteBattletag func(childComplexity int, input int) int
-		DeleteGame      func(childComplexity int, input int) int
-		DeleteSession   func(childComplexity int, input int) int
+		CreateBattletag         func(childComplexity int, input model.InputBattletag) int
+		CreateGame              func(childComplexity int, input model.InputGame) int
+		CreateSession           func(childComplexity int, input model.InputSession) int
+		DeleteBattletag         func(childComplexity int, input int) int
+		DeleteGame              func(childComplexity int, input int) int
+		DeleteSession           func(childComplexity int, input int) int
+		UpdateSessionStartingSr func(childComplexity int, input model.InputUpdateSessionStartingSr) int
 	}
 
 	Query struct {
@@ -126,6 +127,7 @@ type MutationResolver interface {
 	CreateBattletag(ctx context.Context, input model.InputBattletag) (model.MutateItemPayload, error)
 	DeleteBattletag(ctx context.Context, input int) (model.MutateItemPayload, error)
 	CreateSession(ctx context.Context, input model.InputSession) (model.MutateItemPayload, error)
+	UpdateSessionStartingSr(ctx context.Context, input model.InputUpdateSessionStartingSr) (model.MutateItemPayload, error)
 	DeleteSession(ctx context.Context, input int) (model.MutateItemPayload, error)
 	CreateGame(ctx context.Context, input model.InputGame) (model.MutateItemPayload, error)
 	DeleteGame(ctx context.Context, input int) (model.MutateItemPayload, error)
@@ -468,6 +470,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Mutation.DeleteSession(childComplexity, args["input"].(int)), true
 
+	case "Mutation.updateSessionStartingSR":
+		if e.complexity.Mutation.UpdateSessionStartingSr == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_updateSessionStartingSR_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.UpdateSessionStartingSr(childComplexity, args["input"].(model.InputUpdateSessionStartingSr)), true
+
 	case "Query.battletags":
 		if e.complexity.Query.Battletags == nil {
 			break
@@ -756,6 +770,14 @@ input InputGetSessions {
   battletagId: Int!
 }
 
+input InputUpdateSessionStartingSR {
+  id: Int!
+  userId: Int!
+  battletagId: Int!
+  role: Role!
+  starting_sr: Int!
+}
+
 # Game schema
 type Game {
   id: Int!
@@ -798,6 +820,9 @@ type Mutation {
   createBattletag(input: InputBattletag!): MutateItemPayload!
   deleteBattletag(input: Int!): MutateItemPayload!
   createSession(input: InputSession!): MutateItemPayload!
+  updateSessionStartingSR(
+    input: InputUpdateSessionStartingSR!
+  ): MutateItemPayload!
   deleteSession(input: Int!): MutateItemPayload!
   createGame(input: InputGame!): MutateItemPayload!
   deleteGame(input: Int!): MutateItemPayload!
@@ -892,6 +917,21 @@ func (ec *executionContext) field_Mutation_deleteSession_args(ctx context.Contex
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
 		arg0, err = ec.unmarshalNInt2int(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_updateSessionStartingSR_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 model.InputUpdateSessionStartingSr
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNInputUpdateSessionStartingSR2githubᚗcomᚋdavidfunk13ᚋoverwatchᚑcompanionᚋgraphᚋmodelᚐInputUpdateSessionStartingSr(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -2324,6 +2364,48 @@ func (ec *executionContext) _Mutation_createSession(ctx context.Context, field g
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
 		return ec.resolvers.Mutation().CreateSession(rctx, args["input"].(model.InputSession))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(model.MutateItemPayload)
+	fc.Result = res
+	return ec.marshalNMutateItemPayload2githubᚗcomᚋdavidfunk13ᚋoverwatchᚑcompanionᚋgraphᚋmodelᚐMutateItemPayload(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_updateSessionStartingSR(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_updateSessionStartingSR_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().UpdateSessionStartingSr(rctx, args["input"].(model.InputUpdateSessionStartingSr))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -4341,6 +4423,58 @@ func (ec *executionContext) unmarshalInputInputSession(ctx context.Context, obj 
 	return it, nil
 }
 
+func (ec *executionContext) unmarshalInputInputUpdateSessionStartingSR(ctx context.Context, obj interface{}) (model.InputUpdateSessionStartingSr, error) {
+	var it model.InputUpdateSessionStartingSr
+	var asMap = obj.(map[string]interface{})
+
+	for k, v := range asMap {
+		switch k {
+		case "id":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+			it.ID, err = ec.unmarshalNInt2int(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "userId":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("userId"))
+			it.UserID, err = ec.unmarshalNInt2int(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "battletagId":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("battletagId"))
+			it.BattletagID, err = ec.unmarshalNInt2int(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "role":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("role"))
+			it.Role, err = ec.unmarshalNRole2githubᚗcomᚋdavidfunk13ᚋoverwatchᚑcompanionᚋgraphᚋmodelᚐRole(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "starting_sr":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("starting_sr"))
+			it.StartingSr, err = ec.unmarshalNInt2int(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
 // endregion **************************** input.gotpl *****************************
 
 // region    ************************** interface.gotpl ***************************
@@ -4705,6 +4839,11 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			}
 		case "createSession":
 			out.Values[i] = ec._Mutation_createSession(ctx, field)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "updateSessionStartingSR":
+			out.Values[i] = ec._Mutation_updateSessionStartingSR(ctx, field)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
@@ -5239,6 +5378,11 @@ func (ec *executionContext) unmarshalNInputGame2githubᚗcomᚋdavidfunk13ᚋove
 
 func (ec *executionContext) unmarshalNInputSession2githubᚗcomᚋdavidfunk13ᚋoverwatchᚑcompanionᚋgraphᚋmodelᚐInputSession(ctx context.Context, v interface{}) (model.InputSession, error) {
 	res, err := ec.unmarshalInputInputSession(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalNInputUpdateSessionStartingSR2githubᚗcomᚋdavidfunk13ᚋoverwatchᚑcompanionᚋgraphᚋmodelᚐInputUpdateSessionStartingSr(ctx context.Context, v interface{}) (model.InputUpdateSessionStartingSr, error) {
+	res, err := ec.unmarshalInputInputUpdateSessionStartingSR(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 

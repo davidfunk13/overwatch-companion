@@ -98,6 +98,14 @@ type InputSession struct {
 	StartingSrSupport *int `json:"starting_sr_support"`
 }
 
+type InputUpdateSessionStartingSr struct {
+	ID          int  `json:"id"`
+	UserID      int  `json:"userId"`
+	BattletagID int  `json:"battletagId"`
+	Role        Role `json:"role"`
+	StartingSr  int  `json:"starting_sr"`
+}
+
 type MutateItemPayloadFailure struct {
 	ID      int     `json:"id"`
 	Success bool    `json:"success"`

@@ -201,7 +201,11 @@ func CreateGame(input model.InputGame) model.MutateItemPayload {
 			Data:    &errorString,
 		}
 
-		//DELETE GAME YOU JUST ADDED HERE BECAUSE IF SR DOESNT UPDATE IT WILL BE OUT OF SYNC!!!
+		// We need to delete the game we just added and fail the operation as a whole because we need
+		// to keep our SR values consistnent with what is in the game tables.
+		lastGameID := int(lastInsertedID)
+
+		DeleteGame(&lastGameID)
 
 		return payload
 	}

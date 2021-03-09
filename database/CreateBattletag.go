@@ -30,7 +30,7 @@ func CreateBattletag(input model.InputBattletag) model.MutateItemPayload {
 		Portrait:    input.Portrait,
 	}
 
-	// implement a check to see if it exists before inserting when priority allows.
+	// check to see if it exists before inserting
 	exists, err := db.Query(`Select * from battletag where userId=? AND blizzId=?;`, input.UserID, input.BlizzID)
 
 	if err != nil {
