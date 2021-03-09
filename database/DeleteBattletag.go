@@ -11,7 +11,7 @@ func DeleteBattletag(id *int) (model.MutateItemPayload, error) {
 	db, err := OpenConnection()
 
 	defer db.Close()
-	
+
 	//prepare statement to delete the battletag itself.
 	statement, err := db.Prepare("DELETE FROM battletag where id=?")
 
@@ -31,7 +31,7 @@ func DeleteBattletag(id *int) (model.MutateItemPayload, error) {
 
 	var payload model.MutateItemPayload
 
-	if rowsAffected == 1 {
+	if rowsAffected > 0 {
 		payload = model.MutateItemPayloadSuccess{
 			ID:      *id,
 			Success: true,
@@ -40,10 +40,13 @@ func DeleteBattletag(id *int) (model.MutateItemPayload, error) {
 	}
 
 	if rowsAffected == 0 {
+		errStr := "Zero rows Affected"
+
 		payload = model.MutateItemPayloadFailure{
 			ID:      *id,
 			Success: false,
 			Error:   "Delete operation not successful or did not exist.",
+			Data:    &errStr,
 		}
 	}
 

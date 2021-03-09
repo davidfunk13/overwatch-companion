@@ -12,6 +12,10 @@ type MutateItemPayload interface {
 	IsMutateItemPayload()
 }
 
+type OptionalDataPayload interface {
+	IsOptionalDataPayload()
+}
+
 type Battletag struct {
 	ID          int      `json:"id"`
 	UserID      int      `json:"userId"`
@@ -24,6 +28,8 @@ type Battletag struct {
 	IsPublic    *bool    `json:"isPublic"`
 	Portrait    string   `json:"portrait"`
 }
+
+func (Battletag) IsOptionalDataPayload() {}
 
 type BlizzBattletag struct {
 	Name        string   `json:"name"`
@@ -47,6 +53,8 @@ type Game struct {
 	SrOut        int          `json:"sr_out"`
 	MatchOutcome MatchOutcome `json:"match_outcome"`
 }
+
+func (Game) IsOptionalDataPayload() {}
 
 type InputBattletag struct {
 	UserID      int      `json:"userId"`
@@ -91,17 +99,19 @@ type InputSession struct {
 }
 
 type MutateItemPayloadFailure struct {
-	ID      int    `json:"id"`
-	Success bool   `json:"success"`
-	Error   string `json:"error"`
+	ID      int     `json:"id"`
+	Success bool    `json:"success"`
+	Error   string  `json:"error"`
+	Data    *string `json:"data"`
 }
 
 func (MutateItemPayloadFailure) IsMutateItemPayload() {}
 
 type MutateItemPayloadSuccess struct {
-	ID      int    `json:"id"`
-	Success bool   `json:"success"`
-	Message string `json:"message"`
+	ID      int                 `json:"id"`
+	Success bool                `json:"success"`
+	Message string              `json:"message"`
+	Data    OptionalDataPayload `json:"data"`
 }
 
 func (MutateItemPayloadSuccess) IsMutateItemPayload() {}
@@ -117,6 +127,8 @@ type Session struct {
 	StartingSrSupport int `json:"starting_sr_support"`
 	SrSupport         int `json:"sr_support"`
 }
+
+func (Session) IsOptionalDataPayload() {}
 
 type Location string
 

@@ -81,12 +81,14 @@ type ComplexityRoot struct {
 	}
 
 	MutateItemPayloadFailure struct {
+		Data    func(childComplexity int) int
 		Error   func(childComplexity int) int
 		ID      func(childComplexity int) int
 		Success func(childComplexity int) int
 	}
 
 	MutateItemPayloadSuccess struct {
+		Data    func(childComplexity int) int
 		ID      func(childComplexity int) int
 		Message func(childComplexity int) int
 		Success func(childComplexity int) int
@@ -121,11 +123,11 @@ type ComplexityRoot struct {
 }
 
 type MutationResolver interface {
-	CreateBattletag(ctx context.Context, input model.InputBattletag) (*model.Battletag, error)
+	CreateBattletag(ctx context.Context, input model.InputBattletag) (model.MutateItemPayload, error)
 	DeleteBattletag(ctx context.Context, input int) (model.MutateItemPayload, error)
-	CreateSession(ctx context.Context, input model.InputSession) (*model.Session, error)
+	CreateSession(ctx context.Context, input model.InputSession) (model.MutateItemPayload, error)
 	DeleteSession(ctx context.Context, input int) (model.MutateItemPayload, error)
-	CreateGame(ctx context.Context, input model.InputGame) (*model.Game, error)
+	CreateGame(ctx context.Context, input model.InputGame) (model.MutateItemPayload, error)
 	DeleteGame(ctx context.Context, input int) (model.MutateItemPayload, error)
 }
 type QueryResolver interface {
@@ -338,6 +340,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Game.UserID(childComplexity), true
 
+	case "MutateItemPayloadFailure.data":
+		if e.complexity.MutateItemPayloadFailure.Data == nil {
+			break
+		}
+
+		return e.complexity.MutateItemPayloadFailure.Data(childComplexity), true
+
 	case "MutateItemPayloadFailure.error":
 		if e.complexity.MutateItemPayloadFailure.Error == nil {
 			break
@@ -358,6 +367,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.MutateItemPayloadFailure.Success(childComplexity), true
+
+	case "MutateItemPayloadSuccess.data":
+		if e.complexity.MutateItemPayloadSuccess.Data == nil {
+			break
+		}
+
+		return e.complexity.MutateItemPayloadSuccess.Data(childComplexity), true
 
 	case "MutateItemPayloadSuccess.id":
 		if e.complexity.MutateItemPayloadSuccess.ID == nil {
@@ -615,26 +631,26 @@ func (ec *executionContext) introspectType(name string) (*introspection.Type, er
 }
 
 var sources = []*ast.Source{
-	{Name: "graph/schema.graphqls", Input: `enum Platform{
-  PC 
+	{Name: "graph/schema.graphqls", Input: `enum Platform {
+  PC
   NINTENDOSWITCH
   XBOX
   PLAYSTATION
 }
 
-enum Role{
+enum Role {
   TANK
   DAMAGE
   SUPPORT
 }
 
-enum MatchOutcome{
+enum MatchOutcome {
   LOSS
-  WIN 
+  WIN
   DRAW
 }
 
-enum Location{
+enum Location {
   BUSAN
   ILIOS
   LIJIANGTOWER
@@ -666,8 +682,8 @@ type Battletag {
   level: Int!
   playerLevel: Int!
   platform: Platform!
-  isPublic: Boolean,
-  portrait: String!,
+  isPublic: Boolean
+  portrait: String!
 }
 
 input InputBattletag {
@@ -698,16 +714,20 @@ interface MutateItemPayload {
   success: Boolean!
 }
 
+union OptionalDataPayload = Battletag | Session | Game
+
 type MutateItemPayloadSuccess implements MutateItemPayload {
   id: Int!
   success: Boolean!
   message: String!
+  data: OptionalDataPayload
 }
 
 type MutateItemPayloadFailure implements MutateItemPayload {
   id: Int!
   success: Boolean!
   error: String!
+  data: String
 }
 
 # Session schema
@@ -766,7 +786,7 @@ input InputGetGames {
   role: Role
 }
 
-# Queries 
+# Queries
 type Query {
   battletags(input: Int!): [Battletag!]!
   sessions(input: InputGetSessions): [Session!]!
@@ -775,13 +795,14 @@ type Query {
 
 # Mutations
 type Mutation {
-  createBattletag(input: InputBattletag!): Battletag!
+  createBattletag(input: InputBattletag!): MutateItemPayload!
   deleteBattletag(input: Int!): MutateItemPayload!
-  createSession(input: InputSession!): Session!
+  createSession(input: InputSession!): MutateItemPayload!
   deleteSession(input: Int!): MutateItemPayload!
-  createGame(input: InputGame!): Game!
+  createGame(input: InputGame!): MutateItemPayload!
   deleteGame(input: Int!): MutateItemPayload!
-}`, BuiltIn: false},
+}
+`, BuiltIn: false},
 }
 var parsedSchema = gqlparser.MustLoadSchema(sources...)
 
@@ -2024,6 +2045,38 @@ func (ec *executionContext) _MutateItemPayloadFailure_error(ctx context.Context,
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
+func (ec *executionContext) _MutateItemPayloadFailure_data(ctx context.Context, field graphql.CollectedField, obj *model.MutateItemPayloadFailure) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "MutateItemPayloadFailure",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Data, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
 func (ec *executionContext) _MutateItemPayloadSuccess_id(ctx context.Context, field graphql.CollectedField, obj *model.MutateItemPayloadSuccess) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -2129,6 +2182,38 @@ func (ec *executionContext) _MutateItemPayloadSuccess_message(ctx context.Contex
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
+func (ec *executionContext) _MutateItemPayloadSuccess_data(ctx context.Context, field graphql.CollectedField, obj *model.MutateItemPayloadSuccess) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "MutateItemPayloadSuccess",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Data, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(model.OptionalDataPayload)
+	fc.Result = res
+	return ec.marshalOOptionalDataPayload2githubᚗcomᚋdavidfunk13ᚋoverwatchᚑcompanionᚋgraphᚋmodelᚐOptionalDataPayload(ctx, field.Selections, res)
+}
+
 func (ec *executionContext) _Mutation_createBattletag(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -2166,9 +2251,9 @@ func (ec *executionContext) _Mutation_createBattletag(ctx context.Context, field
 		}
 		return graphql.Null
 	}
-	res := resTmp.(*model.Battletag)
+	res := resTmp.(model.MutateItemPayload)
 	fc.Result = res
-	return ec.marshalNBattletag2ᚖgithubᚗcomᚋdavidfunk13ᚋoverwatchᚑcompanionᚋgraphᚋmodelᚐBattletag(ctx, field.Selections, res)
+	return ec.marshalNMutateItemPayload2githubᚗcomᚋdavidfunk13ᚋoverwatchᚑcompanionᚋgraphᚋmodelᚐMutateItemPayload(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Mutation_deleteBattletag(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -2250,9 +2335,9 @@ func (ec *executionContext) _Mutation_createSession(ctx context.Context, field g
 		}
 		return graphql.Null
 	}
-	res := resTmp.(*model.Session)
+	res := resTmp.(model.MutateItemPayload)
 	fc.Result = res
-	return ec.marshalNSession2ᚖgithubᚗcomᚋdavidfunk13ᚋoverwatchᚑcompanionᚋgraphᚋmodelᚐSession(ctx, field.Selections, res)
+	return ec.marshalNMutateItemPayload2githubᚗcomᚋdavidfunk13ᚋoverwatchᚑcompanionᚋgraphᚋmodelᚐMutateItemPayload(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Mutation_deleteSession(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -2334,9 +2419,9 @@ func (ec *executionContext) _Mutation_createGame(ctx context.Context, field grap
 		}
 		return graphql.Null
 	}
-	res := resTmp.(*model.Game)
+	res := resTmp.(model.MutateItemPayload)
 	fc.Result = res
-	return ec.marshalNGame2ᚖgithubᚗcomᚋdavidfunk13ᚋoverwatchᚑcompanionᚋgraphᚋmodelᚐGame(ctx, field.Selections, res)
+	return ec.marshalNMutateItemPayload2githubᚗcomᚋdavidfunk13ᚋoverwatchᚑcompanionᚋgraphᚋmodelᚐMutateItemPayload(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Mutation_deleteGame(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -4283,11 +4368,41 @@ func (ec *executionContext) _MutateItemPayload(ctx context.Context, sel ast.Sele
 	}
 }
 
+func (ec *executionContext) _OptionalDataPayload(ctx context.Context, sel ast.SelectionSet, obj model.OptionalDataPayload) graphql.Marshaler {
+	switch obj := (obj).(type) {
+	case nil:
+		return graphql.Null
+	case model.Battletag:
+		return ec._Battletag(ctx, sel, &obj)
+	case *model.Battletag:
+		if obj == nil {
+			return graphql.Null
+		}
+		return ec._Battletag(ctx, sel, obj)
+	case model.Session:
+		return ec._Session(ctx, sel, &obj)
+	case *model.Session:
+		if obj == nil {
+			return graphql.Null
+		}
+		return ec._Session(ctx, sel, obj)
+	case model.Game:
+		return ec._Game(ctx, sel, &obj)
+	case *model.Game:
+		if obj == nil {
+			return graphql.Null
+		}
+		return ec._Game(ctx, sel, obj)
+	default:
+		panic(fmt.Errorf("unexpected type %T", obj))
+	}
+}
+
 // endregion ************************** interface.gotpl ***************************
 
 // region    **************************** object.gotpl ****************************
 
-var battletagImplementors = []string{"Battletag"}
+var battletagImplementors = []string{"Battletag", "OptionalDataPayload"}
 
 func (ec *executionContext) _Battletag(ctx context.Context, sel ast.SelectionSet, obj *model.Battletag) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, battletagImplementors)
@@ -4418,7 +4533,7 @@ func (ec *executionContext) _BlizzBattletag(ctx context.Context, sel ast.Selecti
 	return out
 }
 
-var gameImplementors = []string{"Game"}
+var gameImplementors = []string{"Game", "OptionalDataPayload"}
 
 func (ec *executionContext) _Game(ctx context.Context, sel ast.SelectionSet, obj *model.Game) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, gameImplementors)
@@ -4511,6 +4626,8 @@ func (ec *executionContext) _MutateItemPayloadFailure(ctx context.Context, sel a
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
+		case "data":
+			out.Values[i] = ec._MutateItemPayloadFailure_data(ctx, field, obj)
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -4548,6 +4665,8 @@ func (ec *executionContext) _MutateItemPayloadSuccess(ctx context.Context, sel a
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
+		case "data":
+			out.Values[i] = ec._MutateItemPayloadSuccess_data(ctx, field, obj)
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -4687,7 +4806,7 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 	return out
 }
 
-var sessionImplementors = []string{"Session"}
+var sessionImplementors = []string{"Session", "OptionalDataPayload"}
 
 func (ec *executionContext) _Session(ctx context.Context, sel ast.SelectionSet, obj *model.Session) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, sessionImplementors)
@@ -4999,10 +5118,6 @@ func (ec *executionContext) ___Type(ctx context.Context, sel ast.SelectionSet, o
 
 // region    ***************************** type.gotpl *****************************
 
-func (ec *executionContext) marshalNBattletag2githubᚗcomᚋdavidfunk13ᚋoverwatchᚑcompanionᚋgraphᚋmodelᚐBattletag(ctx context.Context, sel ast.SelectionSet, v model.Battletag) graphql.Marshaler {
-	return ec._Battletag(ctx, sel, &v)
-}
-
 func (ec *executionContext) marshalNBattletag2ᚕᚖgithubᚗcomᚋdavidfunk13ᚋoverwatchᚑcompanionᚋgraphᚋmodelᚐBattletagᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Battletag) graphql.Marshaler {
 	ret := make(graphql.Array, len(v))
 	var wg sync.WaitGroup
@@ -5063,10 +5178,6 @@ func (ec *executionContext) marshalNBoolean2bool(ctx context.Context, sel ast.Se
 		}
 	}
 	return res
-}
-
-func (ec *executionContext) marshalNGame2githubᚗcomᚋdavidfunk13ᚋoverwatchᚑcompanionᚋgraphᚋmodelᚐGame(ctx context.Context, sel ast.SelectionSet, v model.Game) graphql.Marshaler {
-	return ec._Game(ctx, sel, &v)
 }
 
 func (ec *executionContext) marshalNGame2ᚕᚖgithubᚗcomᚋdavidfunk13ᚋoverwatchᚑcompanionᚋgraphᚋmodelᚐGameᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Game) graphql.Marshaler {
@@ -5194,10 +5305,6 @@ func (ec *executionContext) unmarshalNRole2githubᚗcomᚋdavidfunk13ᚋoverwatc
 
 func (ec *executionContext) marshalNRole2githubᚗcomᚋdavidfunk13ᚋoverwatchᚑcompanionᚋgraphᚋmodelᚐRole(ctx context.Context, sel ast.SelectionSet, v model.Role) graphql.Marshaler {
 	return v
-}
-
-func (ec *executionContext) marshalNSession2githubᚗcomᚋdavidfunk13ᚋoverwatchᚑcompanionᚋgraphᚋmodelᚐSession(ctx context.Context, sel ast.SelectionSet, v model.Session) graphql.Marshaler {
-	return ec._Session(ctx, sel, &v)
 }
 
 func (ec *executionContext) marshalNSession2ᚕᚖgithubᚗcomᚋdavidfunk13ᚋoverwatchᚑcompanionᚋgraphᚋmodelᚐSessionᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Session) graphql.Marshaler {
@@ -5544,6 +5651,13 @@ func (ec *executionContext) marshalOInt2ᚖint(ctx context.Context, sel ast.Sele
 		return graphql.Null
 	}
 	return graphql.MarshalInt(*v)
+}
+
+func (ec *executionContext) marshalOOptionalDataPayload2githubᚗcomᚋdavidfunk13ᚋoverwatchᚑcompanionᚋgraphᚋmodelᚐOptionalDataPayload(ctx context.Context, sel ast.SelectionSet, v model.OptionalDataPayload) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._OptionalDataPayload(ctx, sel, v)
 }
 
 func (ec *executionContext) unmarshalORole2ᚖgithubᚗcomᚋdavidfunk13ᚋoverwatchᚑcompanionᚋgraphᚋmodelᚐRole(ctx context.Context, v interface{}) (*model.Role, error) {

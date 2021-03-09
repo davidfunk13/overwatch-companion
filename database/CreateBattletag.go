@@ -7,7 +7,9 @@ import (
 )
 
 // CreateBattletag is a function that creates a new battletag and returns it to the user.
-func CreateBattletag(input model.InputBattletag) *model.Battletag {
+func CreateBattletag(input model.InputBattletag) model.MutateItemPayload {
+	var payload model.MutateItemPayload
+
 	db, err := OpenConnection()
 
 	if err != nil {
@@ -28,12 +30,39 @@ func CreateBattletag(input model.InputBattletag) *model.Battletag {
 		Portrait:    input.Portrait,
 	}
 
-	//implement a check to see if it exists before inserting when priority allows.
-	// exists, err := db.Query(`Select * from battletag where userId=? AND blizzId=?;`, input.UserID, input.BlizzID)
+	// implement a check to see if it exists before inserting when priority allows.
+	exists, err := db.Query(`Select * from battletag where userId=? AND blizzId=?;`, input.UserID, input.BlizzID)
 
-	// if err != nil {
-	// 	panic(err.Error())
-	// }
+	if err != nil {
+		errorString := err.Error()
+
+		payload = model.MutateItemPayloadFailure{
+			Success: false,
+			Error:   "Error during check for existing battletag",
+			Data:    &errorString,
+		}
+
+		return payload
+	}
+
+	type tempType []map[string]interface{}
+
+	var existing []tempType
+
+	for exists.Next() {
+		item := tempType{}
+
+		existing = append(existing, item)
+	}
+
+	if len(existing) > 0 {
+		payload = model.MutateItemPayloadFailure{
+			Success: false,
+			Error:   "Battletag already exists.",
+		}
+
+		return payload
+	}
 
 	qstr := `INSERT INTO battletag (
 		userId,
@@ -50,7 +79,15 @@ func CreateBattletag(input model.InputBattletag) *model.Battletag {
 	statement, err := db.Prepare(qstr)
 
 	if err != nil {
-		panic(err.Error())
+		errorString := err.Error()
+
+		payload = model.MutateItemPayloadFailure{
+			Success: false,
+			Error:   "Error during check for existing battletag",
+			Data:    &errorString,
+		}
+
+		return payload
 	}
 
 	res, err := statement.Exec(
@@ -66,7 +103,15 @@ func CreateBattletag(input model.InputBattletag) *model.Battletag {
 	)
 
 	if err != nil {
-		panic(err.Error())
+		errorString := err.Error()
+
+		payload = model.MutateItemPayloadFailure{
+			Success: false,
+			Error:   "Error executing statement to insert new battletag record",
+			Data:    &errorString,
+		}
+
+		return payload
 	}
 
 	fmt.Println("Successfully inserted")
@@ -74,7 +119,15 @@ func CreateBattletag(input model.InputBattletag) *model.Battletag {
 	lastInsertedID, err := res.LastInsertId()
 
 	if err != nil {
-		panic(err.Error())
+		errorString := err.Error()
+
+		payload = model.MutateItemPayloadFailure{
+			Success: false,
+			Error:   "Error getting last inserted record.",
+			Data:    &errorString,
+		}
+
+		return payload
 	}
 
 	lastInserted := db.QueryRow(`Select * from battletag where id=?;`, lastInsertedID)
@@ -85,6 +138,7 @@ func CreateBattletag(input model.InputBattletag) *model.Battletag {
 		name, urlName, portrait                 string
 		platform                                model.Platform
 	)
+
 	err = lastInserted.Scan(&id, &userId, &name, &urlName, &blizzId, &level, &playerLevel, &platform, &isPublic, &portrait)
 
 	insertedBattletag := model.Battletag{
@@ -100,5 +154,12 @@ func CreateBattletag(input model.InputBattletag) *model.Battletag {
 		Portrait:    portrait,
 	}
 
-	return &insertedBattletag
+	payload = model.MutateItemPayloadSuccess{
+		ID:      insertedBattletag.ID,
+		Success: true,
+		Message: "Battletag successfully created",
+		Data:    &insertedBattletag,
+	}
+
+	return payload
 }

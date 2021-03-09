@@ -7,8 +7,11 @@ import (
 )
 
 //CreateGame creates a game for the user to store against a session.
-func CreateGame(input model.InputGame) model.Game {
-	
+func CreateGame(input model.InputGame) model.MutateItemPayload {
+
+	//payload
+	var payload model.MutateItemPayload
+
 	//open connection to the database
 	db, err := OpenConnection()
 
@@ -33,11 +36,11 @@ func CreateGame(input model.InputGame) model.Game {
 	// define set of variables to hold previous game's values
 	var (
 		prevId, prevUserId, prevBattletagId, prevSessionId, prevSrIn, prevSrOut int
-		prevLocation                                        model.Location
-		prevRole                                            model.Role
-		prevMatchOutcome                                    model.MatchOutcome
+		prevLocation                                                            model.Location
+		prevRole                                                                model.Role
+		prevMatchOutcome                                                        model.MatchOutcome
 	)
-	
+
 	//Get games for this role in this user's battletags' session, if they exist.
 	prevQstr := `SELECT * from game WHERE userId=? AND battletagId=? AND sessionId=? AND role=?;`
 	prevGameStatement, err := db.Query(prevQstr, input.UserID, input.BattletagID, input.SessionID, input.Role)
@@ -46,34 +49,33 @@ func CreateGame(input model.InputGame) model.Game {
 		panic(err.Error())
 	}
 
-	//create empty array to hold temporary existing games, if they exist. 
+	//create empty array to hold temporary existing games, if they exist.
 	var prevGames []*model.Game
 
 	for prevGameStatement.Next() {
 		err = prevGameStatement.Scan(&prevId, &prevUserId, &prevBattletagId, &prevSessionId, &prevLocation, &prevRole, &prevSrIn, &prevSrOut, &prevMatchOutcome)
 
 		g := model.Game{
-			ID: prevId, 
-			UserID: prevUserId, 
-			BattletagID: prevBattletagId, 
-			SessionID: prevSessionId,
-			Location: prevLocation,
-			Role: prevRole,
-			SrIn: prevSrIn,
-			SrOut: prevSrOut,
+			ID:           prevId,
+			UserID:       prevUserId,
+			BattletagID:  prevBattletagId,
+			SessionID:    prevSessionId,
+			Location:     prevLocation,
+			Role:         prevRole,
+			SrIn:         prevSrIn,
+			SrOut:        prevSrOut,
 			MatchOutcome: prevMatchOutcome,
 		}
 
-		prevGames = append(prevGames, &g)		
+		prevGames = append(prevGames, &g)
 	}
-	
 
 	// if we get any games back from the db (meaning there is a previous game to pull srIn from...)
 	// grab the sr_out of the most recent game.
 	var prevGameSrOut int
-	
+
 	if len(prevGames) > 0 {
-		lastGame:= prevGames[len(prevGames) - 1]
+		lastGame := prevGames[len(prevGames)-1]
 		prevGameSrOut = lastGame.SrOut
 		fmt.Println("Last Game: ", lastGame)
 	}
@@ -89,7 +91,7 @@ func CreateGame(input model.InputGame) model.Game {
 		sr_out,
 		match_outcome
 	) VALUES (?, ?, ?, ?, ?, ?, ?, ?);`
-	
+
 	statement, err := db.Prepare(qstr)
 
 	if err != nil {
@@ -103,22 +105,38 @@ func CreateGame(input model.InputGame) model.Game {
 		gameInput.SessionID,
 		gameInput.Location,
 		gameInput.Role,
-		prevGameSrOut, 
+		prevGameSrOut,
 		gameInput.SrOut,
 		gameInput.MatchOutcome,
 	)
 
 	if err != nil {
-		panic(err.Error())
+		errorString := err.Error()
+
+		payload = model.MutateItemPayloadFailure{
+			Success: false,
+			Error:   "Error inserting game into database",
+			Data:    &errorString,
+		}
+
+		return payload
 	}
 
 	fmt.Println("Successfully inserted game to session")
-	
+
 	//get the id of the new game record we just inserted, store for reference.
 	lastInsertedID, err := res.LastInsertId()
 
 	if err != nil {
-		panic(err.Error())
+		errorString := err.Error()
+
+		payload = model.MutateItemPayloadFailure{
+			Success: false,
+			Error:   "Error getting Id of last inserted game",
+			Data:    &errorString,
+		}
+
+		return payload
 	}
 
 	// get the game we just inserted
@@ -126,13 +144,13 @@ func CreateGame(input model.InputGame) model.Game {
 
 	// define new set of variables to hold values of game we just inserted.
 	var (
-		id, userId, battletagId, sessionId, srIn, srOut int 
-		role model.Role
-		location model.Location
-		matchOutcome model.MatchOutcome
+		id, userId, battletagId, sessionId, srIn, srOut int
+		role                                            model.Role
+		location                                        model.Location
+		matchOutcome                                    model.MatchOutcome
 	)
 
-	err = lastInserted.Scan(&id, &userId, &battletagId, &sessionId, &location, &role, &srIn, &srOut, &matchOutcome )
+	err = lastInserted.Scan(&id, &userId, &battletagId, &sessionId, &location, &role, &srIn, &srOut, &matchOutcome)
 
 	if err != nil {
 		panic(err.Error())
@@ -150,10 +168,10 @@ func CreateGame(input model.InputGame) model.Game {
 		SrOut:        srOut,
 		MatchOutcome: matchOutcome,
 	}
-	
+
 	//variable to hold our statement to update the session's SR, depending on what role the game we just created is.
 	var updateSessionStr string
-	
+
 	switch role {
 	case "TANK":
 		updateSessionStr = "UPDATE session SET sr_tank=? WHERE id=? and userId=? and battletagId=?;"
@@ -163,7 +181,7 @@ func CreateGame(input model.InputGame) model.Game {
 		updateSessionStr = "UPDATE session SET sr_support=? WHERE id=? and userId=? and battletagId=?;"
 	}
 
-	//try passing in a pointer to the string here, observe behavior. 
+	//try passing in a pointer to the string here, observe behavior.
 	updateSessionStatement, err := db.Prepare(updateSessionStr)
 
 	// srOut will be our value we use to update, and will be presumably going to the right place because of the above switch statement.
@@ -171,14 +189,31 @@ func CreateGame(input model.InputGame) model.Game {
 		srOut,
 		sessionId,
 		userId,
-		battletagId,		
+		battletagId,
 	)
 
 	if err != nil {
-		panic(err.Error())
+		errorString := err.Error()
+
+		payload = model.MutateItemPayloadFailure{
+			Success: false,
+			Error:   "Error updating session SR after this game inserted.",
+			Data:    &errorString,
+		}
+
+		//DELETE GAME YOU JUST ADDED HERE BECAUSE IF SR DOESNT UPDATE IT WILL BE OUT OF SYNC!!!
+
+		return payload
 	}
 
 	fmt.Printf("Session SR for %s sucessfully updated in session %d for battletag %d for user %d", role, sessionId, battletagId, userId)
 
-	return insertedGame
+	payload = &model.MutateItemPayloadSuccess{
+		ID:      insertedGame.ID,
+		Success: true,
+		Message: "Successfully inserted game.",
+		Data:    insertedGame,
+	}
+
+	return payload
 }

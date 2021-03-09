@@ -11,6 +11,7 @@ func DeleteGame(id *int) (model.MutateItemPayload, error) {
 	db, err := OpenConnection()
 
 	defer db.Close()
+
 	statement, err := db.Prepare("DELETE FROM game where id=?")
 
 	if err != nil {
@@ -27,7 +28,7 @@ func DeleteGame(id *int) (model.MutateItemPayload, error) {
 
 	var payload model.MutateItemPayload
 
-	if rowsAffected == 1 {
+	if rowsAffected > 0 {
 		payload = model.MutateItemPayloadSuccess{
 			ID:      *id,
 			Success: true,
@@ -36,10 +37,13 @@ func DeleteGame(id *int) (model.MutateItemPayload, error) {
 	}
 
 	if rowsAffected == 0 {
+		errStr := "Zero rows affected"
+
 		payload = model.MutateItemPayloadFailure{
 			ID:      *id,
 			Success: false,
 			Error:   "Delete operation not successful or did not exist.",
+			Data:    &errStr,
 		}
 	}
 

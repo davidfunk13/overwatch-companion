@@ -28,7 +28,7 @@ func DeleteSession(id *int) (model.MutateItemPayload, error) {
 
 	var payload model.MutateItemPayload
 
-	if rowsAffected == 1 {
+	if rowsAffected > 0 {
 		payload = model.MutateItemPayloadSuccess{
 			ID:      *id,
 			Success: true,
@@ -43,7 +43,7 @@ func DeleteSession(id *int) (model.MutateItemPayload, error) {
 			Error:   "Delete operation not successful or did not exist.",
 		}
 	}
-	
+
 	return payload, nil
 
 }

@@ -11,11 +11,8 @@ import (
 	"github.com/davidfunk13/overwatch-companion/graph/model"
 )
 
-func (r *mutationResolver) CreateBattletag(ctx context.Context, input model.InputBattletag) (*model.Battletag, error) {
+func (r *mutationResolver) CreateBattletag(ctx context.Context, input model.InputBattletag) (model.MutateItemPayload, error) {
 	inserted := database.CreateBattletag(input)
-
-	//why do we do this?!? why not just create and return; query and return? why append to resolver?
-	r.battletags = append(r.battletags, inserted)
 
 	return inserted, nil
 }
@@ -30,13 +27,13 @@ func (r *mutationResolver) DeleteBattletag(ctx context.Context, input int) (mode
 	return deleted, nil
 }
 
-func (r *mutationResolver) CreateSession(ctx context.Context, input model.InputSession) (*model.Session, error) {
+func (r *mutationResolver) CreateSession(ctx context.Context, input model.InputSession) (model.MutateItemPayload, error) {
 	inserted := database.CreateSession(input)
 
 	//why do we do this?!? why not just create and return; query and return? why append to resolver?
-	r.sessions = append(r.sessions, inserted)
+	// r.sessions = append(r.sessions, inserted)
 
-	return &inserted, nil
+	return inserted, nil
 }
 
 func (r *mutationResolver) DeleteSession(ctx context.Context, input int) (model.MutateItemPayload, error) {
@@ -49,13 +46,13 @@ func (r *mutationResolver) DeleteSession(ctx context.Context, input int) (model.
 	return deleted, nil
 }
 
-func (r *mutationResolver) CreateGame(ctx context.Context, input model.InputGame) (*model.Game, error) {
+func (r *mutationResolver) CreateGame(ctx context.Context, input model.InputGame) (model.MutateItemPayload, error) {
 	inserted := database.CreateGame(input)
 
 	//why do we do this?!? why not just create and return; query and return? why append to resolver?
-	r.games = append(r.games, inserted)
+	// r.games = append(r.games, inserted)
 
-	return &inserted, nil
+	return inserted, nil
 }
 
 func (r *mutationResolver) DeleteGame(ctx context.Context, input int) (model.MutateItemPayload, error) {

@@ -10,9 +10,9 @@ import (
 	"github.com/davidfunk13/overwatch-companion/graph/model"
 )
 
-func SearchBattletags(b string) []model.BlizzBattletag{
+func SearchBattletags(b string) []model.BlizzBattletag {
 
-	url := "https://playoverwatch.com/en-us/search/account-by-name/"+b
+	url := "https://playoverwatch.com/en-us/search/account-by-name/" + b
 	method := "GET"
 
 	client := &http.Client{}
@@ -22,45 +22,46 @@ func SearchBattletags(b string) []model.BlizzBattletag{
 		fmt.Println(err)
 		panic(err.Error())
 	}
-	
+
 	res, err := client.Do(req)
-	
+
 	if err != nil {
 		fmt.Println(err)
 		panic(err.Error())
 	}
-	
+
 	defer res.Body.Close()
 
+	// We can probably do this WAY better.....
 	body, err := ioutil.ReadAll(res.Body)
-	
+
 	if err != nil {
 		fmt.Println(err)
 		panic(err.Error())
 	}
 	var data []map[string]interface{}
-	
+
 	if err := json.Unmarshal(body, &data); err != nil {
-        panic(err)
-    }
-	
+		panic(err)
+	}
+
 	var battletags []model.BlizzBattletag
-	
-	for _,b := range data {
-		
+
+	for _, b := range data {
+
 		p := b["platform"].(string)
 		pSanitized := strings.Join(strings.Split(p, " "), "")
-		pUpper :=  strings.ToUpper(pSanitized)
+		pUpper := strings.ToUpper(pSanitized)
 
-		t:= model.BlizzBattletag{
-			Name: b["name"].(string),
-			URLName: b["urlName"].(string),
-			BlizzID: int(b["id"].(float64)),
-			Level: int(b["level"].(float64)),
+		t := model.BlizzBattletag{
+			Name:        b["name"].(string),
+			URLName:     b["urlName"].(string),
+			BlizzID:     int(b["id"].(float64)),
+			Level:       int(b["level"].(float64)),
 			PlayerLevel: int(b["playerLevel"].(float64)),
-			Platform: model.Platform(pUpper),
-			IsPublic: b["isPublic"].(bool),
-			Portrait: b["portrait"].(string),
+			Platform:    model.Platform(pUpper),
+			IsPublic:    b["isPublic"].(bool),
+			Portrait:    b["portrait"].(string),
 		}
 
 		battletags = append(battletags, t)

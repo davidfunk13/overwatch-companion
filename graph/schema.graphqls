@@ -1,23 +1,23 @@
-enum Platform{
-  PC 
+enum Platform {
+  PC
   NINTENDOSWITCH
   XBOX
   PLAYSTATION
 }
 
-enum Role{
+enum Role {
   TANK
   DAMAGE
   SUPPORT
 }
 
-enum MatchOutcome{
+enum MatchOutcome {
   LOSS
-  WIN 
+  WIN
   DRAW
 }
 
-enum Location{
+enum Location {
   BUSAN
   ILIOS
   LIJIANGTOWER
@@ -49,8 +49,8 @@ type Battletag {
   level: Int!
   playerLevel: Int!
   platform: Platform!
-  isPublic: Boolean,
-  portrait: String!,
+  isPublic: Boolean
+  portrait: String!
 }
 
 input InputBattletag {
@@ -81,16 +81,20 @@ interface MutateItemPayload {
   success: Boolean!
 }
 
+union OptionalDataPayload = Battletag | Session | Game
+
 type MutateItemPayloadSuccess implements MutateItemPayload {
   id: Int!
   success: Boolean!
   message: String!
+  data: OptionalDataPayload
 }
 
 type MutateItemPayloadFailure implements MutateItemPayload {
   id: Int!
   success: Boolean!
   error: String!
+  data: String
 }
 
 # Session schema
@@ -149,7 +153,7 @@ input InputGetGames {
   role: Role
 }
 
-# Queries 
+# Queries
 type Query {
   battletags(input: Int!): [Battletag!]!
   sessions(input: InputGetSessions): [Session!]!
@@ -158,10 +162,10 @@ type Query {
 
 # Mutations
 type Mutation {
-  createBattletag(input: InputBattletag!): Battletag!
+  createBattletag(input: InputBattletag!): MutateItemPayload!
   deleteBattletag(input: Int!): MutateItemPayload!
-  createSession(input: InputSession!): Session!
+  createSession(input: InputSession!): MutateItemPayload!
   deleteSession(input: Int!): MutateItemPayload!
-  createGame(input: InputGame!): Game!
+  createGame(input: InputGame!): MutateItemPayload!
   deleteGame(input: Int!): MutateItemPayload!
 }

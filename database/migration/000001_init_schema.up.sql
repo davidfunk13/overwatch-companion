@@ -34,7 +34,7 @@ CREATE TABLE `game` (
     "ILIOS",
     "LIJIANGTOWER",
     "NEPAL",
-    0 "OASIS",
+    "OASIS",
     "HANAMURA",
     "TEMPLEOFANUBIS",
     "VOLSKAYAINDUSTRIES",
