@@ -1,8 +1,6 @@
 package database
 
 import (
-	"fmt"
-
 	"github.com/davidfunk13/overwatch-companion/graph/model"
 )
 
@@ -76,8 +74,6 @@ func UpdateSessionStartingSR(input model.InputUpdateSessionStartingSr) model.Mut
 	//try passing in a pointer to the string here, observe behavior.
 	updateSessionStatement, err := db.Prepare(updateSessionStr)
 
-	fmt.Printf("UPDATE STATEMENT: %s", updateSessionStr)
-
 	res, err := updateSessionStatement.Exec(
 		input.StartingSr,
 		input.ID,
@@ -106,7 +102,7 @@ func UpdateSessionStartingSR(input model.InputUpdateSessionStartingSr) model.Mut
 	if affected == 0 {
 		payload = model.MutateItemPayloadFailure{
 			Success: false,
-			Error:   "Session you are trying to update does not exist.",
+			Error:   "Session you are trying to update does not exist, or no changes were made.",
 		}
 
 		return payload

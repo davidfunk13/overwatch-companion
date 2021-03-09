@@ -162,6 +162,42 @@ mutation {
   }
 }
 
+# Update a sessions starting SR
+mutation {
+  updateSessionStartingSR(
+    input: {
+      id: 26
+      userId: 1
+      battletagId: 5
+      role: SUPPORT
+      starting_sr: 2222
+    }
+  ) {
+    success
+    ... on MutateItemPayloadSuccess {
+      id
+      message
+      data {
+        ... on Session {
+          id
+          userId
+          battletagId
+          starting_sr_tank
+          sr_tank
+          starting_sr_damage
+          sr_damage
+          starting_sr_support
+          sr_support
+        }
+      }
+    }
+    ... on MutateItemPayloadFailure {
+      error
+      data
+    }
+  }
+}
+
 # # # Game Mutations # # #
 
 # Create a game. takes all this junk as input
@@ -170,22 +206,31 @@ mutation {
   createGame(
     input: {
       userId: 1
-      battletagId: 7
-      sessionId: 2
+      battletagId: 5
+      sessionId: 26
       location: ROUTE66
       role: DAMAGE
       sr_out: 3333
       match_outcome: WIN
     }
   ) {
-    id
-    userId
-    battletagId
-    sessionId
-    location
-    role
-    sr_in
-    sr_out
-    match_outcome
+    success
+    ... on MutateItemPayloadSuccess {
+      id
+      message
+      data {
+        ... on Game {
+          id
+          userId
+          battletagId
+          sessionId
+          location
+          role
+          sr_in
+          sr_out
+          match_outcome
+        }
+      }
+    }
   }
 }
