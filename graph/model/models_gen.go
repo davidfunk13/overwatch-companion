@@ -16,6 +16,10 @@ type OptionalDataPayload interface {
 	IsOptionalDataPayload()
 }
 
+type QueryItemPayload interface {
+	IsQueryItemPayload()
+}
+
 type Battletag struct {
 	ID          int      `json:"id"`
 	UserID      int      `json:"userId"`
@@ -85,6 +89,11 @@ type InputGetGames struct {
 	Role        *Role `json:"role"`
 }
 
+type InputGetOneSessionByIDAndBattletagID struct {
+	ID          int `json:"id"`
+	BattletagID int `json:"battletagId"`
+}
+
 type InputGetSessions struct {
 	UserID      int `json:"userId"`
 	BattletagID int `json:"battletagId"`
@@ -123,6 +132,20 @@ type MutateItemPayloadSuccess struct {
 }
 
 func (MutateItemPayloadSuccess) IsMutateItemPayload() {}
+
+type QueryItemFailure struct {
+	Success bool    `json:"success"`
+	Error   *string `json:"error"`
+}
+
+func (QueryItemFailure) IsQueryItemPayload() {}
+
+type QueryItemSuccess struct {
+	Success bool                `json:"success"`
+	Data    OptionalDataPayload `json:"data"`
+}
+
+func (QueryItemSuccess) IsQueryItemPayload() {}
 
 type Session struct {
 	ID                int `json:"id"`

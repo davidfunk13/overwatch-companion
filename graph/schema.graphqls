@@ -39,6 +39,42 @@ enum Location {
   NUMBANI
 }
 
+# Utilities
+interface MutateItemPayload {
+  id: Int
+  success: Boolean!
+}
+
+union OptionalDataPayload = Battletag | Session | Game
+
+type MutateItemPayloadSuccess implements MutateItemPayload {
+  id: Int!
+  success: Boolean!
+  message: String!
+  data: OptionalDataPayload
+}
+
+type MutateItemPayloadFailure implements MutateItemPayload {
+  id: Int!
+  success: Boolean!
+  error: String!
+  data: String
+}
+
+interface QueryItemPayload {
+  success: Boolean!
+}
+
+type QueryItemFailure implements QueryItemPayload {
+  success: Boolean!
+  error: String
+}
+
+type QueryItemSuccess implements QueryItemPayload {
+  success: Boolean!
+  data: OptionalDataPayload
+}
+
 # Battletag schemas
 type Battletag {
   id: Int!
@@ -76,27 +112,6 @@ type BlizzBattletag {
   portrait: String!
 }
 
-interface MutateItemPayload {
-  id: Int
-  success: Boolean!
-}
-
-union OptionalDataPayload = Battletag | Session | Game
-
-type MutateItemPayloadSuccess implements MutateItemPayload {
-  id: Int!
-  success: Boolean!
-  message: String!
-  data: OptionalDataPayload
-}
-
-type MutateItemPayloadFailure implements MutateItemPayload {
-  id: Int!
-  success: Boolean!
-  error: String!
-  data: String
-}
-
 # Session schema
 type Session {
   id: Int!
@@ -120,6 +135,11 @@ input InputSession {
 
 input InputGetSessions {
   userId: Int!
+  battletagId: Int!
+}
+
+input InputGetOneSessionByIDAndBattletagID {
+  id: Int!
   battletagId: Int!
 }
 
@@ -165,6 +185,7 @@ input InputGetGames {
 type Query {
   battletags(input: Int!): [Battletag!]!
   sessions(input: InputGetSessions): [Session!]!
+  session(input: InputGetOneSessionByIDAndBattletagID): QueryItemPayload!
   games(input: InputGetGames): [Game!]!
 }
 

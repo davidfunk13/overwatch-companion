@@ -78,6 +78,8 @@ func CreateGame(input model.InputGame) model.MutateItemPayload {
 		lastGame := prevGames[len(prevGames)-1]
 		prevGameSrOut = lastGame.SrOut
 		fmt.Println("Last Game: ", lastGame)
+		// ..here we check if the starting SR is > 0. if it's zero, we bail.
+		// ()
 	}
 
 	//prepare to insert input type into the database as a new game

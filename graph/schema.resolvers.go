@@ -91,6 +91,12 @@ func (r *queryResolver) Sessions(ctx context.Context, input *model.InputGetSessi
 	return sessions, nil
 }
 
+func (r *queryResolver) Session(ctx context.Context, input *model.InputGetOneSessionByIDAndBattletagID) (model.QueryItemPayload, error) {
+	session := database.GetSession(input)
+
+	return session, nil
+}
+
 func (r *queryResolver) Games(ctx context.Context, input *model.InputGetGames) ([]*model.Game, error) {
 	games, err := database.SelectAllGames(*input)
 

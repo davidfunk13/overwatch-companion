@@ -3,7 +3,7 @@
 # # # Battletag Queries # # #
 
 # Select battletag belonging to a user. takes an id.
-
+# Arguments: { id int }
 query {
   battletags(input: 1) {
     id
@@ -16,7 +16,9 @@ query {
 
 # # # Session Queries # # #
 
-# Get a user's sessions belonging to a particular battletag. Takes a userId and a battletagId
+# Get all sessions for user
+# Arguments: { userId int, battletagId int }
+
 query {
   sessions(input: { userId: 1, battletagId: 2 }) {
     id
@@ -28,6 +30,33 @@ query {
     sr_damage
     starting_sr_support
     sr_support
+  }
+}
+
+# Get One Session
+# Arguments: id int, battletagId int
+query {
+  session(input: { id: 27, battletagId: 4 }) {
+    ... on QueryItemSuccess {
+      success
+      data {
+        ... on Session {
+          id
+          userId
+          battletagId
+          starting_sr_tank
+          sr_tank
+          starting_sr_damage
+          sr_damage
+          starting_sr_support
+          sr_support
+        }
+      }
+    }
+    ... on QueryItemFailure {
+      success
+      error
+    }
   }
 }
 
@@ -85,28 +114,6 @@ mutation {
           isPublic
           portrait
         }
-        ... on Session {
-          id
-          userId
-          battletagId
-          starting_sr_tank
-          sr_tank
-          starting_sr_damage
-          sr_damage
-          starting_sr_support
-          sr_support
-        }
-        ... on Game {
-          id
-          userId
-          battletagId
-          sessionId
-          location
-          role
-          sr_in
-          sr_out
-          match_outcome
-        }
       }
     }
     ... on MutateItemPayloadFailure {
@@ -136,7 +143,12 @@ mutation {
 # Create a session. takes a userId and a battletagId as input.
 mutation {
   createSession(
-    input: { userId: 1, battletagId: 4, starting_sr_support: 4300 }
+    input: {
+      userId: 1
+      battletagId: 8
+      starting_sr_support: 2222
+      starting_sr_tank: 2222
+    }
   ) {
     success
     ... on MutateItemPayloadSuccess {
@@ -194,6 +206,20 @@ mutation {
     ... on MutateItemPayloadFailure {
       error
       data
+    }
+  }
+}
+
+# DELETE a session
+mutation {
+  deleteSession(input: 37) {
+    success
+    ... on MutateItemPayloadSuccess {
+      id
+      message
+    }
+    ... on MutateItemPayloadFailure {
+      error
     }
   }
 }
