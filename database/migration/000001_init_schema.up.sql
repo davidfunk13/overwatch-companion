@@ -1,6 +1,6 @@
 CREATE TABLE `battletag` (
   `id` int NOT NULL AUTO_INCREMENT,
-  `userId` int NOT NULL,
+  `userId` varchar(100) NOT NULL,
   `name` varchar(100) NOT NULL,
   `urlName` varchar(100) NOT NULL,
   `blizzId` int NOT NULL,
@@ -11,6 +11,7 @@ CREATE TABLE `battletag` (
   `portrait` varchar(100) NOT NULL,
   PRIMARY KEY (`id`)
 );
+
 CREATE TABLE `session` (
   `id` int NOT NULL AUTO_INCREMENT,
   `userId` int NOT NULL,
@@ -24,6 +25,7 @@ CREATE TABLE `session` (
   FOREIGN KEY (`battletagId`) REFERENCES `battletag` (`id`) ON DELETE CASCADE,
   PRIMARY KEY (`id`)
 );
+
 CREATE TABLE `game` (
   `id` int NOT NULL AUTO_INCREMENT,
   `userId` int NOT NULL,

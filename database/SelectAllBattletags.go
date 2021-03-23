@@ -26,10 +26,11 @@ func SelectAllBattletags(uId int) ([]*model.Battletag, error) {
 
 	for res.Next() {
 		var (
-			id, userId, blizzId, level, playerLevel int
-			isPublic                                bool
-			name, urlName, portrait                 string
-			platform                                model.Platform
+			userId                          string
+			id, blizzId, level, playerLevel int
+			isPublic                        bool
+			name, urlName, portrait         string
+			platform                        model.Platform
 		)
 
 		err = res.Scan(

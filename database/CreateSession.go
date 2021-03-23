@@ -107,7 +107,10 @@ func CreateSession(input model.InputSession) model.MutateItemPayload {
 	// Get last inserted session
 	lastInserted := db.QueryRow(`Select * from session where id=?;`, lastInsertedID)
 
-	var id, userId, battletagId, starting_sr_tank, sr_tank, starting_sr_damage, sr_damage, starting_sr_support, sr_support int
+	var (
+		userId                                                                                                     string
+		id, battletagId, starting_sr_tank, sr_tank, starting_sr_damage, sr_damage, starting_sr_support, sr_support int
+	)
 
 	err = lastInserted.Scan(
 		&id,

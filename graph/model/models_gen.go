@@ -22,7 +22,7 @@ type QueryItemPayload interface {
 
 type Battletag struct {
 	ID          int      `json:"id"`
-	UserID      int      `json:"userId"`
+	UserID      string   `json:"userId"`
 	Name        string   `json:"name"`
 	URLName     string   `json:"urlName"`
 	BlizzID     int      `json:"blizzId"`
@@ -48,7 +48,7 @@ type BlizzBattletag struct {
 
 type Game struct {
 	ID           int          `json:"id"`
-	UserID       int          `json:"userId"`
+	UserID       string       `json:"userId"`
 	BattletagID  int          `json:"battletagId"`
 	SessionID    int          `json:"sessionId"`
 	Location     Location     `json:"location"`
@@ -61,7 +61,7 @@ type Game struct {
 func (Game) IsOptionalDataPayload() {}
 
 type InputBattletag struct {
-	UserID      int      `json:"userId"`
+	UserID      string   `json:"userId"`
 	Name        string   `json:"name"`
 	URLName     string   `json:"urlName"`
 	BlizzID     int      `json:"blizzId"`
@@ -73,7 +73,7 @@ type InputBattletag struct {
 }
 
 type InputGame struct {
-	UserID       int          `json:"userId"`
+	UserID       string       `json:"userId"`
 	BattletagID  int          `json:"battletagId"`
 	SessionID    int          `json:"sessionId"`
 	Location     Location     `json:"location"`
@@ -83,10 +83,10 @@ type InputGame struct {
 }
 
 type InputGetGames struct {
-	UserID      int   `json:"userId"`
-	BattletagID int   `json:"battletagId"`
-	SessionID   int   `json:"sessionId"`
-	Role        *Role `json:"role"`
+	UserID      string `json:"userId"`
+	BattletagID int    `json:"battletagId"`
+	SessionID   int    `json:"sessionId"`
+	Role        *Role  `json:"role"`
 }
 
 type InputGetOneSessionByIDAndBattletagID struct {
@@ -95,24 +95,24 @@ type InputGetOneSessionByIDAndBattletagID struct {
 }
 
 type InputGetSessions struct {
-	UserID      int `json:"userId"`
-	BattletagID int `json:"battletagId"`
+	UserID      string `json:"userId"`
+	BattletagID int    `json:"battletagId"`
 }
 
 type InputSession struct {
-	UserID            int  `json:"userId"`
-	BattletagID       int  `json:"battletagId"`
-	StartingSrTank    *int `json:"starting_sr_tank"`
-	StartingSrDamage  *int `json:"starting_sr_damage"`
-	StartingSrSupport *int `json:"starting_sr_support"`
+	UserID            string `json:"userId"`
+	BattletagID       int    `json:"battletagId"`
+	StartingSrTank    *int   `json:"starting_sr_tank"`
+	StartingSrDamage  *int   `json:"starting_sr_damage"`
+	StartingSrSupport *int   `json:"starting_sr_support"`
 }
 
 type InputUpdateSessionStartingSr struct {
-	ID          int  `json:"id"`
-	UserID      int  `json:"userId"`
-	BattletagID int  `json:"battletagId"`
-	Role        Role `json:"role"`
-	StartingSr  int  `json:"starting_sr"`
+	ID          int    `json:"id"`
+	UserID      string `json:"userId"`
+	BattletagID int    `json:"battletagId"`
+	Role        Role   `json:"role"`
+	StartingSr  int    `json:"starting_sr"`
 }
 
 type MutateItemPayloadFailure struct {
@@ -148,15 +148,15 @@ type QueryItemSuccess struct {
 func (QueryItemSuccess) IsQueryItemPayload() {}
 
 type Session struct {
-	ID                int `json:"id"`
-	UserID            int `json:"userId"`
-	BattletagID       int `json:"battletagId"`
-	StartingSrTank    int `json:"starting_sr_tank"`
-	SrTank            int `json:"sr_tank"`
-	StartingSrDamage  int `json:"starting_sr_damage"`
-	SrDamage          int `json:"sr_damage"`
-	StartingSrSupport int `json:"starting_sr_support"`
-	SrSupport         int `json:"sr_support"`
+	ID                int    `json:"id"`
+	UserID            string `json:"userId"`
+	BattletagID       int    `json:"battletagId"`
+	StartingSrTank    int    `json:"starting_sr_tank"`
+	SrTank            int    `json:"sr_tank"`
+	StartingSrDamage  int    `json:"starting_sr_damage"`
+	SrDamage          int    `json:"sr_damage"`
+	StartingSrSupport int    `json:"starting_sr_support"`
+	SrSupport         int    `json:"sr_support"`
 }
 
 func (Session) IsOptionalDataPayload() {}

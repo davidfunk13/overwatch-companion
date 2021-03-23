@@ -35,10 +35,11 @@ func CreateGame(input model.InputGame) model.MutateItemPayload {
 
 	// define set of variables to hold previous game's values
 	var (
-		prevId, prevUserId, prevBattletagId, prevSessionId, prevSrIn, prevSrOut int
-		prevLocation                                                            model.Location
-		prevRole                                                                model.Role
-		prevMatchOutcome                                                        model.MatchOutcome
+		prevUserId                                                  string
+		prevId, prevBattletagId, prevSessionId, prevSrIn, prevSrOut int
+		prevLocation                                                model.Location
+		prevRole                                                    model.Role
+		prevMatchOutcome                                            model.MatchOutcome
 	)
 
 	//Get games for this role in this user's battletags' session, if they exist.
@@ -146,10 +147,11 @@ func CreateGame(input model.InputGame) model.MutateItemPayload {
 
 	// define new set of variables to hold values of game we just inserted.
 	var (
-		id, userId, battletagId, sessionId, srIn, srOut int
-		role                                            model.Role
-		location                                        model.Location
-		matchOutcome                                    model.MatchOutcome
+		userId                                  string
+		id, battletagId, sessionId, srIn, srOut int
+		role                                    model.Role
+		location                                model.Location
+		matchOutcome                            model.MatchOutcome
 	)
 
 	err = lastInserted.Scan(&id, &userId, &battletagId, &sessionId, &location, &role, &srIn, &srOut, &matchOutcome)

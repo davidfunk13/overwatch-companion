@@ -18,7 +18,10 @@ func GetSession(input *model.InputGetOneSessionByIDAndBattletagID) model.QueryIt
 	//wait until function finishes running, then close connection.
 	defer db.Close()
 
-	var id, userId, battletagId, starting_sr_tank, sr_tank, starting_sr_damage, sr_damage, starting_sr_support, sr_support int
+	var (
+		userId                                                                                                     string
+		id, battletagId, starting_sr_tank, sr_tank, starting_sr_damage, sr_damage, starting_sr_support, sr_support int
+	)
 
 	qstr := `SELECT * FROM session WHERE id=? AND battletagId=?;`
 

@@ -777,7 +777,7 @@ type QueryItemSuccess implements QueryItemPayload {
 # Battletag schemas
 type Battletag {
   id: Int!
-  userId: Int!
+  userId: String!
   name: String!
   urlName: String!
   blizzId: Int!
@@ -789,7 +789,7 @@ type Battletag {
 }
 
 input InputBattletag {
-  userId: Int!
+  userId: String!
   name: String!
   urlName: String!
   blizzId: Int!
@@ -814,7 +814,7 @@ type BlizzBattletag {
 # Session schema
 type Session {
   id: Int!
-  userId: Int!
+  userId: String!
   battletagId: Int!
   starting_sr_tank: Int!
   sr_tank: Int!
@@ -825,7 +825,7 @@ type Session {
 }
 
 input InputSession {
-  userId: Int!
+  userId: String!
   battletagId: Int!
   starting_sr_tank: Int
   starting_sr_damage: Int
@@ -833,7 +833,7 @@ input InputSession {
 }
 
 input InputGetSessions {
-  userId: Int!
+  userId: String!
   battletagId: Int!
 }
 
@@ -844,7 +844,7 @@ input InputGetOneSessionByIDAndBattletagID {
 
 input InputUpdateSessionStartingSR {
   id: Int!
-  userId: Int!
+  userId: String!
   battletagId: Int!
   role: Role!
   starting_sr: Int!
@@ -853,7 +853,7 @@ input InputUpdateSessionStartingSR {
 # Game schema
 type Game {
   id: Int!
-  userId: Int!
+  userId: String!
   battletagId: Int!
   sessionId: Int!
   location: Location!
@@ -864,7 +864,7 @@ type Game {
 }
 
 input InputGame {
-  userId: Int!
+  userId: String!
   battletagId: Int!
   sessionId: Int!
   location: Location!
@@ -874,7 +874,7 @@ input InputGame {
 }
 
 input InputGetGames {
-  userId: Int!
+  userId: String!
   battletagId: Int!
   sessionId: Int!
   role: Role
@@ -1191,9 +1191,9 @@ func (ec *executionContext) _Battletag_userId(ctx context.Context, field graphql
 		}
 		return graphql.Null
 	}
-	res := resTmp.(int)
+	res := resTmp.(string)
 	fc.Result = res
-	return ec.marshalNInt2int(ctx, field.Selections, res)
+	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Battletag_name(ctx context.Context, field graphql.CollectedField, obj *model.Battletag) (ret graphql.Marshaler) {
@@ -1818,9 +1818,9 @@ func (ec *executionContext) _Game_userId(ctx context.Context, field graphql.Coll
 		}
 		return graphql.Null
 	}
-	res := resTmp.(int)
+	res := resTmp.(string)
 	fc.Result = res
-	return ec.marshalNInt2int(ctx, field.Selections, res)
+	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Game_battletagId(ctx context.Context, field graphql.CollectedField, obj *model.Game) (ret graphql.Marshaler) {
@@ -3074,9 +3074,9 @@ func (ec *executionContext) _Session_userId(ctx context.Context, field graphql.C
 		}
 		return graphql.Null
 	}
-	res := resTmp.(int)
+	res := resTmp.(string)
 	fc.Result = res
-	return ec.marshalNInt2int(ctx, field.Selections, res)
+	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Session_battletagId(ctx context.Context, field graphql.CollectedField, obj *model.Session) (ret graphql.Marshaler) {
@@ -4421,7 +4421,7 @@ func (ec *executionContext) unmarshalInputInputBattletag(ctx context.Context, ob
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("userId"))
-			it.UserID, err = ec.unmarshalNInt2int(ctx, v)
+			it.UserID, err = ec.unmarshalNString2string(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -4505,7 +4505,7 @@ func (ec *executionContext) unmarshalInputInputGame(ctx context.Context, obj int
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("userId"))
-			it.UserID, err = ec.unmarshalNInt2int(ctx, v)
+			it.UserID, err = ec.unmarshalNString2string(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -4573,7 +4573,7 @@ func (ec *executionContext) unmarshalInputInputGetGames(ctx context.Context, obj
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("userId"))
-			it.UserID, err = ec.unmarshalNInt2int(ctx, v)
+			it.UserID, err = ec.unmarshalNString2string(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -4645,7 +4645,7 @@ func (ec *executionContext) unmarshalInputInputGetSessions(ctx context.Context, 
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("userId"))
-			it.UserID, err = ec.unmarshalNInt2int(ctx, v)
+			it.UserID, err = ec.unmarshalNString2string(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -4673,7 +4673,7 @@ func (ec *executionContext) unmarshalInputInputSession(ctx context.Context, obj 
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("userId"))
-			it.UserID, err = ec.unmarshalNInt2int(ctx, v)
+			it.UserID, err = ec.unmarshalNString2string(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -4733,7 +4733,7 @@ func (ec *executionContext) unmarshalInputInputUpdateSessionStartingSR(ctx conte
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("userId"))
-			it.UserID, err = ec.unmarshalNInt2int(ctx, v)
+			it.UserID, err = ec.unmarshalNString2string(ctx, v)
 			if err != nil {
 				return it, err
 			}

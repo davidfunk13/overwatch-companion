@@ -78,7 +78,7 @@ type QueryItemSuccess implements QueryItemPayload {
 # Battletag schemas
 type Battletag {
   id: Int!
-  userId: Int!
+  userId: String!
   name: String!
   urlName: String!
   blizzId: Int!
@@ -90,7 +90,7 @@ type Battletag {
 }
 
 input InputBattletag {
-  userId: Int!
+  userId: String!
   name: String!
   urlName: String!
   blizzId: Int!
@@ -115,7 +115,7 @@ type BlizzBattletag {
 # Session schema
 type Session {
   id: Int!
-  userId: Int!
+  userId: String!
   battletagId: Int!
   starting_sr_tank: Int!
   sr_tank: Int!
@@ -126,7 +126,7 @@ type Session {
 }
 
 input InputSession {
-  userId: Int!
+  userId: String!
   battletagId: Int!
   starting_sr_tank: Int
   starting_sr_damage: Int
@@ -134,7 +134,7 @@ input InputSession {
 }
 
 input InputGetSessions {
-  userId: Int!
+  userId: String!
   battletagId: Int!
 }
 
@@ -145,7 +145,7 @@ input InputGetOneSessionByIDAndBattletagID {
 
 input InputUpdateSessionStartingSR {
   id: Int!
-  userId: Int!
+  userId: String!
   battletagId: Int!
   role: Role!
   starting_sr: Int!
@@ -154,7 +154,7 @@ input InputUpdateSessionStartingSR {
 # Game schema
 type Game {
   id: Int!
-  userId: Int!
+  userId: String!
   battletagId: Int!
   sessionId: Int!
   location: Location!
@@ -165,7 +165,7 @@ type Game {
 }
 
 input InputGame {
-  userId: Int!
+  userId: String!
   battletagId: Int!
   sessionId: Int!
   location: Location!
@@ -175,7 +175,7 @@ input InputGame {
 }
 
 input InputGetGames {
-  userId: Int!
+  userId: String!
   battletagId: Int!
   sessionId: Int!
   role: Role

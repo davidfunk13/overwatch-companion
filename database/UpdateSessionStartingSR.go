@@ -112,7 +112,10 @@ func UpdateSessionStartingSR(input model.InputUpdateSessionStartingSr) model.Mut
 	justUpdated := db.QueryRow(`Select * from session where id=?;`, input.ID)
 
 	// define new set of variables to hold values of game we just inserted.
-	var id, userId, battletagId, starting_sr_tank, starting_sr_damage, starting_sr_support, sr_tank, sr_damage, sr_support int
+	var (
+		userId                                                                                                     string
+		id, battletagId, starting_sr_tank, starting_sr_damage, starting_sr_support, sr_tank, sr_damage, sr_support int
+	)
 
 	err = justUpdated.Scan(
 		&id,

@@ -133,10 +133,11 @@ func CreateBattletag(input model.InputBattletag) model.MutateItemPayload {
 	lastInserted := db.QueryRow(`Select * from battletag where id=?;`, lastInsertedID)
 
 	var (
-		userId, id, blizzId, level, playerLevel int
-		isPublic                                bool
-		name, urlName, portrait                 string
-		platform                                model.Platform
+		userId                          string
+		id, blizzId, level, playerLevel int
+		isPublic                        bool
+		name, urlName, portrait         string
+		platform                        model.Platform
 	)
 
 	err = lastInserted.Scan(&id, &userId, &name, &urlName, &blizzId, &level, &playerLevel, &platform, &isPublic, &portrait)

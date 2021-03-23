@@ -20,18 +20,18 @@ func SelectAllGames(input model.InputGetGames) ([]*model.Game, error) {
 
 	var (
 		qstr string
-		res *sql.Rows
+		res  *sql.Rows
 		qErr error
-	) 
-	
+	)
+
 	if input.Role == nil {
 		qstr = "SELECT * FROM game WHERE userId=? AND battletagId=? AND sessionId=?"
-		res, qErr = db.Query(qstr, input.UserID, input.BattletagID, input.SessionID )
+		res, qErr = db.Query(qstr, input.UserID, input.BattletagID, input.SessionID)
 	} else {
 		qstr = "SELECT * FROM game WHERE userId=? AND battletagId=? AND sessionId=? AND role=?"
-		res, qErr = db.Query(qstr, input.UserID, input.BattletagID, input.SessionID, input.Role )
+		res, qErr = db.Query(qstr, input.UserID, input.BattletagID, input.SessionID, input.Role)
 	}
-	
+
 	if qErr != nil {
 		panic(err.Error())
 	}
@@ -39,25 +39,26 @@ func SelectAllGames(input model.InputGetGames) ([]*model.Game, error) {
 	defer res.Close()
 
 	for res.Next() {
-		
+
 		var (
-			id, userId, battletagId, sessionId, sr_in, sr_out int
-			location model.Location
-			role model.Role
-			matchOutcome model.MatchOutcome
+			userId                                    string
+			id, battletagId, sessionId, sr_in, sr_out int
+			location                                  model.Location
+			role                                      model.Role
+			matchOutcome                              model.MatchOutcome
 		)
 
 		err = res.Scan(&id, &userId, &battletagId, &sessionId, &location, &role, &sr_in, &sr_out, &matchOutcome)
 
 		g := model.Game{
-			ID: id, 
-			UserID: userId, 
-			BattletagID: battletagId, 
-			SessionID: sessionId,
-			Location: location,
-			Role: role,
-			SrIn: sr_in,
-			SrOut: sr_out,
+			ID:           id,
+			UserID:       userId,
+			BattletagID:  battletagId,
+			SessionID:    sessionId,
+			Location:     location,
+			Role:         role,
+			SrIn:         sr_in,
+			SrOut:        sr_out,
 			MatchOutcome: matchOutcome,
 		}
 
