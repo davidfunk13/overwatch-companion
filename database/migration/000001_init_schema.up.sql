@@ -14,7 +14,7 @@ CREATE TABLE `battletag` (
 
 CREATE TABLE `session` (
   `id` int NOT NULL AUTO_INCREMENT,
-  `userId` int NOT NULL,
+  `userId` varchar(100) NOT NULL,
   `battletagId` int NOT NULL,
   `starting_sr_tank` int NOT NULL,
   `sr_tank` int NOT NULL,
@@ -28,7 +28,7 @@ CREATE TABLE `session` (
 
 CREATE TABLE `game` (
   `id` int NOT NULL AUTO_INCREMENT,
-  `userId` int NOT NULL,
+  `userId` varchar(100) NOT NULL,
   `battletagId` int NOT NULL,
   `sessionId` int NOT NULL,
   `location` ENUM(
