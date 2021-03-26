@@ -42,7 +42,11 @@ func main() {
 	if env != "production" {
 		host = "127.0.0.1"
 		fmt.Printf(" +++ connect to http://localhost:%s/dev for GraphQL playground \n +++ Happy Hacking!\n", port)
+	} else {
+		host = ""
 	}
+
+	fmt.Printf("heres this addr: %s:%s and the env: %s", host, port, env)
 
 	log.Fatal(http.ListenAndServe(host+":"+port, r))
 }
