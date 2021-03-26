@@ -14,8 +14,10 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/joho/godotenv"
 )
- 
+
 const defaultPort = "3001"
+
+var host string
 
 func main() {
 	env := os.Getenv("APP_ENV")
@@ -38,8 +40,9 @@ func main() {
 	http.Handle("/", r)
 
 	if env != "production" {
+		host = "127.0.0.1"
 		fmt.Printf(" +++ connect to http://localhost:%s/dev for GraphQL playground \n +++ Happy Hacking!\n", port)
 	}
 
-	log.Fatal(http.ListenAndServe(":"+port, r))
+	log.Fatal(http.ListenAndServe(host+":"+port, r))
 }

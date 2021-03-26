@@ -183,7 +183,7 @@ input InputGetGames {
 
 # Queries
 type Query {
-  battletags(input: Int!): [Battletag!]!
+  battletags(input: String!): [Battletag!]!
   sessions(input: InputGetSessions): [Session!]!
   session(input: InputGetOneSessionByIDAndBattletagID): QueryItemPayload!
   games(input: InputGetGames): [Game!]!

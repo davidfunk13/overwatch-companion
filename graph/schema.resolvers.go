@@ -71,7 +71,7 @@ func (r *mutationResolver) DeleteGame(ctx context.Context, input int) (model.Mut
 	return deleted, nil
 }
 
-func (r *queryResolver) Battletags(ctx context.Context, input int) ([]*model.Battletag, error) {
+func (r *queryResolver) Battletags(ctx context.Context, input string) ([]*model.Battletag, error) {
 	battletags, err := database.SelectAllBattletags(input)
 
 	if err != nil {

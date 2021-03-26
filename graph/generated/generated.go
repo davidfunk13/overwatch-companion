@@ -105,7 +105,7 @@ type ComplexityRoot struct {
 	}
 
 	Query struct {
-		Battletags func(childComplexity int, input int) int
+		Battletags func(childComplexity int, input string) int
 		Games      func(childComplexity int, input *model.InputGetGames) int
 		Session    func(childComplexity int, input *model.InputGetOneSessionByIDAndBattletagID) int
 		Sessions   func(childComplexity int, input *model.InputGetSessions) int
@@ -144,7 +144,7 @@ type MutationResolver interface {
 	DeleteGame(ctx context.Context, input int) (model.MutateItemPayload, error)
 }
 type QueryResolver interface {
-	Battletags(ctx context.Context, input int) ([]*model.Battletag, error)
+	Battletags(ctx context.Context, input string) ([]*model.Battletag, error)
 	Sessions(ctx context.Context, input *model.InputGetSessions) ([]*model.Session, error)
 	Session(ctx context.Context, input *model.InputGetOneSessionByIDAndBattletagID) (model.QueryItemPayload, error)
 	Games(ctx context.Context, input *model.InputGetGames) ([]*model.Game, error)
@@ -504,7 +504,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Query.Battletags(childComplexity, args["input"].(int)), true
+		return e.complexity.Query.Battletags(childComplexity, args["input"].(string)), true
 
 	case "Query.games":
 		if e.complexity.Query.Games == nil {
@@ -882,7 +882,7 @@ input InputGetGames {
 
 # Queries
 type Query {
-  battletags(input: Int!): [Battletag!]!
+  battletags(input: String!): [Battletag!]!
   sessions(input: InputGetSessions): [Session!]!
   session(input: InputGetOneSessionByIDAndBattletagID): QueryItemPayload!
   games(input: InputGetGames): [Game!]!
@@ -1031,10 +1031,10 @@ func (ec *executionContext) field_Query___type_args(ctx context.Context, rawArgs
 func (ec *executionContext) field_Query_battletags_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 int
+	var arg0 string
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNInt2int(ctx, tmp)
+		arg0, err = ec.unmarshalNString2string(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -2661,7 +2661,7 @@ func (ec *executionContext) _Query_battletags(ctx context.Context, field graphql
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().Battletags(rctx, args["input"].(int))
+		return ec.resolvers.Query().Battletags(rctx, args["input"].(string))
 	})
 	if err != nil {
 		ec.Error(ctx, err)

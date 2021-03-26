@@ -5,7 +5,7 @@
 # Select battletag belonging to a user. takes an id.
 # Arguments: { id int }
 query {
-  battletags(input: 1) {
+  battletags(input: "string") {
     id
     userId
     name
