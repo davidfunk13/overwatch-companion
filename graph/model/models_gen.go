@@ -89,6 +89,11 @@ type InputGetGames struct {
 	Role        *Role  `json:"role"`
 }
 
+type InputGetOneBattletag struct {
+	UserID      string `json:"userId"`
+	BattletagID int    `json:"battletagId"`
+}
+
 type InputGetOneSessionByIDAndBattletagID struct {
 	ID          int `json:"id"`
 	BattletagID int `json:"battletagId"`

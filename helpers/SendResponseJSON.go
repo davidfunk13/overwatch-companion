@@ -15,6 +15,7 @@ func SendResponseJSON(message string, w http.ResponseWriter, statusCode int) {
 	response := Response{message}
 
 	jsonResponse, err := json.Marshal(response)
+
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

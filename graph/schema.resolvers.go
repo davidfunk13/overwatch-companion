@@ -81,6 +81,12 @@ func (r *queryResolver) Battletags(ctx context.Context, input string) ([]*model.
 	return battletags, nil
 }
 
+func (r *queryResolver) GetOneBattletag(ctx context.Context, input *model.InputGetOneBattletag) (model.QueryItemPayload, error) {
+	battletag := database.GetOneBattletag(input)
+
+	return battletag, nil
+}
+
 func (r *queryResolver) Sessions(ctx context.Context, input *model.InputGetSessions) ([]*model.Session, error) {
 	sessions, err := database.SelectAllSessions(input.UserID, input.BattletagID)
 

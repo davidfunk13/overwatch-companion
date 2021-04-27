@@ -105,10 +105,11 @@ type ComplexityRoot struct {
 	}
 
 	Query struct {
-		Battletags func(childComplexity int, input string) int
-		Games      func(childComplexity int, input *model.InputGetGames) int
-		Session    func(childComplexity int, input *model.InputGetOneSessionByIDAndBattletagID) int
-		Sessions   func(childComplexity int, input *model.InputGetSessions) int
+		Battletags      func(childComplexity int, input string) int
+		Games           func(childComplexity int, input *model.InputGetGames) int
+		GetOneBattletag func(childComplexity int, input *model.InputGetOneBattletag) int
+		Session         func(childComplexity int, input *model.InputGetOneSessionByIDAndBattletagID) int
+		Sessions        func(childComplexity int, input *model.InputGetSessions) int
 	}
 
 	QueryItemFailure struct {
@@ -145,6 +146,7 @@ type MutationResolver interface {
 }
 type QueryResolver interface {
 	Battletags(ctx context.Context, input string) ([]*model.Battletag, error)
+	GetOneBattletag(ctx context.Context, input *model.InputGetOneBattletag) (model.QueryItemPayload, error)
 	Sessions(ctx context.Context, input *model.InputGetSessions) ([]*model.Session, error)
 	Session(ctx context.Context, input *model.InputGetOneSessionByIDAndBattletagID) (model.QueryItemPayload, error)
 	Games(ctx context.Context, input *model.InputGetGames) ([]*model.Game, error)
@@ -518,6 +520,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Query.Games(childComplexity, args["input"].(*model.InputGetGames)), true
 
+	case "Query.getOneBattletag":
+		if e.complexity.Query.GetOneBattletag == nil {
+			break
+		}
+
+		args, err := ec.field_Query_getOneBattletag_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.GetOneBattletag(childComplexity, args["input"].(*model.InputGetOneBattletag)), true
+
 	case "Query.session":
 		if e.complexity.Query.Session == nil {
 			break
@@ -880,9 +894,15 @@ input InputGetGames {
   role: Role
 }
 
+input InputGetOneBattletag {
+  userId: String!
+  battletagId: Int!
+}
+
 # Queries
 type Query {
   battletags(input: String!): [Battletag!]!
+  getOneBattletag(input: InputGetOneBattletag): QueryItemPayload!
   sessions(input: InputGetSessions): [Session!]!
   session(input: InputGetOneSessionByIDAndBattletagID): QueryItemPayload!
   games(input: InputGetGames): [Game!]!
@@ -1050,6 +1070,21 @@ func (ec *executionContext) field_Query_games_args(ctx context.Context, rawArgs 
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
 		arg0, err = ec.unmarshalOInputGetGames2ᚖgithubᚗcomᚋdavidfunk13ᚋoverwatchᚑcompanionᚋgraphᚋmodelᚐInputGetGames(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_getOneBattletag_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 *model.InputGetOneBattletag
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalOInputGetOneBattletag2ᚖgithubᚗcomᚋdavidfunk13ᚋoverwatchᚑcompanionᚋgraphᚋmodelᚐInputGetOneBattletag(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -2676,6 +2711,48 @@ func (ec *executionContext) _Query_battletags(ctx context.Context, field graphql
 	res := resTmp.([]*model.Battletag)
 	fc.Result = res
 	return ec.marshalNBattletag2ᚕᚖgithubᚗcomᚋdavidfunk13ᚋoverwatchᚑcompanionᚋgraphᚋmodelᚐBattletagᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Query_getOneBattletag(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Query_getOneBattletag_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().GetOneBattletag(rctx, args["input"].(*model.InputGetOneBattletag))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(model.QueryItemPayload)
+	fc.Result = res
+	return ec.marshalNQueryItemPayload2githubᚗcomᚋdavidfunk13ᚋoverwatchᚑcompanionᚋgraphᚋmodelᚐQueryItemPayload(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Query_sessions(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -4607,6 +4684,34 @@ func (ec *executionContext) unmarshalInputInputGetGames(ctx context.Context, obj
 	return it, nil
 }
 
+func (ec *executionContext) unmarshalInputInputGetOneBattletag(ctx context.Context, obj interface{}) (model.InputGetOneBattletag, error) {
+	var it model.InputGetOneBattletag
+	var asMap = obj.(map[string]interface{})
+
+	for k, v := range asMap {
+		switch k {
+		case "userId":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("userId"))
+			it.UserID, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "battletagId":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("battletagId"))
+			it.BattletagID, err = ec.unmarshalNInt2int(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
 func (ec *executionContext) unmarshalInputInputGetOneSessionByIDAndBattletagID(ctx context.Context, obj interface{}) (model.InputGetOneSessionByIDAndBattletagID, error) {
 	var it model.InputGetOneSessionByIDAndBattletagID
 	var asMap = obj.(map[string]interface{})
@@ -5212,6 +5317,20 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 					}
 				}()
 				res = ec._Query_battletags(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
+		case "getOneBattletag":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_getOneBattletag(ctx, field)
 				if res == graphql.Null {
 					atomic.AddUint32(&invalids, 1)
 				}
@@ -6168,6 +6287,14 @@ func (ec *executionContext) unmarshalOInputGetGames2ᚖgithubᚗcomᚋdavidfunk1
 		return nil, nil
 	}
 	res, err := ec.unmarshalInputInputGetGames(ctx, v)
+	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalOInputGetOneBattletag2ᚖgithubᚗcomᚋdavidfunk13ᚋoverwatchᚑcompanionᚋgraphᚋmodelᚐInputGetOneBattletag(ctx context.Context, v interface{}) (*model.InputGetOneBattletag, error) {
+	if v == nil {
+		return nil, nil
+	}
+	res, err := ec.unmarshalInputInputGetOneBattletag(ctx, v)
 	return &res, graphql.ErrorOnPath(ctx, err)
 }
 
