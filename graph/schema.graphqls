@@ -40,12 +40,64 @@ enum Location {
 }
 
 # Utilities
+union OptionalDataPayload = Battletag | Session | Game
+
+interface QueryPayload {
+  success: Boolean!
+}
+
+type GetAllBattletagsPayloadSuccess implements QueryPayload {
+  success: Boolean!
+  message: String!
+  data: [Battletag!]!
+}
+
+type GetAllBattletagsPayloadFailure implements QueryPayload {
+  success: Boolean!
+  error: String!
+  data: [Battletag]!
+}
+
+type GetAllSessionsPayloadSuccess implements QueryPayload {
+  success: Boolean!
+  message: String!
+  data: [Session!]!
+}
+
+type GetAllSessionsPayloadFailure implements QueryPayload {
+  success: Boolean!
+  error: String!
+  data: [Session]!
+}
+
+type GetAllGamesPayloadSuccess implements QueryPayload {
+  success: Boolean!
+  message: String!
+  data: [Game!]!
+}
+
+type GetAllGamesPayloadFailure implements QueryPayload {
+  success: Boolean!
+  error: String!
+  data: [Game]!
+}
+
+type GetOneItemPayloadSuccess implements QueryPayload {
+  success: Boolean!
+  message: String!
+  data: OptionalDataPayload
+}
+
+type GetOneItemPayloadFailure implements QueryPayload {
+  success: Boolean!
+  error: String!
+  message: String
+}
+
 interface MutateItemPayload {
   id: Int
   success: Boolean!
 }
-
-union OptionalDataPayload = Battletag | Session | Game
 
 type MutateItemPayloadSuccess implements MutateItemPayload {
   id: Int!
@@ -59,20 +111,6 @@ type MutateItemPayloadFailure implements MutateItemPayload {
   success: Boolean!
   error: String!
   data: String
-}
-
-interface QueryItemPayload {
-  success: Boolean!
-}
-
-type QueryItemFailure implements QueryItemPayload {
-  success: Boolean!
-  error: String
-}
-
-type QueryItemSuccess implements QueryItemPayload {
-  success: Boolean!
-  data: OptionalDataPayload
 }
 
 # Battletag schemas
@@ -174,6 +212,14 @@ input InputGame {
   match_outcome: MatchOutcome!
 }
 
+input InputGetGame {
+  id: Int!
+  userId: String!
+  battletagId: Int!
+  sessionId: Int!
+  role: Role
+}
+
 input InputGetGames {
   userId: String!
   battletagId: Int!
@@ -188,11 +234,12 @@ input InputGetOneBattletag {
 
 # Queries
 type Query {
-  battletags(input: String!): [Battletag!]!
-  getOneBattletag(input: InputGetOneBattletag): QueryItemPayload!
-  sessions(input: InputGetSessions): [Session!]!
-  session(input: InputGetOneSessionByIDAndBattletagID): QueryItemPayload!
-  games(input: InputGetGames): [Game!]!
+  getAllBattletags(input: String!): QueryPayload!
+  getOneBattletag(input: InputGetOneBattletag): QueryPayload!
+  getAllSessions(input: InputGetSessions): QueryPayload!
+  getOneSession(input: InputGetOneSessionByIDAndBattletagID): QueryPayload!
+  getOneGame(input: InputGetGame): QueryPayload!
+  getAllGames(input: InputGetGames): QueryPayload!
 }
 
 # Mutations

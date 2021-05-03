@@ -16,8 +16,8 @@ type OptionalDataPayload interface {
 	IsOptionalDataPayload()
 }
 
-type QueryItemPayload interface {
-	IsQueryItemPayload()
+type QueryPayload interface {
+	IsQueryPayload()
 }
 
 type Battletag struct {
@@ -60,6 +60,70 @@ type Game struct {
 
 func (Game) IsOptionalDataPayload() {}
 
+type GetAllBattletagsPayloadFailure struct {
+	Success bool         `json:"success"`
+	Error   string       `json:"error"`
+	Data    []*Battletag `json:"data"`
+}
+
+func (GetAllBattletagsPayloadFailure) IsQueryPayload() {}
+
+type GetAllBattletagsPayloadSuccess struct {
+	Success bool         `json:"success"`
+	Message string       `json:"message"`
+	Data    []*Battletag `json:"data"`
+}
+
+func (GetAllBattletagsPayloadSuccess) IsQueryPayload() {}
+
+type GetAllGamesPayloadFailure struct {
+	Success bool    `json:"success"`
+	Error   string  `json:"error"`
+	Data    []*Game `json:"data"`
+}
+
+func (GetAllGamesPayloadFailure) IsQueryPayload() {}
+
+type GetAllGamesPayloadSuccess struct {
+	Success bool    `json:"success"`
+	Message string  `json:"message"`
+	Data    []*Game `json:"data"`
+}
+
+func (GetAllGamesPayloadSuccess) IsQueryPayload() {}
+
+type GetAllSessionsPayloadFailure struct {
+	Success bool       `json:"success"`
+	Error   string     `json:"error"`
+	Data    []*Session `json:"data"`
+}
+
+func (GetAllSessionsPayloadFailure) IsQueryPayload() {}
+
+type GetAllSessionsPayloadSuccess struct {
+	Success bool       `json:"success"`
+	Message string     `json:"message"`
+	Data    []*Session `json:"data"`
+}
+
+func (GetAllSessionsPayloadSuccess) IsQueryPayload() {}
+
+type GetOneItemPayloadFailure struct {
+	Success bool    `json:"success"`
+	Error   string  `json:"error"`
+	Message *string `json:"message"`
+}
+
+func (GetOneItemPayloadFailure) IsQueryPayload() {}
+
+type GetOneItemPayloadSuccess struct {
+	Success bool                `json:"success"`
+	Message string              `json:"message"`
+	Data    OptionalDataPayload `json:"data"`
+}
+
+func (GetOneItemPayloadSuccess) IsQueryPayload() {}
+
 type InputBattletag struct {
 	UserID      string   `json:"userId"`
 	Name        string   `json:"name"`
@@ -80,6 +144,14 @@ type InputGame struct {
 	Role         Role         `json:"role"`
 	SrOut        int          `json:"sr_out"`
 	MatchOutcome MatchOutcome `json:"match_outcome"`
+}
+
+type InputGetGame struct {
+	ID          int    `json:"id"`
+	UserID      string `json:"userId"`
+	BattletagID int    `json:"battletagId"`
+	SessionID   int    `json:"sessionId"`
+	Role        *Role  `json:"role"`
 }
 
 type InputGetGames struct {
@@ -137,20 +209,6 @@ type MutateItemPayloadSuccess struct {
 }
 
 func (MutateItemPayloadSuccess) IsMutateItemPayload() {}
-
-type QueryItemFailure struct {
-	Success bool    `json:"success"`
-	Error   *string `json:"error"`
-}
-
-func (QueryItemFailure) IsQueryItemPayload() {}
-
-type QueryItemSuccess struct {
-	Success bool                `json:"success"`
-	Data    OptionalDataPayload `json:"data"`
-}
-
-func (QueryItemSuccess) IsQueryItemPayload() {}
 
 type Session struct {
 	ID                int    `json:"id"`

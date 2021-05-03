@@ -214,7 +214,7 @@ func CreateGame(input model.InputGame) model.MutateItemPayload {
 		return payload
 	}
 
-	fmt.Printf("Session SR for %s sucessfully updated in session %d for battletag %d for user %d", role, sessionId, battletagId, userId)
+	fmt.Printf("Session SR for %s sucessfully updated in session %d for battletag %d for user %s", role, sessionId, battletagId, userId)
 
 	payload = &model.MutateItemPayloadSuccess{
 		ID:      insertedGame.ID,

@@ -5,6 +5,7 @@ package graph
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/davidfunk13/overwatch-companion/database"
 	"github.com/davidfunk13/overwatch-companion/graph/generated"
@@ -71,44 +72,36 @@ func (r *mutationResolver) DeleteGame(ctx context.Context, input int) (model.Mut
 	return deleted, nil
 }
 
-func (r *queryResolver) Battletags(ctx context.Context, input string) ([]*model.Battletag, error) {
-	battletags, err := database.SelectAllBattletags(input)
-
-	if err != nil {
-		panic(err.Error())
-	}
+func (r *queryResolver) GetAllBattletags(ctx context.Context, input string) (model.QueryPayload, error) {
+	battletags := database.GetAllBattletags(input)
 
 	return battletags, nil
 }
 
-func (r *queryResolver) GetOneBattletag(ctx context.Context, input *model.InputGetOneBattletag) (model.QueryItemPayload, error) {
+func (r *queryResolver) GetOneBattletag(ctx context.Context, input *model.InputGetOneBattletag) (model.QueryPayload, error) {
 	battletag := database.GetOneBattletag(input)
 
 	return battletag, nil
 }
 
-func (r *queryResolver) Sessions(ctx context.Context, input *model.InputGetSessions) ([]*model.Session, error) {
-	sessions, err := database.SelectAllSessions(input.UserID, input.BattletagID)
-
-	if err != nil {
-		panic(err.Error())
-	}
+func (r *queryResolver) GetAllSessions(ctx context.Context, input *model.InputGetSessions) (model.QueryPayload, error) {
+	sessions := database.GetAllSessions(input.UserID, input.BattletagID)
 
 	return sessions, nil
 }
 
-func (r *queryResolver) Session(ctx context.Context, input *model.InputGetOneSessionByIDAndBattletagID) (model.QueryItemPayload, error) {
+func (r *queryResolver) GetOneSession(ctx context.Context, input *model.InputGetOneSessionByIDAndBattletagID) (model.QueryPayload, error) {
 	session := database.GetSession(input)
 
 	return session, nil
 }
 
-func (r *queryResolver) Games(ctx context.Context, input *model.InputGetGames) ([]*model.Game, error) {
-	games, err := database.SelectAllGames(*input)
+func (r *queryResolver) GetOneGame(ctx context.Context, input *model.InputGetGame) (model.QueryPayload, error) {
+	panic(fmt.Errorf("not implemented"))
+}
 
-	if err != nil {
-		panic(err.Error())
-	}
+func (r *queryResolver) GetAllGames(ctx context.Context, input *model.InputGetGames) (model.QueryPayload, error) {
+	games := database.GetAllGames(*input)
 
 	return games, nil
 }
@@ -121,3 +114,28 @@ func (r *Resolver) Query() generated.QueryResolver { return &queryResolver{r} }
 
 type mutationResolver struct{ *Resolver }
 type queryResolver struct{ *Resolver }
+
+// !!! WARNING !!!
+// The code below was going to be deleted when updating resolvers. It has been copied here so you have
+// one last chance to move it out of harms way if you want. There are two reasons this happens:
+//  - When renaming or deleting a resolver the old code will be put in here. You can safely delete
+//    it when you're done.
+//  - You have helper methods in this file. Move them out to keep these resolver files clean.
+func (r *queryResolver) QueryAllBattletags(ctx context.Context, input string) (model.QueryPayload, error) {
+	panic(fmt.Errorf("not implemented"))
+}
+func (r *queryResolver) QueryOneBattletag(ctx context.Context, input *model.InputGetOneBattletag) (model.QueryPayload, error) {
+	panic(fmt.Errorf("not implemented"))
+}
+func (r *queryResolver) QueryAllSessions(ctx context.Context, input *model.InputGetSessions) (model.QueryPayload, error) {
+	panic(fmt.Errorf("not implemented"))
+}
+func (r *queryResolver) QueryOneSession(ctx context.Context, input *model.InputGetOneSessionByIDAndBattletagID) (model.QueryPayload, error) {
+	panic(fmt.Errorf("not implemented"))
+}
+func (r *queryResolver) QueryAllGames(ctx context.Context, input *model.InputGetGames) (model.QueryPayload, error) {
+	panic(fmt.Errorf("not implemented"))
+}
+func (r *queryResolver) QueryOneGame(ctx context.Context, input *model.InputGetGame) (model.QueryPayload, error) {
+	panic(fmt.Errorf("not implemented"))
+}
