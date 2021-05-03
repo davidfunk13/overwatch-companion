@@ -1,6 +1,8 @@
 package database
 
 import (
+	"fmt"
+
 	"github.com/davidfunk13/overwatch-companion/graph/model"
 )
 
@@ -11,35 +13,25 @@ func UpdateSessionStartingSR(input model.InputUpdateSessionStartingSr) model.Mut
 	// variable to store our payload
 	var payload model.MutateItemPayload
 	//open connection to the database
-	// db, err := OpenConnection()
+	db, err := OpenConnection()
 
-	// if err != nil {
-	// 	panic(err.Error())
-	// }
+	if err != nil {
+		panic(err.Error())
+	}
 
-	// //wait until function finishes running, then close connection.
-	// defer db.Close()
+	//wait until function finishes running, then close connection.
+	defer db.Close()
 
-	// getHasGames := &model.InputGetGames{
-	// 	UserID:      input.UserID,
-	// 	BattletagID: input.BattletagID,
-	// 	SessionID:   input.ID,
-	// 	Role:        &input.Role,
-	// }
+	getHasGames := &model.InputGetGames{
+		UserID:      input.UserID,
+		BattletagID: input.BattletagID,
+		SessionID:   input.ID,
+		Role:        &input.Role,
+	}
 
-	// hasGames := GetAllGames(*getHasGames)
-	// fmt.Printf("%v", hasGames)
-	// if err != nil {
-	// 	errorString := err.Error()
+	hasGames := GetAllGames(*getHasGames)
 
-	// 	payload = model.MutateItemPayloadFailure{
-	// 		Success: false,
-	// 		Error:   "Error checking if this session has any games for the requested role.",
-	// 		Data:    &errorString,
-	// 	}
-
-	// 	return payload
-	// }
+	fmt.Printf("%v", hasGames.data)
 
 	// if len(hasGames) > 0 {
 	// 	errorString := "This session already has games of this role type in it. You cannot update the starting sr of a role that has a game in it."

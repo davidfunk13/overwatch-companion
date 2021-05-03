@@ -114,28 +114,3 @@ func (r *Resolver) Query() generated.QueryResolver { return &queryResolver{r} }
 
 type mutationResolver struct{ *Resolver }
 type queryResolver struct{ *Resolver }
-
-// !!! WARNING !!!
-// The code below was going to be deleted when updating resolvers. It has been copied here so you have
-// one last chance to move it out of harms way if you want. There are two reasons this happens:
-//  - When renaming or deleting a resolver the old code will be put in here. You can safely delete
-//    it when you're done.
-//  - You have helper methods in this file. Move them out to keep these resolver files clean.
-func (r *queryResolver) QueryAllBattletags(ctx context.Context, input string) (model.QueryPayload, error) {
-	panic(fmt.Errorf("not implemented"))
-}
-func (r *queryResolver) QueryOneBattletag(ctx context.Context, input *model.InputGetOneBattletag) (model.QueryPayload, error) {
-	panic(fmt.Errorf("not implemented"))
-}
-func (r *queryResolver) QueryAllSessions(ctx context.Context, input *model.InputGetSessions) (model.QueryPayload, error) {
-	panic(fmt.Errorf("not implemented"))
-}
-func (r *queryResolver) QueryOneSession(ctx context.Context, input *model.InputGetOneSessionByIDAndBattletagID) (model.QueryPayload, error) {
-	panic(fmt.Errorf("not implemented"))
-}
-func (r *queryResolver) QueryAllGames(ctx context.Context, input *model.InputGetGames) (model.QueryPayload, error) {
-	panic(fmt.Errorf("not implemented"))
-}
-func (r *queryResolver) QueryOneGame(ctx context.Context, input *model.InputGetGame) (model.QueryPayload, error) {
-	panic(fmt.Errorf("not implemented"))
-}
