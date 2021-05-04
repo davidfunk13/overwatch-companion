@@ -5,6 +5,7 @@ package graph
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/davidfunk13/overwatch-companion/database"
 	"github.com/davidfunk13/overwatch-companion/graph/generated"
@@ -36,12 +37,6 @@ func (r *mutationResolver) CreateSession(ctx context.Context, input model.InputS
 	return inserted, nil
 }
 
-func (r *mutationResolver) UpdateSessionStartingSr(ctx context.Context, input model.InputUpdateSessionStartingSr) (model.MutateItemPayload, error) {
-	updated := database.UpdateSessionStartingSR(input)
-
-	return updated, nil
-}
-
 func (r *mutationResolver) DeleteSession(ctx context.Context, input int) (model.MutateItemPayload, error) {
 	deleted, err := database.DeleteSession(&input)
 
@@ -71,44 +66,36 @@ func (r *mutationResolver) DeleteGame(ctx context.Context, input int) (model.Mut
 	return deleted, nil
 }
 
-func (r *queryResolver) Battletags(ctx context.Context, input string) ([]*model.Battletag, error) {
-	battletags, err := database.SelectAllBattletags(input)
-
-	if err != nil {
-		panic(err.Error())
-	}
+func (r *queryResolver) GetAllBattletags(ctx context.Context, input string) (model.QueryPayload, error) {
+	battletags := database.GetAllBattletags(input)
 
 	return battletags, nil
 }
 
-func (r *queryResolver) GetOneBattletag(ctx context.Context, input *model.InputGetOneBattletag) (model.QueryItemPayload, error) {
+func (r *queryResolver) GetOneBattletag(ctx context.Context, input *model.InputGetOneBattletag) (model.QueryPayload, error) {
 	battletag := database.GetOneBattletag(input)
 
 	return battletag, nil
 }
 
-func (r *queryResolver) Sessions(ctx context.Context, input *model.InputGetSessions) ([]*model.Session, error) {
-	sessions, err := database.SelectAllSessions(input.UserID, input.BattletagID)
-
-	if err != nil {
-		panic(err.Error())
-	}
+func (r *queryResolver) GetAllSessions(ctx context.Context, input *model.InputGetSessions) (model.QueryPayload, error) {
+	sessions := database.GetAllSessions(input.UserID, input.BattletagID)
 
 	return sessions, nil
 }
 
-func (r *queryResolver) Session(ctx context.Context, input *model.InputGetOneSessionByIDAndBattletagID) (model.QueryItemPayload, error) {
+func (r *queryResolver) GetOneSession(ctx context.Context, input *model.InputGetOneSessionByIDAndBattletagID) (model.QueryPayload, error) {
 	session := database.GetSession(input)
 
 	return session, nil
 }
 
-func (r *queryResolver) Games(ctx context.Context, input *model.InputGetGames) ([]*model.Game, error) {
-	games, err := database.SelectAllGames(*input)
+func (r *queryResolver) GetOneGame(ctx context.Context, input *model.InputGetGame) (model.QueryPayload, error) {
+	panic(fmt.Errorf("not implemented"))
+}
 
-	if err != nil {
-		panic(err.Error())
-	}
+func (r *queryResolver) GetAllGames(ctx context.Context, input *model.InputGetGames) (model.QueryPayload, error) {
+	games := database.GetAllGames(*input)
 
 	return games, nil
 }
