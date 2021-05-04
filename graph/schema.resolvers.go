@@ -37,12 +37,6 @@ func (r *mutationResolver) CreateSession(ctx context.Context, input model.InputS
 	return inserted, nil
 }
 
-func (r *mutationResolver) UpdateSessionStartingSr(ctx context.Context, input model.InputUpdateSessionStartingSr) (model.MutateItemPayload, error) {
-	updated := database.UpdateSessionStartingSR(input)
-
-	return updated, nil
-}
-
 func (r *mutationResolver) DeleteSession(ctx context.Context, input int) (model.MutateItemPayload, error) {
 	deleted, err := database.DeleteSession(&input)
 

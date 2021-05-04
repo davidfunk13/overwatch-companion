@@ -49,7 +49,7 @@ interface QueryPayload {
 type GetAllBattletagsPayloadSuccess implements QueryPayload {
   success: Boolean!
   message: String!
-  data: [Battletag!]!
+  data: [Battletag]!
 }
 
 type GetAllBattletagsPayloadFailure implements QueryPayload {
@@ -61,7 +61,7 @@ type GetAllBattletagsPayloadFailure implements QueryPayload {
 type GetAllSessionsPayloadSuccess implements QueryPayload {
   success: Boolean!
   message: String!
-  data: [Session!]!
+  data: [Session]!
 }
 
 type GetAllSessionsPayloadFailure implements QueryPayload {
@@ -73,7 +73,7 @@ type GetAllSessionsPayloadFailure implements QueryPayload {
 type GetAllGamesPayloadSuccess implements QueryPayload {
   success: Boolean!
   message: String!
-  data: [Game!]!
+  data: [Game]!
 }
 
 type GetAllGamesPayloadFailure implements QueryPayload {
@@ -247,9 +247,9 @@ type Mutation {
   createBattletag(input: InputBattletag!): MutateItemPayload!
   deleteBattletag(input: Int!): MutateItemPayload!
   createSession(input: InputSession!): MutateItemPayload!
-  updateSessionStartingSR(
-    input: InputUpdateSessionStartingSR!
-  ): MutateItemPayload!
+  # updateSessionStartingSR(
+  #   input: InputUpdateSessionStartingSR!
+  # ): MutateItemPayload!
   deleteSession(input: Int!): MutateItemPayload!
   createGame(input: InputGame!): MutateItemPayload!
   deleteGame(input: Int!): MutateItemPayload!

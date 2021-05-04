@@ -143,13 +143,12 @@ type ComplexityRoot struct {
 	}
 
 	Mutation struct {
-		CreateBattletag         func(childComplexity int, input model.InputBattletag) int
-		CreateGame              func(childComplexity int, input model.InputGame) int
-		CreateSession           func(childComplexity int, input model.InputSession) int
-		DeleteBattletag         func(childComplexity int, input int) int
-		DeleteGame              func(childComplexity int, input int) int
-		DeleteSession           func(childComplexity int, input int) int
-		UpdateSessionStartingSr func(childComplexity int, input model.InputUpdateSessionStartingSr) int
+		CreateBattletag func(childComplexity int, input model.InputBattletag) int
+		CreateGame      func(childComplexity int, input model.InputGame) int
+		CreateSession   func(childComplexity int, input model.InputSession) int
+		DeleteBattletag func(childComplexity int, input int) int
+		DeleteGame      func(childComplexity int, input int) int
+		DeleteSession   func(childComplexity int, input int) int
 	}
 
 	Query struct {
@@ -178,7 +177,6 @@ type MutationResolver interface {
 	CreateBattletag(ctx context.Context, input model.InputBattletag) (model.MutateItemPayload, error)
 	DeleteBattletag(ctx context.Context, input int) (model.MutateItemPayload, error)
 	CreateSession(ctx context.Context, input model.InputSession) (model.MutateItemPayload, error)
-	UpdateSessionStartingSr(ctx context.Context, input model.InputUpdateSessionStartingSr) (model.MutateItemPayload, error)
 	DeleteSession(ctx context.Context, input int) (model.MutateItemPayload, error)
 	CreateGame(ctx context.Context, input model.InputGame) (model.MutateItemPayload, error)
 	DeleteGame(ctx context.Context, input int) (model.MutateItemPayload, error)
@@ -692,18 +690,6 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Mutation.DeleteSession(childComplexity, args["input"].(int)), true
 
-	case "Mutation.updateSessionStartingSR":
-		if e.complexity.Mutation.UpdateSessionStartingSr == nil {
-			break
-		}
-
-		args, err := ec.field_Mutation_updateSessionStartingSR_args(context.TODO(), rawArgs)
-		if err != nil {
-			return 0, false
-		}
-
-		return e.complexity.Mutation.UpdateSessionStartingSr(childComplexity, args["input"].(model.InputUpdateSessionStartingSr)), true
-
 	case "Query.getAllBattletags":
 		if e.complexity.Query.GetAllBattletags == nil {
 			break
@@ -954,7 +940,7 @@ interface QueryPayload {
 type GetAllBattletagsPayloadSuccess implements QueryPayload {
   success: Boolean!
   message: String!
-  data: [Battletag!]!
+  data: [Battletag]!
 }
 
 type GetAllBattletagsPayloadFailure implements QueryPayload {
@@ -966,7 +952,7 @@ type GetAllBattletagsPayloadFailure implements QueryPayload {
 type GetAllSessionsPayloadSuccess implements QueryPayload {
   success: Boolean!
   message: String!
-  data: [Session!]!
+  data: [Session]!
 }
 
 type GetAllSessionsPayloadFailure implements QueryPayload {
@@ -978,7 +964,7 @@ type GetAllSessionsPayloadFailure implements QueryPayload {
 type GetAllGamesPayloadSuccess implements QueryPayload {
   success: Boolean!
   message: String!
-  data: [Game!]!
+  data: [Game]!
 }
 
 type GetAllGamesPayloadFailure implements QueryPayload {
@@ -1152,9 +1138,9 @@ type Mutation {
   createBattletag(input: InputBattletag!): MutateItemPayload!
   deleteBattletag(input: Int!): MutateItemPayload!
   createSession(input: InputSession!): MutateItemPayload!
-  updateSessionStartingSR(
-    input: InputUpdateSessionStartingSR!
-  ): MutateItemPayload!
+  # updateSessionStartingSR(
+  #   input: InputUpdateSessionStartingSR!
+  # ): MutateItemPayload!
   deleteSession(input: Int!): MutateItemPayload!
   createGame(input: InputGame!): MutateItemPayload!
   deleteGame(input: Int!): MutateItemPayload!
@@ -1249,21 +1235,6 @@ func (ec *executionContext) field_Mutation_deleteSession_args(ctx context.Contex
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
 		arg0, err = ec.unmarshalNInt2int(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["input"] = arg0
-	return args, nil
-}
-
-func (ec *executionContext) field_Mutation_updateSessionStartingSR_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
-	var err error
-	args := map[string]interface{}{}
-	var arg0 model.InputUpdateSessionStartingSr
-	if tmp, ok := rawArgs["input"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNInputUpdateSessionStartingSR2githubᚗcomᚋdavidfunk13ᚋoverwatchᚑcompanionᚋgraphᚋmodelᚐInputUpdateSessionStartingSr(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -2564,7 +2535,7 @@ func (ec *executionContext) _GetAllBattletagsPayloadSuccess_data(ctx context.Con
 	}
 	res := resTmp.([]*model.Battletag)
 	fc.Result = res
-	return ec.marshalNBattletag2ᚕᚖgithubᚗcomᚋdavidfunk13ᚋoverwatchᚑcompanionᚋgraphᚋmodelᚐBattletagᚄ(ctx, field.Selections, res)
+	return ec.marshalNBattletag2ᚕᚖgithubᚗcomᚋdavidfunk13ᚋoverwatchᚑcompanionᚋgraphᚋmodelᚐBattletag(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _GetAllGamesPayloadFailure_success(ctx context.Context, field graphql.CollectedField, obj *model.GetAllGamesPayloadFailure) (ret graphql.Marshaler) {
@@ -2774,7 +2745,7 @@ func (ec *executionContext) _GetAllGamesPayloadSuccess_data(ctx context.Context,
 	}
 	res := resTmp.([]*model.Game)
 	fc.Result = res
-	return ec.marshalNGame2ᚕᚖgithubᚗcomᚋdavidfunk13ᚋoverwatchᚑcompanionᚋgraphᚋmodelᚐGameᚄ(ctx, field.Selections, res)
+	return ec.marshalNGame2ᚕᚖgithubᚗcomᚋdavidfunk13ᚋoverwatchᚑcompanionᚋgraphᚋmodelᚐGame(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _GetAllSessionsPayloadFailure_success(ctx context.Context, field graphql.CollectedField, obj *model.GetAllSessionsPayloadFailure) (ret graphql.Marshaler) {
@@ -2984,7 +2955,7 @@ func (ec *executionContext) _GetAllSessionsPayloadSuccess_data(ctx context.Conte
 	}
 	res := resTmp.([]*model.Session)
 	fc.Result = res
-	return ec.marshalNSession2ᚕᚖgithubᚗcomᚋdavidfunk13ᚋoverwatchᚑcompanionᚋgraphᚋmodelᚐSessionᚄ(ctx, field.Selections, res)
+	return ec.marshalNSession2ᚕᚖgithubᚗcomᚋdavidfunk13ᚋoverwatchᚑcompanionᚋgraphᚋmodelᚐSession(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _GetOneItemPayloadFailure_success(ctx context.Context, field graphql.CollectedField, obj *model.GetOneItemPayloadFailure) (ret graphql.Marshaler) {
@@ -3575,48 +3546,6 @@ func (ec *executionContext) _Mutation_createSession(ctx context.Context, field g
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
 		return ec.resolvers.Mutation().CreateSession(rctx, args["input"].(model.InputSession))
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(model.MutateItemPayload)
-	fc.Result = res
-	return ec.marshalNMutateItemPayload2githubᚗcomᚋdavidfunk13ᚋoverwatchᚑcompanionᚋgraphᚋmodelᚐMutateItemPayload(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Mutation_updateSessionStartingSR(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:     "Mutation",
-		Field:      field,
-		Args:       nil,
-		IsMethod:   true,
-		IsResolver: true,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	rawArgs := field.ArgumentMap(ec.Variables)
-	args, err := ec.field_Mutation_updateSessionStartingSR_args(ctx, rawArgs)
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	fc.Args = args
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().UpdateSessionStartingSr(rctx, args["input"].(model.InputUpdateSessionStartingSr))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -6642,11 +6571,6 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
-		case "updateSessionStartingSR":
-			out.Values[i] = ec._Mutation_updateSessionStartingSR(ctx, field)
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
 		case "deleteSession":
 			out.Values[i] = ec._Mutation_deleteSession(ctx, field)
 			if out.Values[i] == graphql.Null {
@@ -7136,53 +7060,6 @@ func (ec *executionContext) marshalNBattletag2ᚕᚖgithubᚗcomᚋdavidfunk13�
 	return ret
 }
 
-func (ec *executionContext) marshalNBattletag2ᚕᚖgithubᚗcomᚋdavidfunk13ᚋoverwatchᚑcompanionᚋgraphᚋmodelᚐBattletagᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Battletag) graphql.Marshaler {
-	ret := make(graphql.Array, len(v))
-	var wg sync.WaitGroup
-	isLen1 := len(v) == 1
-	if !isLen1 {
-		wg.Add(len(v))
-	}
-	for i := range v {
-		i := i
-		fc := &graphql.FieldContext{
-			Index:  &i,
-			Result: &v[i],
-		}
-		ctx := graphql.WithFieldContext(ctx, fc)
-		f := func(i int) {
-			defer func() {
-				if r := recover(); r != nil {
-					ec.Error(ctx, ec.Recover(ctx, r))
-					ret = nil
-				}
-			}()
-			if !isLen1 {
-				defer wg.Done()
-			}
-			ret[i] = ec.marshalNBattletag2ᚖgithubᚗcomᚋdavidfunk13ᚋoverwatchᚑcompanionᚋgraphᚋmodelᚐBattletag(ctx, sel, v[i])
-		}
-		if isLen1 {
-			f(i)
-		} else {
-			go f(i)
-		}
-
-	}
-	wg.Wait()
-	return ret
-}
-
-func (ec *executionContext) marshalNBattletag2ᚖgithubᚗcomᚋdavidfunk13ᚋoverwatchᚑcompanionᚋgraphᚋmodelᚐBattletag(ctx context.Context, sel ast.SelectionSet, v *model.Battletag) graphql.Marshaler {
-	if v == nil {
-		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	return ec._Battletag(ctx, sel, v)
-}
-
 func (ec *executionContext) unmarshalNBoolean2bool(ctx context.Context, v interface{}) (bool, error) {
 	res, err := graphql.UnmarshalBoolean(v)
 	return res, graphql.ErrorOnPath(ctx, err)
@@ -7235,53 +7112,6 @@ func (ec *executionContext) marshalNGame2ᚕᚖgithubᚗcomᚋdavidfunk13ᚋover
 	return ret
 }
 
-func (ec *executionContext) marshalNGame2ᚕᚖgithubᚗcomᚋdavidfunk13ᚋoverwatchᚑcompanionᚋgraphᚋmodelᚐGameᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Game) graphql.Marshaler {
-	ret := make(graphql.Array, len(v))
-	var wg sync.WaitGroup
-	isLen1 := len(v) == 1
-	if !isLen1 {
-		wg.Add(len(v))
-	}
-	for i := range v {
-		i := i
-		fc := &graphql.FieldContext{
-			Index:  &i,
-			Result: &v[i],
-		}
-		ctx := graphql.WithFieldContext(ctx, fc)
-		f := func(i int) {
-			defer func() {
-				if r := recover(); r != nil {
-					ec.Error(ctx, ec.Recover(ctx, r))
-					ret = nil
-				}
-			}()
-			if !isLen1 {
-				defer wg.Done()
-			}
-			ret[i] = ec.marshalNGame2ᚖgithubᚗcomᚋdavidfunk13ᚋoverwatchᚑcompanionᚋgraphᚋmodelᚐGame(ctx, sel, v[i])
-		}
-		if isLen1 {
-			f(i)
-		} else {
-			go f(i)
-		}
-
-	}
-	wg.Wait()
-	return ret
-}
-
-func (ec *executionContext) marshalNGame2ᚖgithubᚗcomᚋdavidfunk13ᚋoverwatchᚑcompanionᚋgraphᚋmodelᚐGame(ctx context.Context, sel ast.SelectionSet, v *model.Game) graphql.Marshaler {
-	if v == nil {
-		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	return ec._Game(ctx, sel, v)
-}
-
 func (ec *executionContext) unmarshalNInputBattletag2githubᚗcomᚋdavidfunk13ᚋoverwatchᚑcompanionᚋgraphᚋmodelᚐInputBattletag(ctx context.Context, v interface{}) (model.InputBattletag, error) {
 	res, err := ec.unmarshalInputInputBattletag(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
@@ -7294,11 +7124,6 @@ func (ec *executionContext) unmarshalNInputGame2githubᚗcomᚋdavidfunk13ᚋove
 
 func (ec *executionContext) unmarshalNInputSession2githubᚗcomᚋdavidfunk13ᚋoverwatchᚑcompanionᚋgraphᚋmodelᚐInputSession(ctx context.Context, v interface{}) (model.InputSession, error) {
 	res, err := ec.unmarshalInputInputSession(ctx, v)
-	return res, graphql.ErrorOnPath(ctx, err)
-}
-
-func (ec *executionContext) unmarshalNInputUpdateSessionStartingSR2githubᚗcomᚋdavidfunk13ᚋoverwatchᚑcompanionᚋgraphᚋmodelᚐInputUpdateSessionStartingSr(ctx context.Context, v interface{}) (model.InputUpdateSessionStartingSr, error) {
-	res, err := ec.unmarshalInputInputUpdateSessionStartingSR(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
@@ -7412,53 +7237,6 @@ func (ec *executionContext) marshalNSession2ᚕᚖgithubᚗcomᚋdavidfunk13ᚋo
 	}
 	wg.Wait()
 	return ret
-}
-
-func (ec *executionContext) marshalNSession2ᚕᚖgithubᚗcomᚋdavidfunk13ᚋoverwatchᚑcompanionᚋgraphᚋmodelᚐSessionᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Session) graphql.Marshaler {
-	ret := make(graphql.Array, len(v))
-	var wg sync.WaitGroup
-	isLen1 := len(v) == 1
-	if !isLen1 {
-		wg.Add(len(v))
-	}
-	for i := range v {
-		i := i
-		fc := &graphql.FieldContext{
-			Index:  &i,
-			Result: &v[i],
-		}
-		ctx := graphql.WithFieldContext(ctx, fc)
-		f := func(i int) {
-			defer func() {
-				if r := recover(); r != nil {
-					ec.Error(ctx, ec.Recover(ctx, r))
-					ret = nil
-				}
-			}()
-			if !isLen1 {
-				defer wg.Done()
-			}
-			ret[i] = ec.marshalNSession2ᚖgithubᚗcomᚋdavidfunk13ᚋoverwatchᚑcompanionᚋgraphᚋmodelᚐSession(ctx, sel, v[i])
-		}
-		if isLen1 {
-			f(i)
-		} else {
-			go f(i)
-		}
-
-	}
-	wg.Wait()
-	return ret
-}
-
-func (ec *executionContext) marshalNSession2ᚖgithubᚗcomᚋdavidfunk13ᚋoverwatchᚑcompanionᚋgraphᚋmodelᚐSession(ctx context.Context, sel ast.SelectionSet, v *model.Session) graphql.Marshaler {
-	if v == nil {
-		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	return ec._Session(ctx, sel, v)
 }
 
 func (ec *executionContext) unmarshalNString2string(ctx context.Context, v interface{}) (string, error) {
