@@ -42,58 +42,6 @@ enum Location {
 # Utilities
 union OptionalDataPayload = Battletag | Session | Game
 
-interface QueryPayload {
-  success: Boolean!
-}
-
-type GetAllBattletagsPayloadSuccess implements QueryPayload {
-  success: Boolean!
-  message: String!
-  data: [Battletag]!
-}
-
-type GetAllBattletagsPayloadFailure implements QueryPayload {
-  success: Boolean!
-  error: String!
-  data: [Battletag]!
-}
-
-type GetAllSessionsPayloadSuccess implements QueryPayload {
-  success: Boolean!
-  message: String!
-  data: [Session]!
-}
-
-type GetAllSessionsPayloadFailure implements QueryPayload {
-  success: Boolean!
-  error: String!
-  data: [Session]!
-}
-
-type GetAllGamesPayloadSuccess implements QueryPayload {
-  success: Boolean!
-  message: String!
-  data: [Game]!
-}
-
-type GetAllGamesPayloadFailure implements QueryPayload {
-  success: Boolean!
-  error: String!
-  data: [Game]!
-}
-
-type GetOneItemPayloadSuccess implements QueryPayload {
-  success: Boolean!
-  message: String!
-  data: OptionalDataPayload
-}
-
-type GetOneItemPayloadFailure implements QueryPayload {
-  success: Boolean!
-  error: String!
-  message: String
-}
-
 interface MutateItemPayload {
   id: Int
   success: Boolean!
@@ -234,12 +182,12 @@ input InputGetOneBattletag {
 
 # Queries
 type Query {
-  getAllBattletags(input: String!): QueryPayload!
-  getOneBattletag(input: InputGetOneBattletag): QueryPayload!
-  getAllSessions(input: InputGetSessions): QueryPayload!
-  getOneSession(input: InputGetOneSessionByIDAndBattletagID): QueryPayload!
-  getOneGame(input: InputGetGame): QueryPayload!
-  getAllGames(input: InputGetGames): QueryPayload!
+  getAllBattletags(input: String!): [Battletag]!
+  getOneBattletag(input: InputGetOneBattletag): Battletag!
+  getAllSessions(input: InputGetSessions): [Session]!
+  getOneSession(input: InputGetOneSessionByIDAndBattletagID): Session!
+  getAllGames(input: InputGetGames): [Game]!
+  getOneGame(input: InputGetGame): Game!
 }
 
 # Mutations

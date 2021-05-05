@@ -7,7 +7,7 @@ import (
 )
 
 // SelectAllGames Selects and returns all games from the database. This function will be refined to only select one sessions games.
-func GetAllGames(input model.InputGetGames) model.QueryPayload {
+func GetAllGames(input model.InputGetGames) []*model.Game {
 	db, err := OpenConnection()
 
 	if err != nil {
@@ -33,13 +33,7 @@ func GetAllGames(input model.InputGetGames) model.QueryPayload {
 	}
 
 	if qErr != nil {
-
-		payload := model.GetAllGamesPayloadFailure{
-			Success: false,
-			Error:   "Error getting games list for this user's battletag's session.",
-		}
-
-		return payload
+		panic(err.Error())
 	}
 
 	defer res.Close()
@@ -57,12 +51,7 @@ func GetAllGames(input model.InputGetGames) model.QueryPayload {
 		err = res.Scan(&id, &userId, &battletagId, &sessionId, &location, &role, &sr_in, &sr_out, &matchOutcome)
 
 		if err != nil {
-			payload := model.GetAllGamesPayloadFailure{
-				Success: false,
-				Error:   "Error getting games list for this user's battletag's session.",
-			}
-
-			return payload
+			panic(err.Error())
 		}
 
 		g := model.Game{
@@ -79,11 +68,6 @@ func GetAllGames(input model.InputGetGames) model.QueryPayload {
 
 		data = append(data, &g)
 	}
-	payload := model.GetAllGamesPayloadSuccess{
-		Success: true,
-		Message: "All games for this user's battletag's session have been successfully fetched.",
-		Data:    data,
-	}
 
-	return payload
+	return data
 }

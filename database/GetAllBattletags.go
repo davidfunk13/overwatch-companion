@@ -5,7 +5,7 @@ import (
 )
 
 // SelectAllBattletags Selects and returns all battletags from the database. This function will be refined to only fetch a user's battletags.
-func GetAllBattletags(uId string) model.QueryPayload {
+func GetAllBattletags(uId string) []*model.Battletag {
 	db, err := OpenConnection()
 
 	if err != nil {
@@ -47,12 +47,7 @@ func GetAllBattletags(uId string) model.QueryPayload {
 		)
 
 		if err != nil {
-			payload := model.GetAllBattletagsPayloadFailure{
-				Success: false,
-				Error:   "Failed getting list of battletags from the database.",
-				Data:    make([]*model.Battletag, 0),
-			}
-			return payload
+			panic(err.Error())
 		}
 
 		b := model.Battletag{
@@ -71,11 +66,5 @@ func GetAllBattletags(uId string) model.QueryPayload {
 		data = append(data, &b)
 	}
 
-	payload := model.GetAllBattletagsPayloadSuccess{
-		Success: true,
-		Message: "All battletags for this user have been fetched",
-		Data:    data,
-	}
-
-	return payload
+	return data
 }

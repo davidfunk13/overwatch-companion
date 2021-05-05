@@ -7,7 +7,7 @@ import (
 )
 
 // GetOneBattletag returns a single battletag by userId and battletagId.
-func GetOneBattletag(input *model.InputGetOneBattletag) model.QueryPayload {
+func GetOneBattletag(input *model.InputGetOneBattletag) *model.Battletag {
 	db, err := OpenConnection()
 
 	if err != nil {
@@ -40,14 +40,9 @@ func GetOneBattletag(input *model.InputGetOneBattletag) model.QueryPayload {
 		&portrait,
 	); err {
 	case sql.ErrNoRows:
-		payload := model.GetOneItemPayloadFailure{
-			Success: false,
-			Error:   "No battletag found with those ids.",
-		}
-
-		return payload
+		return &model.Battletag{}
 	case nil:
-		battletag := model.Battletag{
+		battletag := &model.Battletag{
 			ID:          battletagId,
 			UserID:      userId,
 			Name:        name,
@@ -60,14 +55,8 @@ func GetOneBattletag(input *model.InputGetOneBattletag) model.QueryPayload {
 			Portrait:    portrait,
 		}
 
-		payload := model.GetOneItemPayloadSuccess{
-			Success: true,
-			Message: "Battletag found successfully.",
-			Data:    battletag,
-		}
-
-		return payload
+		return battletag
 	default:
-		panic(err)
+		panic(err.Error())
 	}
 }

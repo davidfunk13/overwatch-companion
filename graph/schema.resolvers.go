@@ -66,38 +66,38 @@ func (r *mutationResolver) DeleteGame(ctx context.Context, input int) (model.Mut
 	return deleted, nil
 }
 
-func (r *queryResolver) GetAllBattletags(ctx context.Context, input string) (model.QueryPayload, error) {
+func (r *queryResolver) GetAllBattletags(ctx context.Context, input string) ([]*model.Battletag, error) {
 	battletags := database.GetAllBattletags(input)
 
 	return battletags, nil
 }
 
-func (r *queryResolver) GetOneBattletag(ctx context.Context, input *model.InputGetOneBattletag) (model.QueryPayload, error) {
+func (r *queryResolver) GetOneBattletag(ctx context.Context, input *model.InputGetOneBattletag) (*model.Battletag, error) {
 	battletag := database.GetOneBattletag(input)
 
 	return battletag, nil
 }
 
-func (r *queryResolver) GetAllSessions(ctx context.Context, input *model.InputGetSessions) (model.QueryPayload, error) {
+func (r *queryResolver) GetAllSessions(ctx context.Context, input *model.InputGetSessions) ([]*model.Session, error) {
 	sessions := database.GetAllSessions(input.UserID, input.BattletagID)
 
 	return sessions, nil
 }
 
-func (r *queryResolver) GetOneSession(ctx context.Context, input *model.InputGetOneSessionByIDAndBattletagID) (model.QueryPayload, error) {
+func (r *queryResolver) GetOneSession(ctx context.Context, input *model.InputGetOneSessionByIDAndBattletagID) (*model.Session, error) {
 	session := database.GetSession(input)
 
 	return session, nil
 }
 
-func (r *queryResolver) GetOneGame(ctx context.Context, input *model.InputGetGame) (model.QueryPayload, error) {
-	panic(fmt.Errorf("not implemented"))
-}
-
-func (r *queryResolver) GetAllGames(ctx context.Context, input *model.InputGetGames) (model.QueryPayload, error) {
+func (r *queryResolver) GetAllGames(ctx context.Context, input *model.InputGetGames) ([]*model.Game, error) {
 	games := database.GetAllGames(*input)
 
 	return games, nil
+}
+
+func (r *queryResolver) GetOneGame(ctx context.Context, input *model.InputGetGame) (*model.Game, error) {
+	panic(fmt.Errorf("not implemented"))
 }
 
 // Mutation returns generated.MutationResolver implementation.

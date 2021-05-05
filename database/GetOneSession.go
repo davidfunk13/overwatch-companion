@@ -7,7 +7,7 @@ import (
 )
 
 // Get session gets a single session by id and battletagId
-func GetSession(input *model.InputGetOneSessionByIDAndBattletagID) model.QueryPayload {
+func GetSession(input *model.InputGetOneSessionByIDAndBattletagID) *model.Session {
 	//open connection to the database
 	db, err := OpenConnection()
 
@@ -39,14 +39,8 @@ func GetSession(input *model.InputGetOneSessionByIDAndBattletagID) model.QueryPa
 		&sr_support,
 	); err {
 	case sql.ErrNoRows:
-		payload := model.GetOneItemPayloadFailure{
-			Success: false,
-			Error:   "No session found with those ids.",
-		}
-
-		return payload
+		return &model.Session{}
 	case nil:
-
 		session := model.Session{
 			ID:                id,
 			UserID:            userId,
@@ -59,12 +53,7 @@ func GetSession(input *model.InputGetOneSessionByIDAndBattletagID) model.QueryPa
 			SrSupport:         sr_support,
 		}
 
-		payload := model.GetOneItemPayloadSuccess{
-			Success: true,
-			Data:    session,
-		}
-
-		return payload
+		return &session
 	default:
 		panic(err)
 	}

@@ -5,7 +5,7 @@ import (
 )
 
 // SelectAllSessions Selects and returns all sessions from the database. This function will be refined to only select one battletag's sessions.
-func GetAllSessions(uid string, bid int) model.QueryPayload {
+func GetAllSessions(uid string, bid int) []*model.Session {
 	db, err := OpenConnection()
 
 	if err != nil {
@@ -44,13 +44,7 @@ func GetAllSessions(uid string, bid int) model.QueryPayload {
 		)
 
 		if err != nil {
-			payload := model.GetAllSessionsPayloadFailure{
-				Success: false,
-				Error:   "Failed looking up session list for this user.",
-				Data:    make([]*model.Session, 0),
-			}
-
-			return payload
+			panic(err.Error())
 		}
 
 		s := model.Session{
@@ -68,11 +62,5 @@ func GetAllSessions(uid string, bid int) model.QueryPayload {
 		data = append(data, &s)
 	}
 
-	payload := model.GetAllSessionsPayloadSuccess{
-		Success: true,
-		Message: "All sessions for this user's battletag retrieved successfully.",
-		Data:    data,
-	}
-
-	return payload
+	return data
 }
