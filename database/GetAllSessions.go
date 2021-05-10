@@ -27,7 +27,7 @@ func GetAllSessions(uid string, bid int) []*model.Session {
 	for res.Next() {
 
 		var (
-			userId                                                                                                     string
+			userId, created_at, updated_at                                                                             string
 			id, battletagId, starting_sr_tank, sr_tank, starting_sr_damage, sr_damage, starting_sr_support, sr_support int
 		)
 
@@ -41,6 +41,8 @@ func GetAllSessions(uid string, bid int) []*model.Session {
 			&sr_damage,
 			&starting_sr_support,
 			&sr_support,
+			&created_at,
+			&updated_at,
 		)
 
 		if err != nil {
@@ -57,6 +59,8 @@ func GetAllSessions(uid string, bid int) []*model.Session {
 			SrDamage:          sr_damage,
 			StartingSrSupport: starting_sr_support,
 			SrSupport:         sr_support,
+			CreatedAt:         created_at,
+			UpdatedAt:         &updated_at,
 		}
 
 		data = append(data, &s)

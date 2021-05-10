@@ -27,6 +27,8 @@ type Battletag struct {
 	Platform    Platform `json:"platform"`
 	IsPublic    *bool    `json:"isPublic"`
 	Portrait    string   `json:"portrait"`
+	CreatedAt   string   `json:"created_at"`
+	UpdatedAt   *string  `json:"updated_at"`
 }
 
 func (Battletag) IsOptionalDataPayload() {}
@@ -52,6 +54,8 @@ type Game struct {
 	SrIn         int          `json:"sr_in"`
 	SrOut        int          `json:"sr_out"`
 	MatchOutcome MatchOutcome `json:"match_outcome"`
+	CreatedAt    string       `json:"created_at"`
+	UpdatedAt    *string      `json:"updated_at"`
 }
 
 func (Game) IsOptionalDataPayload() {}
@@ -143,15 +147,17 @@ type MutateItemPayloadSuccess struct {
 func (MutateItemPayloadSuccess) IsMutateItemPayload() {}
 
 type Session struct {
-	ID                int    `json:"id"`
-	UserID            string `json:"userId"`
-	BattletagID       int    `json:"battletagId"`
-	StartingSrTank    int    `json:"starting_sr_tank"`
-	SrTank            int    `json:"sr_tank"`
-	StartingSrDamage  int    `json:"starting_sr_damage"`
-	SrDamage          int    `json:"sr_damage"`
-	StartingSrSupport int    `json:"starting_sr_support"`
-	SrSupport         int    `json:"sr_support"`
+	ID                int     `json:"id"`
+	UserID            string  `json:"userId"`
+	BattletagID       int     `json:"battletagId"`
+	StartingSrTank    int     `json:"starting_sr_tank"`
+	SrTank            int     `json:"sr_tank"`
+	StartingSrDamage  int     `json:"starting_sr_damage"`
+	SrDamage          int     `json:"sr_damage"`
+	StartingSrSupport int     `json:"starting_sr_support"`
+	SrSupport         int     `json:"sr_support"`
+	CreatedAt         string  `json:"created_at"`
+	UpdatedAt         *string `json:"updated_at"`
 }
 
 func (Session) IsOptionalDataPayload() {}

@@ -46,6 +46,7 @@ type DirectiveRoot struct {
 type ComplexityRoot struct {
 	Battletag struct {
 		BlizzID     func(childComplexity int) int
+		CreatedAt   func(childComplexity int) int
 		ID          func(childComplexity int) int
 		IsPublic    func(childComplexity int) int
 		Level       func(childComplexity int) int
@@ -54,6 +55,7 @@ type ComplexityRoot struct {
 		PlayerLevel func(childComplexity int) int
 		Portrait    func(childComplexity int) int
 		URLName     func(childComplexity int) int
+		UpdatedAt   func(childComplexity int) int
 		UserID      func(childComplexity int) int
 	}
 
@@ -70,6 +72,7 @@ type ComplexityRoot struct {
 
 	Game struct {
 		BattletagID  func(childComplexity int) int
+		CreatedAt    func(childComplexity int) int
 		ID           func(childComplexity int) int
 		Location     func(childComplexity int) int
 		MatchOutcome func(childComplexity int) int
@@ -77,6 +80,7 @@ type ComplexityRoot struct {
 		SessionID    func(childComplexity int) int
 		SrIn         func(childComplexity int) int
 		SrOut        func(childComplexity int) int
+		UpdatedAt    func(childComplexity int) int
 		UserID       func(childComplexity int) int
 	}
 
@@ -114,6 +118,7 @@ type ComplexityRoot struct {
 
 	Session struct {
 		BattletagID       func(childComplexity int) int
+		CreatedAt         func(childComplexity int) int
 		ID                func(childComplexity int) int
 		SrDamage          func(childComplexity int) int
 		SrSupport         func(childComplexity int) int
@@ -121,6 +126,7 @@ type ComplexityRoot struct {
 		StartingSrDamage  func(childComplexity int) int
 		StartingSrSupport func(childComplexity int) int
 		StartingSrTank    func(childComplexity int) int
+		UpdatedAt         func(childComplexity int) int
 		UserID            func(childComplexity int) int
 	}
 }
@@ -163,6 +169,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Battletag.BlizzID(childComplexity), true
+
+	case "Battletag.created_at":
+		if e.complexity.Battletag.CreatedAt == nil {
+			break
+		}
+
+		return e.complexity.Battletag.CreatedAt(childComplexity), true
 
 	case "Battletag.id":
 		if e.complexity.Battletag.ID == nil {
@@ -219,6 +232,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Battletag.URLName(childComplexity), true
+
+	case "Battletag.updated_at":
+		if e.complexity.Battletag.UpdatedAt == nil {
+			break
+		}
+
+		return e.complexity.Battletag.UpdatedAt(childComplexity), true
 
 	case "Battletag.userId":
 		if e.complexity.Battletag.UserID == nil {
@@ -290,6 +310,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Game.BattletagID(childComplexity), true
 
+	case "Game.created_at":
+		if e.complexity.Game.CreatedAt == nil {
+			break
+		}
+
+		return e.complexity.Game.CreatedAt(childComplexity), true
+
 	case "Game.id":
 		if e.complexity.Game.ID == nil {
 			break
@@ -338,6 +365,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Game.SrOut(childComplexity), true
+
+	case "Game.updated_at":
+		if e.complexity.Game.UpdatedAt == nil {
+			break
+		}
+
+		return e.complexity.Game.UpdatedAt(childComplexity), true
 
 	case "Game.userId":
 		if e.complexity.Game.UserID == nil {
@@ -553,6 +587,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Session.BattletagID(childComplexity), true
 
+	case "Session.created_at":
+		if e.complexity.Session.CreatedAt == nil {
+			break
+		}
+
+		return e.complexity.Session.CreatedAt(childComplexity), true
+
 	case "Session.id":
 		if e.complexity.Session.ID == nil {
 			break
@@ -601,6 +642,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Session.StartingSrTank(childComplexity), true
+
+	case "Session.updated_at":
+		if e.complexity.Session.UpdatedAt == nil {
+			break
+		}
+
+		return e.complexity.Session.UpdatedAt(childComplexity), true
 
 	case "Session.userId":
 		if e.complexity.Session.UserID == nil {
@@ -748,6 +796,8 @@ type Battletag {
   platform: Platform!
   isPublic: Boolean
   portrait: String!
+  created_at: String!
+  updated_at: String
 }
 
 input InputBattletag {
@@ -784,6 +834,8 @@ type Session {
   sr_damage: Int!
   starting_sr_support: Int!
   sr_support: Int!
+  created_at: String!
+  updated_at: String
 }
 
 input InputSession {
@@ -823,6 +875,8 @@ type Game {
   sr_in: Int!
   sr_out: Int!
   match_outcome: MatchOutcome!
+  created_at: String!
+  updated_at: String
 }
 
 input InputGame {
@@ -1465,6 +1519,73 @@ func (ec *executionContext) _Battletag_portrait(ctx context.Context, field graph
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
+func (ec *executionContext) _Battletag_created_at(ctx context.Context, field graphql.CollectedField, obj *model.Battletag) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Battletag",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.CreatedAt, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Battletag_updated_at(ctx context.Context, field graphql.CollectedField, obj *model.Battletag) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Battletag",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.UpdatedAt, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
 func (ec *executionContext) _BlizzBattletag_name(ctx context.Context, field graphql.CollectedField, obj *model.BlizzBattletag) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -2058,6 +2179,73 @@ func (ec *executionContext) _Game_match_outcome(ctx context.Context, field graph
 	res := resTmp.(model.MatchOutcome)
 	fc.Result = res
 	return ec.marshalNMatchOutcome2githubᚗcomᚋdavidfunk13ᚋoverwatchᚑcompanionᚋgraphᚋmodelᚐMatchOutcome(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Game_created_at(ctx context.Context, field graphql.CollectedField, obj *model.Game) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Game",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.CreatedAt, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Game_updated_at(ctx context.Context, field graphql.CollectedField, obj *model.Game) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Game",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.UpdatedAt, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _MutateItemPayloadFailure_id(ctx context.Context, field graphql.CollectedField, obj *model.MutateItemPayloadFailure) (ret graphql.Marshaler) {
@@ -3222,6 +3410,73 @@ func (ec *executionContext) _Session_sr_support(ctx context.Context, field graph
 	res := resTmp.(int)
 	fc.Result = res
 	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Session_created_at(ctx context.Context, field graphql.CollectedField, obj *model.Session) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Session",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.CreatedAt, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Session_updated_at(ctx context.Context, field graphql.CollectedField, obj *model.Session) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Session",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.UpdatedAt, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) ___Directive_name(ctx context.Context, field graphql.CollectedField, obj *introspection.Directive) (ret graphql.Marshaler) {
@@ -4866,6 +5121,13 @@ func (ec *executionContext) _Battletag(ctx context.Context, sel ast.SelectionSet
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
+		case "created_at":
+			out.Values[i] = ec._Battletag_created_at(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "updated_at":
+			out.Values[i] = ec._Battletag_updated_at(ctx, field, obj)
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -4995,6 +5257,13 @@ func (ec *executionContext) _Game(ctx context.Context, sel ast.SelectionSet, obj
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
+		case "created_at":
+			out.Values[i] = ec._Game_created_at(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "updated_at":
+			out.Values[i] = ec._Game_updated_at(ctx, field, obj)
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -5310,6 +5579,13 @@ func (ec *executionContext) _Session(ctx context.Context, sel ast.SelectionSet, 
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
+		case "created_at":
+			out.Values[i] = ec._Session_created_at(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "updated_at":
+			out.Values[i] = ec._Session_updated_at(ctx, field, obj)
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}

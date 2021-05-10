@@ -108,7 +108,7 @@ func CreateSession(input model.InputSession) model.MutateItemPayload {
 	lastInserted := db.QueryRow(`Select * from session where id=?;`, lastInsertedID)
 
 	var (
-		userId                                                                                                     string
+		userId, created_at, updated_at                                                                             string
 		id, battletagId, starting_sr_tank, sr_tank, starting_sr_damage, sr_damage, starting_sr_support, sr_support int
 	)
 
@@ -122,6 +122,8 @@ func CreateSession(input model.InputSession) model.MutateItemPayload {
 		&sr_damage,
 		&starting_sr_support,
 		&sr_support,
+		&created_at,
+		&updated_at,
 	)
 
 	insertedSession := model.Session{
@@ -134,6 +136,8 @@ func CreateSession(input model.InputSession) model.MutateItemPayload {
 		SrDamage:          sr_damage,
 		StartingSrSupport: starting_sr_support,
 		SrSupport:         sr_support,
+		CreatedAt:         created_at,
+		UpdatedAt:         &updated_at,
 	}
 
 	payload = model.MutateItemPayloadSuccess{

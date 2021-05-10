@@ -9,6 +9,8 @@ CREATE TABLE `battletag` (
   `platform` varchar(100) NOT NULL,
   `isPublic` bool NOT NULL,
   `portrait` varchar(100) NOT NULL,
+  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
 );
 
@@ -22,6 +24,8 @@ CREATE TABLE `session` (
   `sr_damage` int NOT NULL,
   `starting_sr_support` int NOT NULL,
   `sr_support` int NOT NULL,
+  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   FOREIGN KEY (`battletagId`) REFERENCES `battletag` (`id`) ON DELETE CASCADE,
   PRIMARY KEY (`id`)
 );
@@ -56,6 +60,8 @@ CREATE TABLE `game` (
   `sr_in` int NOT NULL,
   `sr_out` int NOT NULL,
   `match_outcome` ENUM("WIN", "LOSS", "DRAW") NOT NULL,
+  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ,
+  `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   FOREIGN KEY (`battletagId`) REFERENCES `battletag` (`id`) ON DELETE CASCADE,
   FOREIGN KEY (`sessionId`) REFERENCES `session` (`id`) ON DELETE CASCADE,
   PRIMARY KEY (`id`)

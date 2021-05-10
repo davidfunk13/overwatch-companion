@@ -41,14 +41,14 @@ func GetAllGames(input model.InputGetGames) []*model.Game {
 	for res.Next() {
 
 		var (
-			userId                                    string
+			userId, created_at, updated_at            string
 			id, battletagId, sessionId, sr_in, sr_out int
 			location                                  model.Location
 			role                                      model.Role
 			matchOutcome                              model.MatchOutcome
 		)
 
-		err = res.Scan(&id, &userId, &battletagId, &sessionId, &location, &role, &sr_in, &sr_out, &matchOutcome)
+		err = res.Scan(&id, &userId, &battletagId, &sessionId, &location, &role, &sr_in, &sr_out, &matchOutcome, &created_at, &updated_at)
 
 		if err != nil {
 			panic(err.Error())
@@ -64,6 +64,8 @@ func GetAllGames(input model.InputGetGames) []*model.Game {
 			SrIn:         sr_in,
 			SrOut:        sr_out,
 			MatchOutcome: matchOutcome,
+			CreatedAt:    created_at,
+			UpdatedAt:    &updated_at,
 		}
 
 		data = append(data, &g)

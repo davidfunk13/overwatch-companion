@@ -17,10 +17,10 @@ func GetOneBattletag(input *model.InputGetOneBattletag) *model.Battletag {
 	defer db.Close()
 
 	var (
-		userId, name, urlName, portrait          string
-		battletagId, blizzId, level, playerLevel int
-		platform                                 model.Platform
-		isPublic                                 *bool
+		userId, name, urlName, portrait, created_at, updated_at string
+		battletagId, blizzId, level, playerLevel                int
+		platform                                                model.Platform
+		isPublic                                                *bool
 	)
 
 	qstr := `SELECT * FROM battletag WHERE id=? AND userId=?;`
@@ -38,6 +38,8 @@ func GetOneBattletag(input *model.InputGetOneBattletag) *model.Battletag {
 		&platform,
 		&isPublic,
 		&portrait,
+		&created_at,
+		&updated_at,
 	); err {
 	case sql.ErrNoRows:
 		return &model.Battletag{}
@@ -53,6 +55,8 @@ func GetOneBattletag(input *model.InputGetOneBattletag) *model.Battletag {
 			Platform:    platform,
 			IsPublic:    isPublic,
 			Portrait:    portrait,
+			CreatedAt:   created_at,
+			UpdatedAt:   &updated_at,
 		}
 
 		return battletag

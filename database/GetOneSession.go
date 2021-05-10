@@ -19,7 +19,7 @@ func GetSession(input *model.InputGetOneSessionByIDAndBattletagID) *model.Sessio
 	defer db.Close()
 
 	var (
-		userId                                                                                                     string
+		userId, created_at, updated_at                                                                             string
 		id, battletagId, starting_sr_tank, sr_tank, starting_sr_damage, sr_damage, starting_sr_support, sr_support int
 	)
 
@@ -37,6 +37,8 @@ func GetSession(input *model.InputGetOneSessionByIDAndBattletagID) *model.Sessio
 		&sr_damage,
 		&starting_sr_support,
 		&sr_support,
+		&created_at,
+		&updated_at,
 	); err {
 	case sql.ErrNoRows:
 		return &model.Session{}
@@ -51,6 +53,8 @@ func GetSession(input *model.InputGetOneSessionByIDAndBattletagID) *model.Sessio
 			SrDamage:          sr_damage,
 			StartingSrSupport: starting_sr_support,
 			SrSupport:         sr_support,
+			CreatedAt:         created_at,
+			UpdatedAt:         &updated_at,
 		}
 
 		return &session

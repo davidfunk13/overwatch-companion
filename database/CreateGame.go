@@ -35,7 +35,7 @@ func CreateGame(input model.InputGame) model.MutateItemPayload {
 
 	// define set of variables to hold previous game's values
 	var (
-		prevUserId                                                  string
+		prevUserId, created_at, updated_at                          string
 		prevId, prevBattletagId, prevSessionId, prevSrIn, prevSrOut int
 		prevLocation                                                model.Location
 		prevRole                                                    model.Role
@@ -54,7 +54,7 @@ func CreateGame(input model.InputGame) model.MutateItemPayload {
 	var prevGames []*model.Game
 
 	for prevGameStatement.Next() {
-		err = prevGameStatement.Scan(&prevId, &prevUserId, &prevBattletagId, &prevSessionId, &prevLocation, &prevRole, &prevSrIn, &prevSrOut, &prevMatchOutcome)
+		err = prevGameStatement.Scan(&prevId, &prevUserId, &prevBattletagId, &prevSessionId, &prevLocation, &prevRole, &prevSrIn, &prevSrOut, &prevMatchOutcome, &created_at, &updated_at)
 
 		g := model.Game{
 			ID:           prevId,
@@ -66,6 +66,8 @@ func CreateGame(input model.InputGame) model.MutateItemPayload {
 			SrIn:         prevSrIn,
 			SrOut:        prevSrOut,
 			MatchOutcome: prevMatchOutcome,
+			CreatedAt:    created_at,
+			UpdatedAt:    &updated_at,
 		}
 
 		prevGames = append(prevGames, &g)
