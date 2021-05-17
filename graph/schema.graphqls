@@ -128,8 +128,14 @@ input InputGetSessions {
   battletagId: Int!
 }
 
-input InputGetOneSessionByIDAndBattletagID {
+input InputGetOneSession {
   id: Int!
+  userId: String!
+  battletagId: Int!
+}
+
+input InputGetMostRecentSession {
+  userId: String!
   battletagId: Int!
 }
 
@@ -191,7 +197,8 @@ type Query {
   getAllBattletags(input: String!): [Battletag]!
   getOneBattletag(input: InputGetOneBattletag): Battletag!
   getAllSessions(input: InputGetSessions): [Session]!
-  getOneSession(input: InputGetOneSessionByIDAndBattletagID): Session!
+  getOneSession(input: InputGetOneSession): Session!
+  getMostRecentSession(input: InputGetMostRecentSession): Session!
   getAllGames(input: InputGetGames): [Game]!
   getOneGame(input: InputGetGame): Game!
 }

@@ -97,14 +97,20 @@ type InputGetGames struct {
 	Role        *Role  `json:"role"`
 }
 
+type InputGetMostRecentSession struct {
+	UserID      string `json:"userId"`
+	BattletagID int    `json:"battletagId"`
+}
+
 type InputGetOneBattletag struct {
 	UserID      string `json:"userId"`
 	BattletagID int    `json:"battletagId"`
 }
 
-type InputGetOneSessionByIDAndBattletagID struct {
-	ID          int `json:"id"`
-	BattletagID int `json:"battletagId"`
+type InputGetOneSession struct {
+	ID          int    `json:"id"`
+	UserID      string `json:"userId"`
+	BattletagID int    `json:"battletagId"`
 }
 
 type InputGetSessions struct {

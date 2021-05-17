@@ -7,7 +7,7 @@ import (
 )
 
 // Get session gets a single session by id and battletagId
-func GetSession(input *model.InputGetOneSession) *model.Session {
+func GetMostRecentSession(input *model.InputGetMostRecentSession) *model.Session {
 	//open connection to the database
 	db, err := OpenConnection()
 
@@ -23,9 +23,9 @@ func GetSession(input *model.InputGetOneSession) *model.Session {
 		id, battletagId, starting_sr_tank, sr_tank, starting_sr_damage, sr_damage, starting_sr_support, sr_support int
 	)
 
-	qstr := `SELECT * FROM session WHERE id=? AND battletagId=?;`
+	qstr := `SELECT * FROM session WHERE userId=? AND battletagId=? ORDER BY created_at DESC LIMIT 1;`
 
-	row := db.QueryRow(qstr, input.ID, input.BattletagID)
+	row := db.QueryRow(qstr, input.UserID, input.BattletagID)
 
 	switch err := row.Scan(
 		&id,

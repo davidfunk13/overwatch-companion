@@ -84,8 +84,14 @@ func (r *queryResolver) GetAllSessions(ctx context.Context, input *model.InputGe
 	return sessions, nil
 }
 
-func (r *queryResolver) GetOneSession(ctx context.Context, input *model.InputGetOneSessionByIDAndBattletagID) (*model.Session, error) {
+func (r *queryResolver) GetOneSession(ctx context.Context, input *model.InputGetOneSession) (*model.Session, error) {
 	session := database.GetSession(input)
+
+	return session, nil
+}
+
+func (r *queryResolver) GetMostRecentSession(ctx context.Context, input *model.InputGetMostRecentSession) (*model.Session, error) {
+	session := database.GetMostRecentSession(input)
 
 	return session, nil
 }

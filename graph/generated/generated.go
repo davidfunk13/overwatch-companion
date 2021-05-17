@@ -108,12 +108,13 @@ type ComplexityRoot struct {
 	}
 
 	Query struct {
-		GetAllBattletags func(childComplexity int, input string) int
-		GetAllGames      func(childComplexity int, input *model.InputGetGames) int
-		GetAllSessions   func(childComplexity int, input *model.InputGetSessions) int
-		GetOneBattletag  func(childComplexity int, input *model.InputGetOneBattletag) int
-		GetOneGame       func(childComplexity int, input *model.InputGetGame) int
-		GetOneSession    func(childComplexity int, input *model.InputGetOneSessionByIDAndBattletagID) int
+		GetAllBattletags     func(childComplexity int, input string) int
+		GetAllGames          func(childComplexity int, input *model.InputGetGames) int
+		GetAllSessions       func(childComplexity int, input *model.InputGetSessions) int
+		GetMostRecentSession func(childComplexity int, input *model.InputGetMostRecentSession) int
+		GetOneBattletag      func(childComplexity int, input *model.InputGetOneBattletag) int
+		GetOneGame           func(childComplexity int, input *model.InputGetGame) int
+		GetOneSession        func(childComplexity int, input *model.InputGetOneSession) int
 	}
 
 	Session struct {
@@ -143,7 +144,8 @@ type QueryResolver interface {
 	GetAllBattletags(ctx context.Context, input string) ([]*model.Battletag, error)
 	GetOneBattletag(ctx context.Context, input *model.InputGetOneBattletag) (*model.Battletag, error)
 	GetAllSessions(ctx context.Context, input *model.InputGetSessions) ([]*model.Session, error)
-	GetOneSession(ctx context.Context, input *model.InputGetOneSessionByIDAndBattletagID) (*model.Session, error)
+	GetOneSession(ctx context.Context, input *model.InputGetOneSession) (*model.Session, error)
+	GetMostRecentSession(ctx context.Context, input *model.InputGetMostRecentSession) (*model.Session, error)
 	GetAllGames(ctx context.Context, input *model.InputGetGames) ([]*model.Game, error)
 	GetOneGame(ctx context.Context, input *model.InputGetGame) (*model.Game, error)
 }
@@ -544,6 +546,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Query.GetAllSessions(childComplexity, args["input"].(*model.InputGetSessions)), true
 
+	case "Query.getMostRecentSession":
+		if e.complexity.Query.GetMostRecentSession == nil {
+			break
+		}
+
+		args, err := ec.field_Query_getMostRecentSession_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.GetMostRecentSession(childComplexity, args["input"].(*model.InputGetMostRecentSession)), true
+
 	case "Query.getOneBattletag":
 		if e.complexity.Query.GetOneBattletag == nil {
 			break
@@ -578,7 +592,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Query.GetOneSession(childComplexity, args["input"].(*model.InputGetOneSessionByIDAndBattletagID)), true
+		return e.complexity.Query.GetOneSession(childComplexity, args["input"].(*model.InputGetOneSession)), true
 
 	case "Session.battletagId":
 		if e.complexity.Session.BattletagID == nil {
@@ -851,8 +865,14 @@ input InputGetSessions {
   battletagId: Int!
 }
 
-input InputGetOneSessionByIDAndBattletagID {
+input InputGetOneSession {
   id: Int!
+  userId: String!
+  battletagId: Int!
+}
+
+input InputGetMostRecentSession {
+  userId: String!
   battletagId: Int!
 }
 
@@ -914,7 +934,8 @@ type Query {
   getAllBattletags(input: String!): [Battletag]!
   getOneBattletag(input: InputGetOneBattletag): Battletag!
   getAllSessions(input: InputGetSessions): [Session]!
-  getOneSession(input: InputGetOneSessionByIDAndBattletagID): Session!
+  getOneSession(input: InputGetOneSession): Session!
+  getMostRecentSession(input: InputGetMostRecentSession): Session!
   getAllGames(input: InputGetGames): [Game]!
   getOneGame(input: InputGetGame): Game!
 }
@@ -1089,6 +1110,21 @@ func (ec *executionContext) field_Query_getAllSessions_args(ctx context.Context,
 	return args, nil
 }
 
+func (ec *executionContext) field_Query_getMostRecentSession_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 *model.InputGetMostRecentSession
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalOInputGetMostRecentSession2ᚖgithubᚗcomᚋdavidfunk13ᚋoverwatchᚑcompanionᚋgraphᚋmodelᚐInputGetMostRecentSession(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
 func (ec *executionContext) field_Query_getOneBattletag_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
@@ -1122,10 +1158,10 @@ func (ec *executionContext) field_Query_getOneGame_args(ctx context.Context, raw
 func (ec *executionContext) field_Query_getOneSession_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 *model.InputGetOneSessionByIDAndBattletagID
+	var arg0 *model.InputGetOneSession
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalOInputGetOneSessionByIDAndBattletagID2ᚖgithubᚗcomᚋdavidfunk13ᚋoverwatchᚑcompanionᚋgraphᚋmodelᚐInputGetOneSessionByIDAndBattletagID(ctx, tmp)
+		arg0, err = ec.unmarshalOInputGetOneSession2ᚖgithubᚗcomᚋdavidfunk13ᚋoverwatchᚑcompanionᚋgraphᚋmodelᚐInputGetOneSession(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -2925,7 +2961,49 @@ func (ec *executionContext) _Query_getOneSession(ctx context.Context, field grap
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().GetOneSession(rctx, args["input"].(*model.InputGetOneSessionByIDAndBattletagID))
+		return ec.resolvers.Query().GetOneSession(rctx, args["input"].(*model.InputGetOneSession))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.Session)
+	fc.Result = res
+	return ec.marshalNSession2ᚖgithubᚗcomᚋdavidfunk13ᚋoverwatchᚑcompanionᚋgraphᚋmodelᚐSession(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Query_getMostRecentSession(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Query_getMostRecentSession_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().GetMostRecentSession(rctx, args["input"].(*model.InputGetMostRecentSession))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -4814,6 +4892,34 @@ func (ec *executionContext) unmarshalInputInputGetGames(ctx context.Context, obj
 	return it, nil
 }
 
+func (ec *executionContext) unmarshalInputInputGetMostRecentSession(ctx context.Context, obj interface{}) (model.InputGetMostRecentSession, error) {
+	var it model.InputGetMostRecentSession
+	var asMap = obj.(map[string]interface{})
+
+	for k, v := range asMap {
+		switch k {
+		case "userId":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("userId"))
+			it.UserID, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "battletagId":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("battletagId"))
+			it.BattletagID, err = ec.unmarshalNInt2int(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
 func (ec *executionContext) unmarshalInputInputGetOneBattletag(ctx context.Context, obj interface{}) (model.InputGetOneBattletag, error) {
 	var it model.InputGetOneBattletag
 	var asMap = obj.(map[string]interface{})
@@ -4842,8 +4948,8 @@ func (ec *executionContext) unmarshalInputInputGetOneBattletag(ctx context.Conte
 	return it, nil
 }
 
-func (ec *executionContext) unmarshalInputInputGetOneSessionByIDAndBattletagID(ctx context.Context, obj interface{}) (model.InputGetOneSessionByIDAndBattletagID, error) {
-	var it model.InputGetOneSessionByIDAndBattletagID
+func (ec *executionContext) unmarshalInputInputGetOneSession(ctx context.Context, obj interface{}) (model.InputGetOneSession, error) {
+	var it model.InputGetOneSession
 	var asMap = obj.(map[string]interface{})
 
 	for k, v := range asMap {
@@ -4853,6 +4959,14 @@ func (ec *executionContext) unmarshalInputInputGetOneSessionByIDAndBattletagID(c
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
 			it.ID, err = ec.unmarshalNInt2int(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "userId":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("userId"))
+			it.UserID, err = ec.unmarshalNString2string(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -5475,6 +5589,20 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 					}
 				}()
 				res = ec._Query_getOneSession(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
+		case "getMostRecentSession":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_getMostRecentSession(ctx, field)
 				if res == graphql.Null {
 					atomic.AddUint32(&invalids, 1)
 				}
@@ -6388,6 +6516,14 @@ func (ec *executionContext) unmarshalOInputGetGames2ᚖgithubᚗcomᚋdavidfunk1
 	return &res, graphql.ErrorOnPath(ctx, err)
 }
 
+func (ec *executionContext) unmarshalOInputGetMostRecentSession2ᚖgithubᚗcomᚋdavidfunk13ᚋoverwatchᚑcompanionᚋgraphᚋmodelᚐInputGetMostRecentSession(ctx context.Context, v interface{}) (*model.InputGetMostRecentSession, error) {
+	if v == nil {
+		return nil, nil
+	}
+	res, err := ec.unmarshalInputInputGetMostRecentSession(ctx, v)
+	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
 func (ec *executionContext) unmarshalOInputGetOneBattletag2ᚖgithubᚗcomᚋdavidfunk13ᚋoverwatchᚑcompanionᚋgraphᚋmodelᚐInputGetOneBattletag(ctx context.Context, v interface{}) (*model.InputGetOneBattletag, error) {
 	if v == nil {
 		return nil, nil
@@ -6396,11 +6532,11 @@ func (ec *executionContext) unmarshalOInputGetOneBattletag2ᚖgithubᚗcomᚋdav
 	return &res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) unmarshalOInputGetOneSessionByIDAndBattletagID2ᚖgithubᚗcomᚋdavidfunk13ᚋoverwatchᚑcompanionᚋgraphᚋmodelᚐInputGetOneSessionByIDAndBattletagID(ctx context.Context, v interface{}) (*model.InputGetOneSessionByIDAndBattletagID, error) {
+func (ec *executionContext) unmarshalOInputGetOneSession2ᚖgithubᚗcomᚋdavidfunk13ᚋoverwatchᚑcompanionᚋgraphᚋmodelᚐInputGetOneSession(ctx context.Context, v interface{}) (*model.InputGetOneSession, error) {
 	if v == nil {
 		return nil, nil
 	}
-	res, err := ec.unmarshalInputInputGetOneSessionByIDAndBattletagID(ctx, v)
+	res, err := ec.unmarshalInputInputGetOneSession(ctx, v)
 	return &res, graphql.ErrorOnPath(ctx, err)
 }
 
