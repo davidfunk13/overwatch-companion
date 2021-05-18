@@ -195,12 +195,12 @@ input InputGetOneBattletag {
 # Queries
 type Query {
   getAllBattletags(input: String!): [Battletag]!
-  getOneBattletag(input: InputGetOneBattletag): Battletag!
+  getOneBattletag(input: InputGetOneBattletag): [Battletag]!
   getAllSessions(input: InputGetSessions): [Session]!
-  getOneSession(input: InputGetOneSession): Session!
-  getMostRecentSession(input: InputGetMostRecentSession): Session!
+  getOneSession(input: InputGetOneSession): [Session]!
+  getMostRecentSession(input: InputGetMostRecentSession): [Session]!
   getAllGames(input: InputGetGames): [Game]!
-  getOneGame(input: InputGetGame): Game!
+  getOneGame(input: InputGetGame): [Game]!
 }
 
 # Mutations

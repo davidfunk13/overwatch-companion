@@ -72,7 +72,7 @@ func (r *queryResolver) GetAllBattletags(ctx context.Context, input string) ([]*
 	return battletags, nil
 }
 
-func (r *queryResolver) GetOneBattletag(ctx context.Context, input *model.InputGetOneBattletag) (*model.Battletag, error) {
+func (r *queryResolver) GetOneBattletag(ctx context.Context, input *model.InputGetOneBattletag) ([]*model.Battletag, error) {
 	battletag := database.GetOneBattletag(input)
 
 	return battletag, nil
@@ -84,13 +84,13 @@ func (r *queryResolver) GetAllSessions(ctx context.Context, input *model.InputGe
 	return sessions, nil
 }
 
-func (r *queryResolver) GetOneSession(ctx context.Context, input *model.InputGetOneSession) (*model.Session, error) {
-	session := database.GetSession(input)
+func (r *queryResolver) GetOneSession(ctx context.Context, input *model.InputGetOneSession) ([]*model.Session, error) {
+	session := database.GetOneSession(input)
 
 	return session, nil
 }
 
-func (r *queryResolver) GetMostRecentSession(ctx context.Context, input *model.InputGetMostRecentSession) (*model.Session, error) {
+func (r *queryResolver) GetMostRecentSession(ctx context.Context, input *model.InputGetMostRecentSession) ([]*model.Session, error) {
 	session := database.GetMostRecentSession(input)
 
 	return session, nil
@@ -102,7 +102,7 @@ func (r *queryResolver) GetAllGames(ctx context.Context, input *model.InputGetGa
 	return games, nil
 }
 
-func (r *queryResolver) GetOneGame(ctx context.Context, input *model.InputGetGame) (*model.Game, error) {
+func (r *queryResolver) GetOneGame(ctx context.Context, input *model.InputGetGame) ([]*model.Game, error) {
 	panic(fmt.Errorf("not implemented"))
 }
 

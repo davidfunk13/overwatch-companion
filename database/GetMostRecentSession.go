@@ -7,7 +7,7 @@ import (
 )
 
 // Get session gets a single session by id and battletagId
-func GetMostRecentSession(input *model.InputGetMostRecentSession) *model.Session {
+func GetMostRecentSession(input *model.InputGetMostRecentSession) []*model.Session {
 	//open connection to the database
 	db, err := OpenConnection()
 
@@ -27,6 +27,8 @@ func GetMostRecentSession(input *model.InputGetMostRecentSession) *model.Session
 
 	row := db.QueryRow(qstr, input.UserID, input.BattletagID)
 
+	var returnSlice []*model.Session
+
 	switch err := row.Scan(
 		&id,
 		&userId,
@@ -41,7 +43,7 @@ func GetMostRecentSession(input *model.InputGetMostRecentSession) *model.Session
 		&updated_at,
 	); err {
 	case sql.ErrNoRows:
-		return &model.Session{}
+		return returnSlice
 	case nil:
 		session := model.Session{
 			ID:                id,
@@ -57,7 +59,9 @@ func GetMostRecentSession(input *model.InputGetMostRecentSession) *model.Session
 			UpdatedAt:         &updated_at,
 		}
 
-		return &session
+		returnSlice = append(returnSlice, &session)
+
+		return returnSlice
 	default:
 		panic(err)
 	}
