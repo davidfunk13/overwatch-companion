@@ -7,7 +7,7 @@ import (
 )
 
 // Get session gets a single session by id and battletagId
-func GetOneSession(input *model.InputGetOneSession) []*model.Session {
+func GetSession(input *model.InputGetOneSession) *model.Session {
 	//open connection to the database
 	db, err := OpenConnection()
 
@@ -27,8 +27,6 @@ func GetOneSession(input *model.InputGetOneSession) []*model.Session {
 
 	row := db.QueryRow(qstr, input.ID, input.BattletagID)
 
-	var returnSlice []*model.Session
-
 	switch err := row.Scan(
 		&id,
 		&userId,
@@ -43,9 +41,7 @@ func GetOneSession(input *model.InputGetOneSession) []*model.Session {
 		&updated_at,
 	); err {
 	case sql.ErrNoRows:
-		returnSlice = append(returnSlice, &model.Session{})
-
-		return returnSlice
+		return &model.Session{}
 	case nil:
 		session := model.Session{
 			ID:                id,
@@ -61,9 +57,7 @@ func GetOneSession(input *model.InputGetOneSession) []*model.Session {
 			UpdatedAt:         &updated_at,
 		}
 
-		returnSlice = append(returnSlice, &session)
-
-		return returnSlice
+		return &session
 	default:
 		panic(err)
 	}

@@ -142,12 +142,12 @@ type MutationResolver interface {
 }
 type QueryResolver interface {
 	GetAllBattletags(ctx context.Context, input string) ([]*model.Battletag, error)
-	GetOneBattletag(ctx context.Context, input *model.InputGetOneBattletag) ([]*model.Battletag, error)
+	GetOneBattletag(ctx context.Context, input *model.InputGetOneBattletag) (*model.Battletag, error)
 	GetAllSessions(ctx context.Context, input *model.InputGetSessions) ([]*model.Session, error)
-	GetOneSession(ctx context.Context, input *model.InputGetOneSession) ([]*model.Session, error)
-	GetMostRecentSession(ctx context.Context, input *model.InputGetMostRecentSession) ([]*model.Session, error)
+	GetOneSession(ctx context.Context, input *model.InputGetOneSession) (*model.Session, error)
+	GetMostRecentSession(ctx context.Context, input *model.InputGetMostRecentSession) (*model.Session, error)
 	GetAllGames(ctx context.Context, input *model.InputGetGames) ([]*model.Game, error)
-	GetOneGame(ctx context.Context, input *model.InputGetGame) ([]*model.Game, error)
+	GetOneGame(ctx context.Context, input *model.InputGetGame) (*model.Game, error)
 }
 
 type executableSchema struct {
@@ -932,12 +932,12 @@ input InputGetOneBattletag {
 # Queries
 type Query {
   getAllBattletags(input: String!): [Battletag]!
-  getOneBattletag(input: InputGetOneBattletag): [Battletag]!
+  getOneBattletag(input: InputGetOneBattletag): Battletag!
   getAllSessions(input: InputGetSessions): [Session]!
-  getOneSession(input: InputGetOneSession): [Session]!
-  getMostRecentSession(input: InputGetMostRecentSession): [Session]!
+  getOneSession(input: InputGetOneSession): Session!
+  getMostRecentSession(input: InputGetMostRecentSession): Session!
   getAllGames(input: InputGetGames): [Game]!
-  getOneGame(input: InputGetGame): [Game]!
+  getOneGame(input: InputGetGame): Game!
 }
 
 # Mutations
@@ -2889,9 +2889,9 @@ func (ec *executionContext) _Query_getOneBattletag(ctx context.Context, field gr
 		}
 		return graphql.Null
 	}
-	res := resTmp.([]*model.Battletag)
+	res := resTmp.(*model.Battletag)
 	fc.Result = res
-	return ec.marshalNBattletag2ᚕᚖgithubᚗcomᚋdavidfunk13ᚋoverwatchᚑcompanionᚋgraphᚋmodelᚐBattletag(ctx, field.Selections, res)
+	return ec.marshalNBattletag2ᚖgithubᚗcomᚋdavidfunk13ᚋoverwatchᚑcompanionᚋgraphᚋmodelᚐBattletag(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Query_getAllSessions(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -2973,9 +2973,9 @@ func (ec *executionContext) _Query_getOneSession(ctx context.Context, field grap
 		}
 		return graphql.Null
 	}
-	res := resTmp.([]*model.Session)
+	res := resTmp.(*model.Session)
 	fc.Result = res
-	return ec.marshalNSession2ᚕᚖgithubᚗcomᚋdavidfunk13ᚋoverwatchᚑcompanionᚋgraphᚋmodelᚐSession(ctx, field.Selections, res)
+	return ec.marshalNSession2ᚖgithubᚗcomᚋdavidfunk13ᚋoverwatchᚑcompanionᚋgraphᚋmodelᚐSession(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Query_getMostRecentSession(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -3015,9 +3015,9 @@ func (ec *executionContext) _Query_getMostRecentSession(ctx context.Context, fie
 		}
 		return graphql.Null
 	}
-	res := resTmp.([]*model.Session)
+	res := resTmp.(*model.Session)
 	fc.Result = res
-	return ec.marshalNSession2ᚕᚖgithubᚗcomᚋdavidfunk13ᚋoverwatchᚑcompanionᚋgraphᚋmodelᚐSession(ctx, field.Selections, res)
+	return ec.marshalNSession2ᚖgithubᚗcomᚋdavidfunk13ᚋoverwatchᚑcompanionᚋgraphᚋmodelᚐSession(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Query_getAllGames(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -3099,9 +3099,9 @@ func (ec *executionContext) _Query_getOneGame(ctx context.Context, field graphql
 		}
 		return graphql.Null
 	}
-	res := resTmp.([]*model.Game)
+	res := resTmp.(*model.Game)
 	fc.Result = res
-	return ec.marshalNGame2ᚕᚖgithubᚗcomᚋdavidfunk13ᚋoverwatchᚑcompanionᚋgraphᚋmodelᚐGame(ctx, field.Selections, res)
+	return ec.marshalNGame2ᚖgithubᚗcomᚋdavidfunk13ᚋoverwatchᚑcompanionᚋgraphᚋmodelᚐGame(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Query___type(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -5970,6 +5970,10 @@ func (ec *executionContext) ___Type(ctx context.Context, sel ast.SelectionSet, o
 
 // region    ***************************** type.gotpl *****************************
 
+func (ec *executionContext) marshalNBattletag2githubᚗcomᚋdavidfunk13ᚋoverwatchᚑcompanionᚋgraphᚋmodelᚐBattletag(ctx context.Context, sel ast.SelectionSet, v model.Battletag) graphql.Marshaler {
+	return ec._Battletag(ctx, sel, &v)
+}
+
 func (ec *executionContext) marshalNBattletag2ᚕᚖgithubᚗcomᚋdavidfunk13ᚋoverwatchᚑcompanionᚋgraphᚋmodelᚐBattletag(ctx context.Context, sel ast.SelectionSet, v []*model.Battletag) graphql.Marshaler {
 	ret := make(graphql.Array, len(v))
 	var wg sync.WaitGroup
@@ -6007,6 +6011,16 @@ func (ec *executionContext) marshalNBattletag2ᚕᚖgithubᚗcomᚋdavidfunk13�
 	return ret
 }
 
+func (ec *executionContext) marshalNBattletag2ᚖgithubᚗcomᚋdavidfunk13ᚋoverwatchᚑcompanionᚋgraphᚋmodelᚐBattletag(ctx context.Context, sel ast.SelectionSet, v *model.Battletag) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	return ec._Battletag(ctx, sel, v)
+}
+
 func (ec *executionContext) unmarshalNBoolean2bool(ctx context.Context, v interface{}) (bool, error) {
 	res, err := graphql.UnmarshalBoolean(v)
 	return res, graphql.ErrorOnPath(ctx, err)
@@ -6020,6 +6034,10 @@ func (ec *executionContext) marshalNBoolean2bool(ctx context.Context, sel ast.Se
 		}
 	}
 	return res
+}
+
+func (ec *executionContext) marshalNGame2githubᚗcomᚋdavidfunk13ᚋoverwatchᚑcompanionᚋgraphᚋmodelᚐGame(ctx context.Context, sel ast.SelectionSet, v model.Game) graphql.Marshaler {
+	return ec._Game(ctx, sel, &v)
 }
 
 func (ec *executionContext) marshalNGame2ᚕᚖgithubᚗcomᚋdavidfunk13ᚋoverwatchᚑcompanionᚋgraphᚋmodelᚐGame(ctx context.Context, sel ast.SelectionSet, v []*model.Game) graphql.Marshaler {
@@ -6057,6 +6075,16 @@ func (ec *executionContext) marshalNGame2ᚕᚖgithubᚗcomᚋdavidfunk13ᚋover
 	}
 	wg.Wait()
 	return ret
+}
+
+func (ec *executionContext) marshalNGame2ᚖgithubᚗcomᚋdavidfunk13ᚋoverwatchᚑcompanionᚋgraphᚋmodelᚐGame(ctx context.Context, sel ast.SelectionSet, v *model.Game) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	return ec._Game(ctx, sel, v)
 }
 
 func (ec *executionContext) unmarshalNInputBattletag2githubᚗcomᚋdavidfunk13ᚋoverwatchᚑcompanionᚋgraphᚋmodelᚐInputBattletag(ctx context.Context, v interface{}) (model.InputBattletag, error) {
@@ -6139,6 +6167,10 @@ func (ec *executionContext) marshalNRole2githubᚗcomᚋdavidfunk13ᚋoverwatch�
 	return v
 }
 
+func (ec *executionContext) marshalNSession2githubᚗcomᚋdavidfunk13ᚋoverwatchᚑcompanionᚋgraphᚋmodelᚐSession(ctx context.Context, sel ast.SelectionSet, v model.Session) graphql.Marshaler {
+	return ec._Session(ctx, sel, &v)
+}
+
 func (ec *executionContext) marshalNSession2ᚕᚖgithubᚗcomᚋdavidfunk13ᚋoverwatchᚑcompanionᚋgraphᚋmodelᚐSession(ctx context.Context, sel ast.SelectionSet, v []*model.Session) graphql.Marshaler {
 	ret := make(graphql.Array, len(v))
 	var wg sync.WaitGroup
@@ -6174,6 +6206,16 @@ func (ec *executionContext) marshalNSession2ᚕᚖgithubᚗcomᚋdavidfunk13ᚋo
 	}
 	wg.Wait()
 	return ret
+}
+
+func (ec *executionContext) marshalNSession2ᚖgithubᚗcomᚋdavidfunk13ᚋoverwatchᚑcompanionᚋgraphᚋmodelᚐSession(ctx context.Context, sel ast.SelectionSet, v *model.Session) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	return ec._Session(ctx, sel, v)
 }
 
 func (ec *executionContext) unmarshalNString2string(ctx context.Context, v interface{}) (string, error) {

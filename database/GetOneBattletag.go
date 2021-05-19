@@ -7,7 +7,7 @@ import (
 )
 
 // GetOneBattletag returns a single battletag by userId and battletagId.
-func GetOneBattletag(input *model.InputGetOneBattletag) []*model.Battletag {
+func GetOneBattletag(input *model.InputGetOneBattletag) *model.Battletag {
 	db, err := OpenConnection()
 
 	if err != nil {
@@ -26,7 +26,7 @@ func GetOneBattletag(input *model.InputGetOneBattletag) []*model.Battletag {
 	qstr := `SELECT * FROM battletag WHERE id=? AND userId=?;`
 
 	row := db.QueryRow(qstr, input.BattletagID, input.UserID)
-	var returnSlice []*model.Battletag
+
 	switch err := row.Scan(
 		&battletagId,
 		&userId,
@@ -42,8 +42,7 @@ func GetOneBattletag(input *model.InputGetOneBattletag) []*model.Battletag {
 		&updated_at,
 	); err {
 	case sql.ErrNoRows:
-
-		return returnSlice
+		return &model.Battletag{}
 	case nil:
 		battletag := &model.Battletag{
 			ID:          battletagId,
@@ -60,9 +59,7 @@ func GetOneBattletag(input *model.InputGetOneBattletag) []*model.Battletag {
 			UpdatedAt:   &updated_at,
 		}
 
-		returnSlice = append(returnSlice, battletag)
-
-		return returnSlice
+		return battletag
 	default:
 		panic(err.Error())
 	}
