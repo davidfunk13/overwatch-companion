@@ -41,7 +41,9 @@ func GetMostRecentSession(input *model.InputGetMostRecentSession) *model.Session
 		&updated_at,
 	); err {
 	case sql.ErrNoRows:
-		return &model.Session{}
+		session := model.Session{}
+
+		return &session
 	case nil:
 		session := model.Session{
 			ID:                id,
