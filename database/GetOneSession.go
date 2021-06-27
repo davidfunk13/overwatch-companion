@@ -19,14 +19,19 @@ func GetSession(input *model.InputGetOneSession) *model.Session {
 	defer db.Close()
 
 	var (
-		userId, created_at, updated_at                                                                             string
+		userId, created_at, updated_at, qstr                                                                             string
 		id, battletagId, starting_sr_tank, sr_tank, starting_sr_damage, sr_damage, starting_sr_support, sr_support int
+		row *sql.Row
 	)
 
-	qstr := `SELECT * FROM session WHERE id=? AND battletagId=?;`
-
-	row := db.QueryRow(qstr, input.ID, input.BattletagID)
-
+	qstr = `SELECT * FROM session WHERE userId=? AND battletagId=? ORDER BY created_at DESC LIMIT 1;`
+	row = db.QueryRow(qstr, input.UserID, input.BattletagID)
+	
+	if input.ID != nil {
+		qstr = `SELECT * FROM session WHERE id=? AND battletagId=?;`
+		row = db.QueryRow(qstr, input.ID, input.BattletagID)
+	}
+	
 	switch err := row.Scan(
 		&id,
 		&userId,

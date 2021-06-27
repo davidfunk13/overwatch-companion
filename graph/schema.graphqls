@@ -129,12 +129,7 @@ input InputGetSessions {
 }
 
 input InputGetOneSession {
-  id: Int!
-  userId: String!
-  battletagId: Int!
-}
-
-input InputGetMostRecentSession {
+  id: Int
   userId: String!
   battletagId: Int!
 }
@@ -198,7 +193,6 @@ type Query {
   getOneBattletag(input: InputGetOneBattletag): Battletag!
   getAllSessions(input: InputGetSessions): [Session]!
   getOneSession(input: InputGetOneSession): Session!
-  getMostRecentSession(input: InputGetMostRecentSession): Session!
   getAllGames(input: InputGetGames): [Game]!
   getOneGame(input: InputGetGame): Game!
 }

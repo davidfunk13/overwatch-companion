@@ -90,12 +90,6 @@ func (r *queryResolver) GetOneSession(ctx context.Context, input *model.InputGet
 	return session, nil
 }
 
-func (r *queryResolver) GetMostRecentSession(ctx context.Context, input *model.InputGetMostRecentSession) (*model.Session, error) {
-	session := database.GetMostRecentSession(input)
-
-	return session, nil
-}
-
 func (r *queryResolver) GetAllGames(ctx context.Context, input *model.InputGetGames) ([]*model.Game, error) {
 	games := database.GetAllGames(*input)
 
