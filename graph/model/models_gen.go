@@ -44,6 +44,12 @@ type BlizzBattletag struct {
 	Portrait    string   `json:"portrait"`
 }
 
+type CurrentRole struct {
+	Role       *Role `json:"role"`
+	CurrentSr  *int  `json:"current_sr"`
+	StartingSr *int  `json:"starting_sr"`
+}
+
 type Game struct {
 	ID           int          `json:"id"`
 	UserID       string       `json:"userId"`
@@ -80,6 +86,11 @@ type InputGame struct {
 	Role         Role         `json:"role"`
 	SrOut        int          `json:"sr_out"`
 	MatchOutcome MatchOutcome `json:"match_outcome"`
+}
+
+type InputGetCurrentRole struct {
+	SessionID int  `json:"sessionId"`
+	Role      Role `json:"role"`
 }
 
 type InputGetGame struct {

@@ -100,6 +100,12 @@ func (r *queryResolver) GetOneGame(ctx context.Context, input *model.InputGetGam
 	panic(fmt.Errorf("not implemented"))
 }
 
+func (r *queryResolver) GetCurrentRole(ctx context.Context, input *model.InputGetCurrentRole) (*model.CurrentRole, error) {
+	role := database.GetCurrentRole(input)
+
+	return role, nil
+}
+
 // Mutation returns generated.MutationResolver implementation.
 func (r *Resolver) Mutation() generated.MutationResolver { return &mutationResolver{r} }
 

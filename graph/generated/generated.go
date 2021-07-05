@@ -70,6 +70,12 @@ type ComplexityRoot struct {
 		URLName     func(childComplexity int) int
 	}
 
+	CurrentRole struct {
+		CurrentSr  func(childComplexity int) int
+		Role       func(childComplexity int) int
+		StartingSr func(childComplexity int) int
+	}
+
 	Game struct {
 		BattletagID  func(childComplexity int) int
 		CreatedAt    func(childComplexity int) int
@@ -111,6 +117,7 @@ type ComplexityRoot struct {
 		GetAllBattletags func(childComplexity int, input string) int
 		GetAllGames      func(childComplexity int, input *model.InputGetGames) int
 		GetAllSessions   func(childComplexity int, input *model.InputGetSessions) int
+		GetCurrentRole   func(childComplexity int, input *model.InputGetCurrentRole) int
 		GetOneBattletag  func(childComplexity int, input *model.InputGetOneBattletag) int
 		GetOneGame       func(childComplexity int, input *model.InputGetGame) int
 		GetOneSession    func(childComplexity int, input *model.InputGetOneSession) int
@@ -146,6 +153,7 @@ type QueryResolver interface {
 	GetOneSession(ctx context.Context, input *model.InputGetOneSession) (*model.Session, error)
 	GetAllGames(ctx context.Context, input *model.InputGetGames) ([]*model.Game, error)
 	GetOneGame(ctx context.Context, input *model.InputGetGame) (*model.Game, error)
+	GetCurrentRole(ctx context.Context, input *model.InputGetCurrentRole) (*model.CurrentRole, error)
 }
 
 type executableSchema struct {
@@ -302,6 +310,27 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.BlizzBattletag.URLName(childComplexity), true
+
+	case "CurrentRole.current_sr":
+		if e.complexity.CurrentRole.CurrentSr == nil {
+			break
+		}
+
+		return e.complexity.CurrentRole.CurrentSr(childComplexity), true
+
+	case "CurrentRole.role":
+		if e.complexity.CurrentRole.Role == nil {
+			break
+		}
+
+		return e.complexity.CurrentRole.Role(childComplexity), true
+
+	case "CurrentRole.starting_sr":
+		if e.complexity.CurrentRole.StartingSr == nil {
+			break
+		}
+
+		return e.complexity.CurrentRole.StartingSr(childComplexity), true
 
 	case "Game.battletagId":
 		if e.complexity.Game.BattletagID == nil {
@@ -543,6 +572,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Query.GetAllSessions(childComplexity, args["input"].(*model.InputGetSessions)), true
+
+	case "Query.getCurrentRole":
+		if e.complexity.Query.GetCurrentRole == nil {
+			break
+		}
+
+		args, err := ec.field_Query_getCurrentRole_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.GetCurrentRole(childComplexity, args["input"].(*model.InputGetCurrentRole)), true
 
 	case "Query.getOneBattletag":
 		if e.complexity.Query.GetOneBattletag == nil {
@@ -824,6 +865,7 @@ type BlizzBattletag {
 }
 
 # Session schema
+
 type Session {
   id: Int!
   userId: String!
@@ -866,6 +908,7 @@ input InputUpdateSessionStartingSR {
 }
 
 # Game schema
+
 type Game {
   id: Int!
   userId: String!
@@ -878,7 +921,7 @@ type Game {
   match_outcome: MatchOutcome!
   created_at: String!
   updated_at: String
-}
+} 
 
 input InputGame {
   userId: String!
@@ -910,6 +953,20 @@ input InputGetOneBattletag {
   battletagId: Int!
 }
 
+## Current Role Types
+
+type CurrentRole {
+  role: Role
+  current_sr: Int
+  starting_sr: Int
+}
+
+input InputGetCurrentRole {
+  sessionId: Int!
+  role: Role!
+}
+
+
 # Queries
 type Query {
   getAllBattletags(input: String!): [Battletag]!
@@ -918,6 +975,7 @@ type Query {
   getOneSession(input: InputGetOneSession): Session!
   getAllGames(input: InputGetGames): [Game]!
   getOneGame(input: InputGetGame): Game!
+  getCurrentRole(input: InputGetCurrentRole): CurrentRole!
 }
 
 # Mutations
@@ -1082,6 +1140,21 @@ func (ec *executionContext) field_Query_getAllSessions_args(ctx context.Context,
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
 		arg0, err = ec.unmarshalOInputGetSessions2ᚖgithubᚗcomᚋdavidfunk13ᚋoverwatchᚑcompanionᚋgraphᚋmodelᚐInputGetSessions(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_getCurrentRole_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 *model.InputGetCurrentRole
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalOInputGetCurrentRole2ᚖgithubᚗcomᚋdavidfunk13ᚋoverwatchᚑcompanionᚋgraphᚋmodelᚐInputGetCurrentRole(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -1865,6 +1938,102 @@ func (ec *executionContext) _BlizzBattletag_portrait(ctx context.Context, field 
 	res := resTmp.(string)
 	fc.Result = res
 	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _CurrentRole_role(ctx context.Context, field graphql.CollectedField, obj *model.CurrentRole) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "CurrentRole",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Role, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*model.Role)
+	fc.Result = res
+	return ec.marshalORole2ᚖgithubᚗcomᚋdavidfunk13ᚋoverwatchᚑcompanionᚋgraphᚋmodelᚐRole(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _CurrentRole_current_sr(ctx context.Context, field graphql.CollectedField, obj *model.CurrentRole) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "CurrentRole",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.CurrentSr, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*int)
+	fc.Result = res
+	return ec.marshalOInt2ᚖint(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _CurrentRole_starting_sr(ctx context.Context, field graphql.CollectedField, obj *model.CurrentRole) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "CurrentRole",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.StartingSr, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*int)
+	fc.Result = res
+	return ec.marshalOInt2ᚖint(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Game_id(ctx context.Context, field graphql.CollectedField, obj *model.Game) (ret graphql.Marshaler) {
@@ -3025,6 +3194,48 @@ func (ec *executionContext) _Query_getOneGame(ctx context.Context, field graphql
 	res := resTmp.(*model.Game)
 	fc.Result = res
 	return ec.marshalNGame2ᚖgithubᚗcomᚋdavidfunk13ᚋoverwatchᚑcompanionᚋgraphᚋmodelᚐGame(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Query_getCurrentRole(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Query_getCurrentRole_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().GetCurrentRole(rctx, args["input"].(*model.InputGetCurrentRole))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.CurrentRole)
+	fc.Result = res
+	return ec.marshalNCurrentRole2ᚖgithubᚗcomᚋdavidfunk13ᚋoverwatchᚑcompanionᚋgraphᚋmodelᚐCurrentRole(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Query___type(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -4719,6 +4930,34 @@ func (ec *executionContext) unmarshalInputInputGame(ctx context.Context, obj int
 	return it, nil
 }
 
+func (ec *executionContext) unmarshalInputInputGetCurrentRole(ctx context.Context, obj interface{}) (model.InputGetCurrentRole, error) {
+	var it model.InputGetCurrentRole
+	var asMap = obj.(map[string]interface{})
+
+	for k, v := range asMap {
+		switch k {
+		case "sessionId":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("sessionId"))
+			it.SessionID, err = ec.unmarshalNInt2int(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "role":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("role"))
+			it.Role, err = ec.unmarshalNRole2githubᚗcomᚋdavidfunk13ᚋoverwatchᚑcompanionᚋgraphᚋmodelᚐRole(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
 func (ec *executionContext) unmarshalInputInputGetGame(ctx context.Context, obj interface{}) (model.InputGetGame, error) {
 	var it model.InputGetGame
 	var asMap = obj.(map[string]interface{})
@@ -5210,6 +5449,34 @@ func (ec *executionContext) _BlizzBattletag(ctx context.Context, sel ast.Selecti
 	return out
 }
 
+var currentRoleImplementors = []string{"CurrentRole"}
+
+func (ec *executionContext) _CurrentRole(ctx context.Context, sel ast.SelectionSet, obj *model.CurrentRole) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, currentRoleImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("CurrentRole")
+		case "role":
+			out.Values[i] = ec._CurrentRole_role(ctx, field, obj)
+		case "current_sr":
+			out.Values[i] = ec._CurrentRole_current_sr(ctx, field, obj)
+		case "starting_sr":
+			out.Values[i] = ec._CurrentRole_starting_sr(ctx, field, obj)
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
 var gameImplementors = []string{"Game", "OptionalDataPayload"}
 
 func (ec *executionContext) _Game(ctx context.Context, sel ast.SelectionSet, obj *model.Game) graphql.Marshaler {
@@ -5512,6 +5779,20 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 					}
 				}()
 				res = ec._Query_getOneGame(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
+		case "getCurrentRole":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_getCurrentRole(ctx, field)
 				if res == graphql.Null {
 					atomic.AddUint32(&invalids, 1)
 				}
@@ -5915,6 +6196,20 @@ func (ec *executionContext) marshalNBoolean2bool(ctx context.Context, sel ast.Se
 		}
 	}
 	return res
+}
+
+func (ec *executionContext) marshalNCurrentRole2githubᚗcomᚋdavidfunk13ᚋoverwatchᚑcompanionᚋgraphᚋmodelᚐCurrentRole(ctx context.Context, sel ast.SelectionSet, v model.CurrentRole) graphql.Marshaler {
+	return ec._CurrentRole(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNCurrentRole2ᚖgithubᚗcomᚋdavidfunk13ᚋoverwatchᚑcompanionᚋgraphᚋmodelᚐCurrentRole(ctx context.Context, sel ast.SelectionSet, v *model.CurrentRole) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	return ec._CurrentRole(ctx, sel, v)
 }
 
 func (ec *executionContext) marshalNGame2githubᚗcomᚋdavidfunk13ᚋoverwatchᚑcompanionᚋgraphᚋmodelᚐGame(ctx context.Context, sel ast.SelectionSet, v model.Game) graphql.Marshaler {
@@ -6379,6 +6674,14 @@ func (ec *executionContext) marshalOGame2ᚖgithubᚗcomᚋdavidfunk13ᚋoverwat
 		return graphql.Null
 	}
 	return ec._Game(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalOInputGetCurrentRole2ᚖgithubᚗcomᚋdavidfunk13ᚋoverwatchᚑcompanionᚋgraphᚋmodelᚐInputGetCurrentRole(ctx context.Context, v interface{}) (*model.InputGetCurrentRole, error) {
+	if v == nil {
+		return nil, nil
+	}
+	res, err := ec.unmarshalInputInputGetCurrentRole(ctx, v)
+	return &res, graphql.ErrorOnPath(ctx, err)
 }
 
 func (ec *executionContext) unmarshalOInputGetGame2ᚖgithubᚗcomᚋdavidfunk13ᚋoverwatchᚑcompanionᚋgraphᚋmodelᚐInputGetGame(ctx context.Context, v interface{}) (*model.InputGetGame, error) {

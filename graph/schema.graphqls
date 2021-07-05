@@ -101,6 +101,7 @@ type BlizzBattletag {
 }
 
 # Session schema
+
 type Session {
   id: Int!
   userId: String!
@@ -143,6 +144,7 @@ input InputUpdateSessionStartingSR {
 }
 
 # Game schema
+
 type Game {
   id: Int!
   userId: String!
@@ -155,7 +157,7 @@ type Game {
   match_outcome: MatchOutcome!
   created_at: String!
   updated_at: String
-}
+} 
 
 input InputGame {
   userId: String!
@@ -187,6 +189,20 @@ input InputGetOneBattletag {
   battletagId: Int!
 }
 
+## Current Role Types
+
+type CurrentRole {
+  role: Role
+  current_sr: Int
+  starting_sr: Int
+}
+
+input InputGetCurrentRole {
+  sessionId: Int!
+  role: Role!
+}
+
+
 # Queries
 type Query {
   getAllBattletags(input: String!): [Battletag]!
@@ -195,6 +211,7 @@ type Query {
   getOneSession(input: InputGetOneSession): Session!
   getAllGames(input: InputGetGames): [Game]!
   getOneGame(input: InputGetGame): Game!
+  getCurrentRole(input: InputGetCurrentRole): CurrentRole!
 }
 
 # Mutations
